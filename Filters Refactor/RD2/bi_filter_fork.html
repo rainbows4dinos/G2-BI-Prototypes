@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buyer Intent</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#5746b2;--primary-hover:#4535a0;--primary-20:#ebe9f6;--primary-10:#f5f3fb;
+  --neutral-5:#fafafa;--card:#fff;
+  --border-light:#e5e3f0;--border-med:#b0afb6;--border-brand:#ddd8f8;
+  --text:#1a1a2e;--text-sec:#49495a;--text-ter:#8b8fa8;--text-pri:#5746b2;
+  --r-sm:8px;--r-md:12px;--r-pill:20px;
+  --sh-card:0 0 1px rgba(32,31,35,.18),0 2px 8px rgba(32,31,35,.06);
+  --sh-dd:0 8px 24px rgba(0,0,0,.12),0 0 1px rgba(32,31,35,.14);
+  --font:'Figtree',system-ui,sans-serif;
+  --surface:#f5f4fb;
+}
+body{font-family:var(--font);background:var(--surface);color:var(--text);font-size:14px;min-height:100vh}
+.mi{font-family:'Material Icons';font-size:18px;line-height:1;vertical-align:middle;display:inline-flex;align-items:center;justify-content:center;user-select:none;flex-shrink:0}
+
+.page{display:flex;flex-direction:column;min-height:100vh}
+.top-bar{background:var(--primary);height:48px;display:flex;align-items:center;padding:0 24px;gap:12px;flex-shrink:0}
+.top-bar-logo{color:#fff;font-weight:800;font-size:15px}
+.top-bar-org{background:rgba(255,255,255,.15);border-radius:var(--r-pill);padding:4px 12px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px}
+.page-header{background:#fff;border-bottom:0.5px solid var(--border-light);padding:16px 32px 0;flex-shrink:0}
+.breadcrumb{font-size:12px;color:var(--text-sec);margin-bottom:6px}
+.breadcrumb a{color:var(--text-pri);text-decoration:none}
+.page-title{font-size:22px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.page-tabs{display:flex}
+.page-tab{padding:8px 16px;font-size:14px;font-weight:600;color:var(--text-sec);border-bottom:2px solid transparent;cursor:pointer}
+.page-tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.content{flex:1;padding:24px 32px;display:flex;flex-direction:column;gap:20px}
+
+.btn{display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 12px;border-radius:var(--r-pill);font-size:14px;font-weight:600;cursor:pointer;border:none;white-space:nowrap;font-family:var(--font);transition:background .12s,color .12s,border-color .12s}
+.btn-ghost{background:var(--neutral-5);border:0.5px solid var(--border-med);color:var(--primary)}
+.btn-ghost:hover{background:var(--primary-20);border-color:var(--primary)}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-hover)}
+.btn-text{background:transparent;color:var(--primary);border:none;font-size:13px}
+.btn-text:hover{text-decoration:underline}
+
+/* ── Filter bar ── */
+.filter-bar{background:var(--card);border:0.5px solid var(--border-light);border-radius:var(--r-md);box-shadow:var(--sh-card)}
+
+.fb-top{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:0.5px solid var(--border-light);flex-wrap:wrap}
+.fb-top-left{display:flex;align-items:center;gap:8px;flex:1}
+.fb-top-right{display:flex;align-items:center;gap:8px}
+
+/* ICP pill */
+.icp-pill{display:inline-flex;align-items:center;height:32px;background:var(--primary);border-radius:var(--r-sm);overflow:hidden;cursor:pointer;border:none;font-family:var(--font);flex-shrink:0}
+.icp-pill:hover,.icp-pill.open{background:var(--primary-hover)}
+.icp-pill-label{padding:0 6px 0 10px;font-size:13px;font-weight:600;color:#fff;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.icp-pill-caret{border-left:0.5px solid rgba(255,255,255,.25);width:26px;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.8)}
+
+/* Segment pill */
+.seg-pill{display:inline-flex;align-items:center;height:32px;background:var(--neutral-5);border:0.5px solid var(--border-med);border-radius:var(--r-sm);overflow:hidden;cursor:pointer;font-family:var(--font);flex-shrink:0;transition:border-color .12s,background .12s}
+.seg-pill:hover,.seg-pill.open{border-color:var(--primary);background:var(--primary-20)}
+.seg-pill.filled{border-color:var(--primary);background:var(--primary-20)}
+.seg-pill-label{padding:0 6px 0 10px;font-size:13px;font-weight:600;color:var(--text-sec);white-space:nowrap;display:flex;align-items:center;gap:5px}
+.seg-pill.open .seg-pill-label,.seg-pill.filled .seg-pill-label{color:var(--text-pri)}
+.seg-pill-caret{border-left:0.5px solid var(--border-med);width:26px;height:100%;display:flex;align-items:center;justify-content:center;color:var(--text-sec)}
+.seg-pill.open .seg-pill-caret,.seg-pill.filled .seg-pill-caret{border-left-color:rgba(87,70,178,.25);color:var(--text-pri)}
+
+.fb-divider{width:0.5px;height:20px;background:var(--border-light);flex-shrink:0}
+
+/* Match mode + rows area */
+.fb-body{padding:10px 16px 12px;display:flex;flex-direction:column;gap:0}
+
+.match-bar{display:none;align-items:center;gap:6px;margin-bottom:8px}
+.match-bar.show{display:flex}
+.match-bar-text{font-size:12px;font-weight:600;color:var(--text-sec)}
+
+.match-sel{display:inline-flex;align-items:center;height:26px;background:var(--neutral-5);border:0.5px solid var(--border-med);border-radius:6px;overflow:hidden;cursor:pointer;font-family:var(--font);position:relative}
+.match-sel:hover{border-color:var(--primary);background:var(--primary-20)}
+.match-sel-label{padding:0 4px 0 8px;font-size:12px;font-weight:600;color:var(--text-pri)}
+.match-sel-caret{width:20px;display:flex;align-items:center;justify-content:center;color:var(--text-ter)}
+
+/* Filter rows */
+.filter-rows{display:flex;flex-direction:column;gap:5px}
+.fb-empty{display:flex;align-items:center;gap:6px;padding:4px 0 2px;font-size:13px;color:var(--text-ter)}
+.fb-empty.hidden{display:none}
+
+.filter-row{display:flex;align-items:center;gap:6px}
+/* Pill-style row token — clickable to edit */
+.row-token{display:inline-flex;align-items:center;height:30px;background:var(--primary-10);border:0.5px solid var(--border-brand);border-radius:6px;overflow:hidden;cursor:pointer;transition:border-color .12s,background .12s;max-width:420px}
+.row-token:hover{border-color:var(--primary);background:var(--primary-20)}
+.row-token.editing{border-color:var(--primary);background:var(--primary-20)}
+.row-token-text{padding:0 8px;font-size:12px;font-weight:600;color:var(--text-pri);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-token-x{border-left:0.5px solid rgba(87,70,178,.2);width:26px;height:100%;display:flex;align-items:center;justify-content:center;color:var(--text-pri);flex-shrink:0}
+.row-token-x:hover{background:rgba(87,70,178,.15)}
+
+/* Add filter btn */
+.add-filter-btn{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:0.5px dashed var(--border-brand);background:transparent;color:var(--text-pri);font-family:var(--font);transition:background .12s,border-color .12s}
+.add-filter-btn:hover{background:var(--primary-10);border-color:var(--primary)}
+
+.save-seg-btn{display:none;align-items:center;gap:4px;height:30px;padding:0 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:0.5px solid var(--border-med);background:var(--neutral-5);color:var(--text-sec);font-family:var(--font);transition:background .12s,border-color .12s,color .12s}
+.save-seg-btn:hover{background:var(--primary-20);border-color:var(--primary);color:var(--text-pri)}
+.save-seg-btn.show{display:inline-flex}
+
+
+
+.fb-footer{display:flex;align-items:center;gap:8px;margin-top:6px}
+
+/* ── Two-panel filter drawer ── */
+.drawer-backdrop{position:fixed;inset:0;z-index:600;display:none}
+.drawer-backdrop.open{display:block}
+
+.filter-drawer{position:fixed;z-index:700;background:#fff;border:0.5px solid var(--border-light);border-radius:var(--r-md);box-shadow:var(--sh-dd);display:none;flex-direction:column;width:540px;max-height:420px}
+.filter-drawer.open{display:flex}
+
+/* drawer header */
+.drawer-header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:0.5px solid var(--border-light);flex-shrink:0}
+.drawer-header-title{font-size:13px;font-weight:700;color:var(--text)}
+.drawer-close{background:none;border:none;cursor:pointer;color:var(--text-ter);display:flex;align-items:center;border-radius:4px;padding:2px}
+.drawer-close:hover{background:var(--border-light);color:var(--text-sec)}
+
+/* two panels */
+.drawer-panels{display:flex;flex:1;overflow:hidden;min-height:0}
+
+/* left panel — property list */
+.panel-left{width:220px;border-right:0.5px solid var(--border-light);display:flex;flex-direction:column;flex-shrink:0}
+.panel-search{padding:8px 10px;border-bottom:0.5px solid var(--border-light);flex-shrink:0}
+.panel-search input{width:100%;height:28px;border:0.5px solid var(--border-med);border-radius:6px;padding:0 8px 0 28px;font-size:12px;font-family:var(--font);color:var(--text);background:var(--neutral-5);outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Ccircle cx='6' cy='6' r='4' fill='none' stroke='%238b8fa8' stroke-width='1.4'/%3E%3Cpath d='M9.5 9.5l2.5 2.5' stroke='%238b8fa8' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:8px center}
+.panel-search input:focus{border-color:var(--primary)}
+.prop-list{overflow-y:auto;flex:1;padding:4px 0}
+.prop-group-label{padding:8px 12px 4px;font-size:10px;font-weight:700;color:var(--text-ter);letter-spacing:.07em;text-transform:uppercase}
+.prop-item{display:flex;align-items:center;gap:8px;padding:7px 12px;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;white-space:nowrap}
+.prop-item:hover{background:var(--primary-10);color:var(--text-pri)}
+.prop-item.active{background:var(--primary-20);color:var(--text-pri);font-weight:600}
+.prop-item .mi{font-size:15px;color:var(--text-ter)}
+.prop-item.active .mi,.prop-item:hover .mi{color:var(--text-pri)}
+
+/* right panel — operator + values */
+.panel-right{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.panel-right-empty{display:flex;align-items:center;justify-content:center;flex:1;font-size:13px;color:var(--text-ter);flex-direction:column;gap:8px}
+
+.op-row{padding:8px 10px;border-bottom:0.5px solid var(--border-light);flex-shrink:0}
+.op-select{width:100%;height:30px;border:0.5px solid var(--border-med);border-radius:6px;background:var(--neutral-5);padding:0 24px 0 8px;font-size:12px;font-family:var(--font);color:var(--text);appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath d='M3 5l4 4 4-4' fill='none' stroke='%2349495a' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
+.op-select:focus{outline:none;border-color:var(--primary)}
+
+.val-search{padding:6px 10px;border-bottom:0.5px solid var(--border-light);flex-shrink:0}
+.val-search input{width:100%;height:28px;border:0.5px solid var(--border-med);border-radius:6px;padding:0 8px 0 28px;font-size:12px;font-family:var(--font);color:var(--text);background:var(--neutral-5);outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Ccircle cx='6' cy='6' r='4' fill='none' stroke='%238b8fa8' stroke-width='1.4'/%3E%3Cpath d='M9.5 9.5l2.5 2.5' stroke='%238b8fa8' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:8px center}
+.val-search input:focus{border-color:var(--primary)}
+
+.val-actions{display:flex;justify-content:flex-end;gap:8px;padding:4px 10px 2px;flex-shrink:0}
+.val-action-btn{background:none;border:none;font-size:11px;font-weight:600;color:var(--text-pri);cursor:pointer;font-family:var(--font);padding:2px 4px;border-radius:3px}
+.val-action-btn:hover{background:var(--primary-10)}
+
+.val-list{overflow-y:auto;flex:1}
+.val-opt{display:flex;align-items:center;gap:8px;padding:7px 10px;font-size:13px;cursor:pointer}
+.val-opt:hover{background:var(--primary-10)}
+.val-opt.selected{background:var(--primary-20)}
+.val-chk{width:14px;height:14px;border-radius:3px;border:1.5px solid var(--border-med);display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;color:#fff}
+.val-opt.selected .val-chk{background:var(--primary);border-color:var(--primary)}
+.val-opt-label{font-size:13px;font-weight:500;color:var(--text)}
+.val-opt.selected .val-opt-label{font-weight:600;color:var(--text-pri)}
+
+/* drawer footer */
+.drawer-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-top:0.5px solid var(--border-light);flex-shrink:0}
+.drawer-footer-left{font-size:12px;color:var(--text-ter)}
+.drawer-footer-right{display:flex;gap:6px}
+.drawer-footer-right .btn{height:28px;font-size:12px;padding:0 12px}
+
+/* simple dropdowns for ICP/Segment */
+.dd-anchor{position:relative;display:inline-flex}
+.simple-dd{position:absolute;top:calc(100% + 6px);left:0;z-index:800;background:#fff;border:0.5px solid var(--border-light);border-radius:var(--r-md);box-shadow:var(--sh-dd);display:none;flex-direction:column;min-width:200px}
+.simple-dd.open{display:flex}
+.simple-dd-hdr{padding:8px 12px 6px;border-bottom:0.5px solid var(--border-light);font-size:10px;font-weight:700;color:var(--text-ter);text-transform:uppercase;letter-spacing:.06em}
+.simple-dd-list{padding:4px 0}
+.simple-dd-opt{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:13px;font-weight:500;color:var(--text);cursor:pointer}
+.simple-dd-opt:hover{background:var(--primary-10)}
+.simple-dd-opt.selected{font-weight:700;color:var(--text-pri)}
+.simple-dd-opt-add{color:var(--text-pri);font-weight:600;border-top:0.5px solid var(--border-light);margin-top:4px}
+.simple-dd-footer{padding:6px 8px;border-top:0.5px solid var(--border-light)}
+
+/* Match mode dd */
+.match-dd{position:absolute;top:calc(100% + 4px);left:0;z-index:800;background:#fff;border:0.5px solid var(--border-light);border-radius:var(--r-md);box-shadow:var(--sh-dd);display:none;flex-direction:column;width:180px}
+.match-dd.open{display:flex}
+.match-dd-opt{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text)}
+.match-dd-opt:hover{background:var(--primary-10)}
+.match-dd-opt.selected{font-weight:600;color:var(--text-pri)}
+.match-dd-chk{font-size:13px;width:14px;flex-shrink:0}
+
+/* Save modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(26,26,46,.35);z-index:900;display:none;align-items:center;justify-content:center}
+.modal-backdrop.open{display:flex}
+.modal{background:#fff;border-radius:var(--r-md);box-shadow:0 16px 48px rgba(0,0,0,.18);padding:24px;width:360px;display:flex;flex-direction:column;gap:16px}
+.modal-title{font-size:16px;font-weight:800}
+.modal-label{font-size:12px;font-weight:600;color:var(--text-sec);margin-bottom:4px}
+.modal-input{height:36px;border:0.5px solid var(--border-med);border-radius:var(--r-sm);padding:0 10px;font-size:14px;font-family:var(--font);color:var(--text);width:100%;background:var(--neutral-5)}
+.modal-input:focus{outline:none;border-color:var(--primary)}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px}
+
+/* Date range */
+.date-range{display:flex;align-items:center;flex-shrink:0}
+.ctrl-btn{height:32px;padding:0 10px;background:var(--neutral-5);border:0.5px solid var(--border-med);border-right:none;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:4px;font-family:var(--font)}
+.ctrl-btn:first-child{border-radius:var(--r-sm) 0 0 var(--r-sm)}
+.ctrl-btn:last-child{border-right:0.5px solid var(--border-med);border-radius:0 var(--r-sm) var(--r-sm) 0}
+.ctrl-btn.active{background:var(--primary-20);color:var(--text-pri);border-color:var(--primary)}
+.ctrl-btn:hover:not(.active){background:#f0f0f3}
+
+/* Metrics */
+.metrics-row{display:flex;gap:16px}
+.metric-card{flex:1;background:#fff;border:0.5px solid var(--border-light);border-radius:var(--r-md);box-shadow:var(--sh-card);padding:20px 20px 16px;display:flex;flex-direction:column;gap:4px}
+.metric-label{font-size:13px;font-weight:600;color:var(--text-sec);display:flex;align-items:center;gap:4px}
+.metric-num{font-size:32px;font-weight:800;line-height:1.1}
+.metric-sub{font-size:12px;color:var(--text-sec);margin-top:2px}
+.metric-action{font-size:13px;font-weight:600;color:var(--text-pri);margin-top:8px;cursor:pointer}
+.metric-action:hover{text-decoration:underline}
+
+/* Table */
+.table-section{background:#fff;border:0.5px solid var(--border-light);border-radius:var(--r-md);box-shadow:var(--sh-card);overflow:hidden}
+.table-tabs{display:flex;border-bottom:0.5px solid var(--border-light);padding:0 16px}
+.table-tab{padding:10px 12px;font-size:14px;font-weight:600;color:var(--text-sec);border-bottom:2px solid transparent;cursor:pointer}
+.table-tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.table-toolbar{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:0.5px solid var(--border-light)}
+.results-count{padding:8px 16px 0;font-size:12px;color:var(--text-sec)}
+.table-wrap{overflow-x:auto}
+table{width:max-content;min-width:100%;border-collapse:collapse}
+th,td{white-space:nowrap}
+th{text-align:left;font-size:12px;font-weight:600;color:var(--text-sec);padding:10px 16px;border-bottom:0.5px solid var(--border-light);background:var(--neutral-5)}
+td{padding:8px 16px;font-size:13px;border-bottom:0.5px solid var(--border-light);background:#fff;height:44px}
+tr:last-child td{border-bottom:none}
+th:first-child{position:sticky;left:0;z-index:3;background:var(--neutral-5);border-right:1px solid var(--border-light)}
+td:first-child{position:sticky;left:0;z-index:2;background:#fff;border-right:1px solid var(--border-light)}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:var(--primary-10)}
+tbody tr:hover td:first-child{background:var(--primary-10)}
+.co-cell{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:180px;height:100%}
+.co-link{color:var(--text-pri);font-weight:600;text-decoration:none}
+.co-link:hover{text-decoration:underline}
+.det-btn{display:none;align-items:center;gap:3px;height:24px;padding:0 8px;border-radius:4px;border:0.5px solid var(--border-med);background:#fff;font-size:12px;font-weight:600;color:var(--text-pri);cursor:pointer;font-family:var(--font);white-space:nowrap;flex-shrink:0}
+.det-btn:hover{background:var(--primary-20);border-color:var(--primary)}
+tbody tr:hover .det-btn{display:inline-flex}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-low{background:#f0f0f3;color:var(--text-sec)}
+.badge-medium{background:#fef9c3;color:#854d0e}
+.badge-high{background:#dcfce7;color:#166534}
+.sig-dots{display:flex;gap:4px;align-items:center}
+.sdot{width:20px;height:20px;border-radius:4px;flex-shrink:0}
+
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:0.5px solid var(--border-light)}
+.page-info{font-size:13px;color:var(--text-sec)}
+.page-btns{display:flex;gap:4px;align-items:center}
+.page-btn{width:32px;height:32px;border-radius:6px;border:0.5px solid var(--border-med);background:var(--neutral-5);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--text);font-family:var(--font)}
+.page-btn:hover:not(:disabled):not(.active){background:var(--primary-20);border-color:var(--primary);color:var(--text-pri)}
+.page-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.page-btn:disabled{opacity:.35;cursor:default}
+.empty-state{padding:48px 16px;text-align:center;color:var(--text-sec);font-size:14px;display:none}
+
+/* Side panel */
+.sp-backdrop{position:fixed;inset:0;background:rgba(32,31,35,.25);z-index:500;display:none}
+.sp-backdrop.open{display:block}
+.side-panel{position:fixed;top:0;right:-480px;width:460px;height:100vh;background:#fff;box-shadow:-4px 0 24px rgba(32,31,35,.14);display:flex;flex-direction:column;transition:right .25s ease;z-index:501;overflow:hidden}
+.side-panel.open{right:0}
+.sp-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:0.5px solid var(--border-light);flex-shrink:0}
+.sp-hdr-l{display:flex;align-items:center;gap:10px}
+.sp-logo{width:36px;height:36px;border-radius:8px;background:var(--primary-20);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--text-pri);flex-shrink:0}
+.sp-name{font-size:16px;font-weight:700}
+.sp-close{background:none;border:none;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;padding:4px;border-radius:6px}
+.sp-close:hover{background:var(--border-light)}
+.sp-body{flex:1;overflow-y:auto;padding:0 20px 24px;display:flex;flex-direction:column}
+.sp-sec{display:flex;flex-direction:column;gap:12px;padding:20px 0}
+.sp-sec-title{font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.6px}
+.sp-divider{border:none;border-top:0.5px solid var(--border-light)}
+.sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+.sp-detail{display:flex;flex-direction:column;gap:3px}
+.sp-detail-lbl{font-size:11px;font-weight:600;color:var(--text-sec);text-transform:uppercase;letter-spacing:.4px}
+.sp-detail-val{font-size:13px;font-weight:500}
+.sp-detail-val a{color:var(--text-pri);text-decoration:none}
+.contacts{display:flex;flex-direction:column;gap:8px}
+.contact-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border:0.5px solid var(--border-light);border-radius:var(--r-sm)}
+.c-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.c-info{flex:1;min-width:0}
+.c-name{font-size:13px;font-weight:600}
+.c-title{font-size:12px;color:var(--text-sec)}
+.c-actions{display:flex;gap:4px}
+.c-action{width:26px;height:26px;border-radius:5px;border:0.5px solid var(--border-med);background:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-sec)}
+.c-action:hover{background:var(--primary-20);border-color:var(--primary);color:var(--text-pri)}
+.soa-chart{display:flex;flex-direction:column;gap:9px}
+.soa-row{display:flex;align-items:center;gap:8px}
+.soa-lbl{font-size:12px;font-weight:600;width:110px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis}
+.soa-track{flex:1;height:8px;background:var(--border-light);border-radius:4px;overflow:hidden}
+.soa-fill{height:100%;border-radius:4px}
+.soa-pct{font-size:12px;font-weight:600;color:var(--text-sec);width:32px;text-align:right;flex-shrink:0}
+.act-feed{display:flex;flex-direction:column}
+.act-item{display:flex;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border-light)}
+.act-item:last-child{border-bottom:none}
+.act-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.act-text{font-size:13px;line-height:1.4}
+.act-text strong{font-weight:600}
+.act-meta{font-size:11px;color:var(--text-sec);margin-top:2px}
+
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#201f23;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;transition:transform .25s;z-index:9999;pointer-events:none}
+#toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="top-bar">
+    <span class="top-bar-logo">my.G2</span>
+    <span class="top-bar-org">G2 Marketing Solutions <span class="mi" style="font-size:16px;color:rgba(255,255,255,.7)">expand_more</span></span>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Buyer Activity</a> › <a href="#">Buyer Intent</a> › Intent Signals</div>
+    <div class="page-title">Buyer Intent <span class="mi" style="font-size:16px;color:var(--text-sec)">info</span></div>
+    <div class="page-tabs">
+      <div class="page-tab active">Intent Signals</div>
+      <div class="page-tab">Churn Risks</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px">
+      <button class="btn btn-text"><span class="mi" style="font-size:16px">cable</span>Manage Integrations</button>
+      <button class="btn btn-text"><span class="mi" style="font-size:16px">notifications</span>Manage Notifications</button>
+      <button class="btn btn-primary"><span class="mi" style="font-size:16px">add</span>Create a Notification</button>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+
+      <div class="fb-top">
+        <div class="fb-top-left">
+
+          <!-- ICP selector -->
+          <div class="dd-anchor" id="icp-anchor">
+            <button class="icp-pill" id="icp-pill" onclick="toggleSimpleDd('icp-dd','icp-pill')">
+              <span class="icp-pill-label"><span class="mi" style="font-size:14px">person_pin</span><span id="icp-label">Mid-Market SaaS</span></span>
+              <span class="icp-pill-caret"><span class="mi" style="font-size:16px">expand_more</span></span>
+            </button>
+            <div class="simple-dd" id="icp-dd">
+              <div class="simple-dd-hdr">Saved ICPs</div>
+              <div class="simple-dd-list">
+                <div class="simple-dd-opt selected" id="icp-opt-0" onclick="selectICP(0,'Mid-Market SaaS')"><span class="mi" style="font-size:15px;color:var(--primary)">check</span>Mid-Market SaaS</div>
+                <div class="simple-dd-opt" id="icp-opt-1" onclick="selectICP(1,'Enterprise FinTech')"><span class="mi" style="font-size:15px;opacity:0">check</span>Enterprise FinTech</div>
+                <div class="simple-dd-opt" id="icp-opt-2" onclick="selectICP(2,'APAC Manufacturing')"><span class="mi" style="font-size:15px;opacity:0">check</span>APAC Manufacturing</div>
+                <div class="simple-dd-opt simple-dd-opt-add" onclick="closeAllDds();showToast('Open ICP builder')"><span class="mi" style="font-size:15px">add_circle_outline</span>Add New ICP</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="fb-divider"></div>
+
+          <!-- Segment selector -->
+          <div class="dd-anchor" id="seg-anchor">
+            <button class="seg-pill" id="seg-pill" onclick="toggleSimpleDd('seg-dd','seg-pill')">
+              <span class="seg-pill-label"><span class="mi" style="font-size:14px">bookmarks</span><span id="seg-label">All signals</span></span>
+              <span class="seg-pill-caret"><span class="mi" style="font-size:16px">expand_more</span></span>
+            </button>
+            <div class="simple-dd" id="seg-dd">
+              <div class="simple-dd-hdr">Saved Segments</div>
+              <div class="simple-dd-list" id="seg-list">
+                <div class="simple-dd-opt selected" onclick="loadSegment('All signals',[])"><span class="mi" style="font-size:15px;color:var(--primary)">check</span>All signals</div>
+              </div>
+              <div class="simple-dd-footer">
+                <button class="add-filter-btn" style="width:100%;justify-content:center;font-size:12px" onclick="closeAllDds();openSaveModal()">
+                  <span class="mi" style="font-size:15px">bookmark_border</span>Save as New Segment
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="fb-top-right">
+          <div class="date-range">
+            <button class="ctrl-btn active" onclick="setDate(this)">7d</button>
+            <button class="ctrl-btn" onclick="setDate(this)">30d</button>
+            <button class="ctrl-btn" onclick="setDate(this)">90d</button>
+            <button class="ctrl-btn" onclick="setDate(this)">1yr</button>
+            <button class="ctrl-btn" style="border-right:0.5px solid var(--border-med);border-radius:0 var(--r-sm) var(--r-sm) 0" onclick="setDate(this)"><span class="mi" style="font-size:15px">calendar_today</span>Custom</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body: match bar + rows + footer -->
+      <div class="fb-body">
+
+        <!-- Match mode selector -->
+        <div class="match-bar" id="match-bar">
+          <span class="match-bar-text">Show companies that match</span>
+          <div class="dd-anchor" id="match-anchor">
+            <div class="match-sel" id="match-sel" onclick="toggleSimpleDd('match-dd','match-sel')">
+              <span class="match-sel-label" id="match-label">all filters</span>
+              <span class="match-sel-caret"><span class="mi" style="font-size:15px">expand_more</span></span>
+            </div>
+            <div class="match-dd" id="match-dd">
+              <div class="match-dd-opt selected" id="match-opt-0" onclick="setMatchMode('all filters')"><span class="match-dd-chk">✓</span>all filters <span style="font-size:11px;color:var(--text-ter);margin-left:4px">(AND)</span></div>
+              <div class="match-dd-opt" id="match-opt-1" onclick="setMatchMode('any filter')"><span class="match-dd-chk"></span>any filter <span style="font-size:11px;color:var(--text-ter);margin-left:4px">(OR)</span></div>
+            </div>
+          </div>
+          <span class="match-bar-text">below</span>
+        </div>
+
+        <!-- Filter rows -->
+        <div class="filter-rows" id="filter-rows">
+          <div class="fb-empty" id="fb-empty"><span class="mi" style="font-size:16px">filter_list</span>No filters — showing all signals for <strong id="empty-icp-name" style="margin-left:3px">Mid-Market SaaS</strong></div>
+        </div>
+
+        <!-- Footer -->
+        <div class="fb-footer">
+          <button class="add-filter-btn" id="add-filter-btn" onclick="openDrawer(null)">
+            <span class="mi" style="font-size:15px">add</span>Add filter
+          </button>
+          <button class="save-seg-btn" id="save-seg-btn" onclick="openSaveModal()">
+            <span class="mi" style="font-size:15px">bookmark_border</span>Save as New Segment
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-label"><span class="mi" style="font-size:16px">business</span>Companies In Market</div>
+        <div class="metric-num" id="met-market">0</div>
+        <div class="metric-sub">Researched your categories</div>
+        <div class="metric-action">Download CSV ↓</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label"><span class="mi" style="font-size:16px">visibility</span>Looking at You Directly</div>
+        <div class="metric-num" id="met-direct">0</div>
+        <div class="metric-sub">Intent toward your product</div>
+        <div class="metric-action">Set Up Notification</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label"><span class="mi" style="font-size:16px">compare_arrows</span>Looking at Competitors</div>
+        <div class="metric-num" id="met-competitor">0</div>
+        <div class="metric-sub">Intent to alternatives in your categories</div>
+        <div class="metric-action">Select Your Top Competitors</div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-section">
+      <div class="table-tabs">
+        <div class="table-tab active">Table View</div>
+        <div class="table-tab">Chart View</div>
+      </div>
+      <div class="table-toolbar">
+        <button class="btn btn-ghost" style="height:28px;font-size:12px;border-radius:6px"><span class="mi" style="font-size:16px">download</span>Download CSV</button>
+        <button class="btn btn-ghost" style="height:28px;font-size:12px;border-radius:6px"><span class="mi" style="font-size:16px">view_column</span>Modify Columns</button>
+      </div>
+      <div class="results-count" id="results-count"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Company Name</th>
+              <th>Intent Level <span class="mi" style="font-size:14px">info</span></th>
+              <th>Industry</th>
+              <th style="text-align:right">Employees</th>
+              <th>Location</th>
+              <th>Signal Types</th>
+              <th style="text-align:right">Contacts</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="empty-state">
+        <span class="mi" style="font-size:40px;color:var(--border-med);display:block;margin-bottom:8px">search_off</span>
+        No companies match the current filters.
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Two-panel filter drawer ── -->
+<div class="drawer-backdrop" id="drawer-backdrop" onclick="closeDrawer()"></div>
+<div class="filter-drawer" id="filter-drawer">
+  <div class="drawer-header">
+    <span class="drawer-header-title" id="drawer-title">Add filter</span>
+    <button class="drawer-close" onclick="closeDrawer()"><span class="mi">close</span></button>
+  </div>
+  <div class="drawer-panels">
+    <!-- Left: property list -->
+    <div class="panel-left">
+      <div class="panel-search"><input type="text" placeholder="Search properties…" id="prop-search" oninput="filterProps()"></div>
+      <div class="prop-list" id="prop-list"></div>
+    </div>
+    <!-- Right: operator + values -->
+    <div class="panel-right" id="panel-right">
+      <div class="panel-right-empty" id="panel-empty">
+        <span class="mi" style="font-size:28px;color:var(--border-med)">arrow_back</span>
+        <span>Select a property</span>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <span class="drawer-footer-left" id="drawer-sel-count"></span>
+    <div class="drawer-footer-right">
+      <button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button>
+      <button class="btn btn-primary" id="drawer-apply-btn" onclick="applyDrawer()">Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- Save modal -->
+<div class="modal-backdrop" id="save-modal">
+  <div class="modal">
+    <div class="modal-title">Save as New Segment</div>
+    <div>
+      <div class="modal-label">Segment name</div>
+      <input class="modal-input" type="text" id="seg-name-input" placeholder="e.g. High-intent SaaS NAM">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeSaveModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSegment()">Save segment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Side panel -->
+<div class="sp-backdrop" id="spBackdrop" onclick="closeSidePanel()"></div>
+<div class="side-panel" id="sidePanel">
+  <div class="sp-hdr">
+    <div class="sp-hdr-l"><div class="sp-logo" id="spLogo"></div><div class="sp-name" id="spName"></div></div>
+    <button class="sp-close" onclick="closeSidePanel()"><span class="mi">close</span></button>
+  </div>
+  <div class="sp-body" id="spBody"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── Data ─────────────────────────────────────────────────────
+const INTENT_ORDER={High:0,Medium:1,Low:2};
+const PAGE_SIZE=15;
+const COMPANIES=[
+  {name:"Adobe",activity:"High",hqCountry:"United States",hqRegion:"California",geoRegion:"APAC",hqGeoRegion:"AMER",employees:25000,revenue:17000000000,industry:"Software & Technology",type:"Public",productIntent:["G2 Buyer Intent"],categoryIntent:["Marketing Automation","Analytics & BI"],signalTypes:["profile","compare","sponsored"]},
+  {name:"Atlassian",activity:"High",hqCountry:"Australia",hqRegion:"New South Wales",geoRegion:"APAC",hqGeoRegion:"APAC",employees:11000,revenue:3500000000,industry:"Software & Technology",type:"Public",productIntent:["G2 Reviews","G2 Buyer Intent"],categoryIntent:["CRM","Sales Intelligence"],signalTypes:["profile","review","compare"]},
+  {name:"Salesforce",activity:"High",hqCountry:"United States",hqRegion:"California",geoRegion:"AMER",hqGeoRegion:"AMER",employees:79000,revenue:31400000000,industry:"Software & Technology",type:"Public",productIntent:["G2 Reviews","G2 Buyer Intent","G2 Data Solutions"],categoryIntent:["CRM","Sales Intelligence"],signalTypes:["profile","compare","alternative","review"]},
+  {name:"HubSpot",activity:"High",hqCountry:"United States",hqRegion:"Massachusetts",geoRegion:"AMER",hqGeoRegion:"AMER",employees:7400,revenue:2200000000,industry:"Software & Technology",type:"Public",productIntent:["G2 Buyer Intent","G2 Reviews"],categoryIntent:["Marketing Automation","CRM"],signalTypes:["profile","sponsored","compare"]},
+  {name:"SAP",activity:"High",hqCountry:"Germany",hqRegion:"Baden-Württemberg",geoRegion:"EMEA",hqGeoRegion:"EMEA",employees:105000,revenue:33000000000,industry:"Software & Technology",type:"Public",productIntent:["G2 Market Intelligence","G2 Data Solutions"],categoryIntent:["CRM","Analytics & BI","Marketing Automation"],signalTypes:["profile","compare","alternative","sponsored","category"]},
+  {name:"Revolut",activity:"High",hqCountry:"United Kingdom",hqRegion:"England",geoRegion:"EMEA",hqGeoRegion:"EMEA",employees:8000,revenue:2200000000,industry:"Financial Services",type:"Private",productIntent:["G2 Reviews","G2 Buyer Intent"],categoryIntent:["CRM","Marketing Automation"],signalTypes:["profile","compare","review","alternative"]},
+  {name:"Shopify",activity:"High",hqCountry:"Canada",hqRegion:"Ontario",geoRegion:"AMER",hqGeoRegion:"AMER",employees:11600,revenue:7100000000,industry:"Retail & E-Commerce",type:"Public",productIntent:["G2 Reviews","G2 Buyer Intent"],categoryIntent:["Marketing Automation","CRM"],signalTypes:["profile","sponsored","compare","review"]},
+  {name:"Stripe",activity:"High",hqCountry:"United States",hqRegion:"California",geoRegion:"AMER",hqGeoRegion:"AMER",employees:8000,revenue:14000000000,industry:"Financial Services",type:"Private",productIntent:["G2 Buyer Intent","G2 Data Solutions"],categoryIntent:["Analytics & BI","Sales Intelligence"],signalTypes:["profile","compare","sponsored"]},
+  {name:"Zendesk",activity:"High",hqCountry:"United States",hqRegion:"California",geoRegion:"AMER",hqGeoRegion:"AMER",employees:6000,revenue:1700000000,industry:"Software & Technology",type:"Private",productIntent:["G2 Reviews","G2 Buyer Intent"],categoryIntent:["Customer Success","CRM"],signalTypes:["profile","compare","review","alternative"]},
+  {name:"Workday",activity:"High",hqCountry:"United States",hqRegion:"California",geoRegion:"AMER",hqGeoRegion:"AMER",employees:18800,revenue:7300000000,industry:"Software & Technology",type:"Public",productIntent:["G2 Buyer Intent","G2 Data Solutions"],categoryIntent:["Analytics & BI","CRM"],signalTypes:["profile","sponsored","compare"]},
+  {name:"Datadog",activity:"High",hqCountry:"United States",hqRegion:"New York",geoRegion:"AMER",hqGeoRegion:"AMER",employees:5200,revenue:2100000000,industry:"Software & Technology",type:"Public",productIntent:["G2 Reviews","G2 Buyer Intent","G2 Market Intelligence"],categoryIntent:["Analytics & BI","Customer Success"],signalTypes:["profile","compare","review","sponsored"]},
+  {name:"McKinsey & Company",activity:"High",hqCountry:"United States",hqRegion:"New York",geoRegion:"AMER",hqGeoRegion:"AMER",employees:45000,revenue:15000000000,industry:"Financial Services",type:"Private",productIntent:["G2 Buyer Intent","G2 Data Solutions"],categoryIntent:["Analytics & BI","Sales Intelligence"],signalTypes:["profile","compare","sponsored","alternative"]},
+  {name:"PepsiCo",activity:"Medium",hqCountry:"United States",hqRegion:"New York",geoRegion:"AMER",hqGeoRegion:"AMER",employees:310000,revenue:86000000000,industry:"Retail & E-Commerce",type:"Public",productIntent:["G2 Market Intelligence"],categoryIntent:["Analytics & BI"],signalTypes:["category","review"]},
+  {name:"Siemens",activity:"Medium",hqCountry:"Germany",hqRegion:"Bavaria",geoRegion:"EMEA",hqGeoRegion:"EMEA",employees:311000,revenue:72000000000,industry:"Manufacturing",type:"Public",productIntent:["G2 Market Intelligence"],categoryIntent:["Analytics & BI"],signalTypes:["category","review"]},
+  {name:"HSBC",activity:"Medium",hqCountry:"United Kingdom",hqRegion:"England",geoRegion:"EMEA",hqGeoRegion:"EMEA",employees:219000,revenue:51000000000,industry:"Financial Services",type:"Public",productIntent:["G2 Buyer Intent"],categoryIntent:["CRM","Sales Intelligence"],signalTypes:["profile","sponsored"]},
+  {name:"Zoom",activity:"Medium",hqCountry:"United States",hqRegion:"California",geoRegion:"AMER",hqGeoRegion:"AMER",employees:7400,revenue:4500000000,industry:"Software & Technology",type:"Public",productIntent:["G2 Reviews"],categoryIntent:["Customer Success","CRM"],signalTypes:["profile","review"]},
+  {name:"Grab",activity:"Medium",hqCountry:"Singapore",hqRegion:"Central Region",geoRegion:"APAC",hqGeoRegion:"APAC",employees:9000,revenue:1700000000,industry:"Retail & E-Commerce",type:"Public",productIntent:["G2 Market Intelligence"],categoryIntent:["Marketing Automation","Customer Success"],signalTypes:["category","sponsored"]},
+  {name:"Infosys",activity:"Medium",hqCountry:"India",hqRegion:"Karnataka",geoRegion:"APAC",hqGeoRegion:"APAC",employees:343000,revenue:18200000000,industry:"Software & Technology",type:"Public",productIntent:["G2 Reviews","G2 Market Intelligence"],categoryIntent:["CRM","Analytics & BI"],signalTypes:["profile","review","category"]},
+  {name:"Canva",activity:"Medium",hqCountry:"Australia",hqRegion:"New South Wales",geoRegion:"APAC",hqGeoRegion:"APAC",employees:4500,revenue:1700000000,industry:"Software & Technology",type:"Private",productIntent:["G2 Reviews","G2 Buyer Intent"],categoryIntent:["Marketing Automation"],signalTypes:["profile","compare","sponsored"]},
+  {name:"Klarna",activity:"Medium",hqCountry:"Sweden",hqRegion:"Stockholm",geoRegion:"EMEA",hqGeoRegion:"EMEA",employees:5000,revenue:2500000000,industry:"Financial Services",type:"Private",productIntent:["G2 Reviews"],categoryIntent:["Marketing Automation","CRM"],signalTypes:["profile","alternative"]},
+  {name:"Kajabi",activity:"Low",hqCountry:"United States",hqRegion:"California",geoRegion:"AMER",hqGeoRegion:"AMER",employees:400,revenue:100000000,industry:"Software & Technology",type:"Private",productIntent:["G2 Reviews"],categoryIntent:["Marketing Automation"],signalTypes:["profile","review"]},
+  {name:"LPL Financial",activity:"Low",hqCountry:"United States",hqRegion:"South Carolina",geoRegion:"AMER",hqGeoRegion:"AMER",employees:5200,revenue:8900000000,industry:"Financial Services",type:"Public",productIntent:["G2 Market Intelligence"],categoryIntent:["Analytics & BI"],signalTypes:["category"]},
+  {name:"Alexandria Capital",activity:"Low",hqCountry:"United States",hqRegion:"California",geoRegion:"AMER",hqGeoRegion:"AMER",employees:120,revenue:50000000,industry:"Financial Services",type:"Private",productIntent:["G2 Buyer Intent"],categoryIntent:["Sales Intelligence"],signalTypes:["compare","alternative"]},
+  {name:"Echo Global Logistics",activity:"Low",hqCountry:"United States",hqRegion:"Illinois",geoRegion:"AMER",hqGeoRegion:"AMER",employees:2800,revenue:900000000,industry:"Manufacturing",type:"Public",productIntent:["G2 Reviews"],categoryIntent:["Analytics & BI"],signalTypes:["profile","review"]},
+  {name:"VFW Post 7686",activity:"Low",hqCountry:"United States",hqRegion:"California",geoRegion:"AMER",hqGeoRegion:"AMER",employees:50,revenue:5000000,industry:"Education",type:"Non-profit",productIntent:["G2 Reviews"],categoryIntent:["CRM"],signalTypes:["profile"]},
+  {name:"Sentris Network",activity:"Low",hqCountry:"United States",hqRegion:"New York",geoRegion:"AMER",hqGeoRegion:"AMER",employees:85,revenue:12000000,industry:"Software & Technology",type:"Private",productIntent:["G2 Buyer Intent"],categoryIntent:["Sales Intelligence"],signalTypes:["compare"]},
+  {name:"BNP Paribas",activity:"Low",hqCountry:"France",hqRegion:"Île-de-France",geoRegion:"EMEA",hqGeoRegion:"EMEA",employees:190000,revenue:47000000000,industry:"Financial Services",type:"Public",productIntent:["G2 Market Intelligence"],categoryIntent:["Analytics & BI"],signalTypes:["category"]},
+  {name:"Stripe Japan",activity:"Low",hqCountry:"Japan",hqRegion:"Tokyo",geoRegion:"APAC",hqGeoRegion:"APAC",employees:200,revenue:80000000,industry:"Financial Services",type:"Private",productIntent:["G2 Buyer Intent"],categoryIntent:["Sales Intelligence"],signalTypes:["profile"]},
+  {name:"Toyota",activity:"Low",hqCountry:"Japan",hqRegion:"Aichi",geoRegion:"APAC",hqGeoRegion:"APAC",employees:375000,revenue:274000000000,industry:"Manufacturing",type:"Public",productIntent:["G2 Market Intelligence"],categoryIntent:["Analytics & BI"],signalTypes:["category","review"]},
+  {name:"University of Michigan",activity:"Low",hqCountry:"United States",hqRegion:"Michigan",geoRegion:"AMER",hqGeoRegion:"AMER",employees:48000,revenue:2900000000,industry:"Education",type:"Non-profit",productIntent:["G2 Reviews"],categoryIntent:["Customer Success"],signalTypes:["profile","review"]},
+];
+const SIG_COLORS={profile:'#5746b2',compare:'#ff6b35',sponsored:'#0062ff',category:'#00b86b',review:'#f5a623',competitor:'#e91e63',alternative:'#9c27b0'};
+const SIG_LABELS={profile:'Viewed G2 profile',compare:'Compared to competitor',sponsored:'Viewed sponsored content',category:'Researched category',review:'Read reviews',competitor:'Researched competitor',alternative:'Looked at alternatives'};
+const SIG_MAP={profile:'Viewed G2 profile',compare:'Compared to competitor',sponsored:'Viewed sponsored content',category:'Researched category',review:'Read reviews',competitor:'Researched competitor',alternative:'Looked at alternatives'};
+const FOUNDED={Adobe:1982,Atlassian:2002,PepsiCo:1965,Salesforce:1999,HubSpot:2006,Kajabi:2010,"LPL Financial":1989,"Alexandria Capital":2004,"Echo Global Logistics":2005,"VFW Post 7686":1944,"Sentris Network":2011,SAP:1972,Siemens:1847,HSBC:1865,Revolut:2015,Shopify:2006,Zoom:2011,Stripe:2010,Grab:2012,Infosys:1981,Zendesk:2007,Workday:2005,"BNP Paribas":1848,Canva:2012,"Stripe Japan":2020,Toyota:1937,Datadog:2010,Klarna:2005,"University of Michigan":1817,"McKinsey & Company":1926};
+const CONTACTS=[{name:'Sarah Chen',title:'VP of Marketing',color:'#5746b2',initials:'SC'},{name:'James Okoye',title:'Head of Demand Gen',color:'#0062ff',initials:'JO'},{name:'Priya Nair',title:'Marketing Operations',color:'#00b86b',initials:'PN'},{name:'Tom Ricci',title:'Director of Sales',color:'#ff6b35',initials:'TR'}];
+
+// ── Property definitions ──────────────────────────────────────
+const PROP_GROUPS=[
+  {
+    label:'Signal Properties',
+    props:[
+      {id:'signal-type',label:'Signal Type',icon:'bolt',type:'multi',values:Object.values(SIG_MAP),field:'signalTypes',map:SIG_MAP},
+      {id:'intent-level',label:'Intent Level',icon:'trending_up',type:'single',values:['High','Medium','Low'],field:'activity'},
+      {id:'product-intent',label:'Product Intent',icon:'inventory_2',type:'multi',values:['G2 Reviews','G2 Buyer Intent','G2 Market Intelligence','G2 Data Solutions'],field:'productIntent'},
+      {id:'category-intent',label:'Category Intent',icon:'category',type:'multi',values:['CRM','Marketing Automation','Sales Intelligence','Customer Success','Analytics & BI'],field:'categoryIntent'},
+    ]
+  },
+  {
+    label:'Company',
+    props:[
+      {id:'company',label:'Company',icon:'business',type:'multi',values:COMPANIES.map(c=>c.name),field:'name'},
+    ]
+  }
+];
+const ALL_PROPS=PROP_GROUPS.flatMap(g=>g.props);
+const OPS_MULTI=['includes any of','includes all of','excludes'];
+const OPS_SINGLE=['is','is not'];
+
+// ── State ─────────────────────────────────────────────────────
+let filterRows=[];
+let rowCounter=0;
+let matchMode='all filters';
+let filteredData=[...COMPANIES];
+let currentPage=1;
+let pageRows=[];
+let savedSegments=[];
+
+// drawer state
+let drawerRowId=null;      // null = new row, string = editing existing
+let drawerPropId=null;
+let drawerOperator=null;
+let drawerValues=[];
+
+// ── Drawer ────────────────────────────────────────────────────
+function openDrawer(rowId){
+  closeAllDds();
+  drawerRowId=rowId;
+  if(rowId){
+    const row=filterRows.find(r=>r.id===rowId);
+    drawerPropId=row.propId;
+    drawerOperator=row.operator;
+    drawerValues=[...row.values];
+    document.getElementById('drawer-title').textContent='Edit filter';
+  } else {
+    drawerPropId=null;
+    drawerOperator=null;
+    drawerValues=[];
+    document.getElementById('drawer-title').textContent='Add filter';
+  }
+  document.getElementById('prop-search').value='';
+  renderPropList('');
+  renderRightPanel();
+  // position below filter bar
+  const bar=document.querySelector('.filter-bar');
+  const rect=bar.getBoundingClientRect();
+  const drawer=document.getElementById('filter-drawer');
+  drawer.style.top=(rect.bottom+6)+'px';
+  drawer.style.left=rect.left+'px';
+  drawer.style.display='flex';
+  document.getElementById('drawer-backdrop').classList.add('open');
+  setTimeout(()=>document.getElementById('prop-search').focus(),60);
+}
+
+function closeDrawer(){
+  document.getElementById('filter-drawer').style.display='none';
+  document.getElementById('drawer-backdrop').classList.remove('open');
+}
+
+function applyDrawer(){
+  if(!drawerPropId) return;
+  const prop=ALL_PROPS.find(p=>p.id===drawerPropId);
+  if(drawerRowId){
+    const row=filterRows.find(r=>r.id===drawerRowId);
+    row.propId=drawerPropId;
+    row.operator=drawerOperator||getDefaultOp(prop);
+    row.values=[...drawerValues];
+  } else {
+    filterRows.push({id:'row-'+(rowCounter++),propId:drawerPropId,operator:drawerOperator||getDefaultOp(prop),values:[...drawerValues]});
+  }
+  closeDrawer();
+  renderFilterTokens();
+  applyFilters();
+  updateFooter();
+}
+
+function getDefaultOp(prop){return prop.type==='single'?OPS_SINGLE[0]:OPS_MULTI[0]}
+
+// ── Prop list (left panel) ────────────────────────────────────
+function renderPropList(q){
+  const list=document.getElementById('prop-list');
+  list.innerHTML=PROP_GROUPS.map(g=>{
+    const filtered=g.props.filter(p=>p.label.toLowerCase().includes(q.toLowerCase()));
+    if(!filtered.length) return '';
+    return `<div class="prop-group-label">${g.label}</div>`
+      +filtered.map(p=>`<div class="prop-item${p.id===drawerPropId?' active':''}" onclick="selectProp('${p.id}')">
+        <span class="mi" style="font-size:15px">${p.icon}</span>${p.label}
+      </div>`).join('');
+  }).join('');
+}
+function filterProps(){renderPropList(document.getElementById('prop-search').value)}
+
+function selectProp(propId){
+  const prop=ALL_PROPS.find(p=>p.id===propId);
+  if(drawerPropId!==propId){
+    drawerPropId=propId;
+    drawerOperator=getDefaultOp(prop);
+    drawerValues=[];
+  }
+  renderPropList(document.getElementById('prop-search').value);
+  renderRightPanel();
+}
+
+// ── Right panel ───────────────────────────────────────────────
+function renderRightPanel(){
+  const panel=document.getElementById('panel-right');
+  const countEl=document.getElementById('drawer-sel-count');
+  if(!drawerPropId){
+    panel.innerHTML='<div class="panel-right-empty" id="panel-empty"><span class="mi" style="font-size:28px;color:var(--border-med)">arrow_back</span><span>Select a property</span></div>';
+    countEl.textContent='';
+    return;
+  }
+  const prop=ALL_PROPS.find(p=>p.id===drawerPropId);
+  const ops=prop.type==='single'?OPS_SINGLE:OPS_MULTI;
+  const opOpts=ops.map(o=>`<option value="${o}"${o===drawerOperator?' selected':''}>${o}</option>`).join('');
+  const vals=prop.values;
+  panel.innerHTML=`
+    <div class="op-row">
+      <select class="op-select" onchange="drawerOperator=this.value">${opOpts}</select>
+    </div>
+    <div class="val-search"><input type="text" placeholder="Search or enter a value…" id="val-search-input" oninput="filterValList()"></div>
+    <div class="val-actions">
+      <button class="val-action-btn" onclick="drawerValues=[];renderValList()">Clear All</button>
+      <button class="val-action-btn" onclick="drawerValues=[...currentValList()];renderValList()">Select All</button>
+    </div>
+    <div class="val-list" id="val-list">${renderValItems(vals)}</div>`;
+  updateSelCount();
+}
+
+function currentValList(){
+  const q=(document.getElementById('val-search-input')||{}).value||'';
+  const prop=ALL_PROPS.find(p=>p.id===drawerPropId);
+  return prop.values.filter(v=>v.toLowerCase().includes(q.toLowerCase()));
+}
+
+function renderValItems(vals){
+  return vals.map(v=>{
+    const sel=drawerValues.includes(v);
+    return`<div class="val-opt${sel?' selected':''}" onclick="toggleDrawerVal('${v.replace(/'/g,"\\'")}')">
+      <span class="val-chk">${sel?'✓':''}</span>
+      <span class="val-opt-label">${esc(v)}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderValList(){
+  const q=(document.getElementById('val-search-input')||{}).value||'';
+  const prop=ALL_PROPS.find(p=>p.id===drawerPropId);
+  const filtered=prop.values.filter(v=>v.toLowerCase().includes(q.toLowerCase()));
+  document.getElementById('val-list').innerHTML=renderValItems(filtered);
+  updateSelCount();
+}
+
+function filterValList(){renderValList()}
+
+function toggleDrawerVal(val){
+  const prop=ALL_PROPS.find(p=>p.id===drawerPropId);
+  if(prop.type==='single'){drawerValues=[val];}
+  else{const i=drawerValues.indexOf(val);if(i>-1)drawerValues.splice(i,1);else drawerValues.push(val);}
+  renderValList();
+}
+
+function updateSelCount(){
+  const el=document.getElementById('drawer-sel-count');
+  if(el) el.textContent=drawerValues.length?`${drawerValues.length} selected`:'';
+}
+
+// ── Filter tokens (rendered rows) ─────────────────────────────
+function renderFilterTokens(){
+  const container=document.getElementById('filter-rows');
+  const empty=document.getElementById('fb-empty');
+  container.innerHTML='';
+  container.appendChild(empty);
+  empty.classList.toggle('hidden',filterRows.length>0);
+  document.getElementById('match-bar').classList.toggle('show',filterRows.length>1);
+
+  filterRows.forEach(row=>{
+    const prop=ALL_PROPS.find(p=>p.id===row.propId);
+    const valStr=row.values.length===0?'any'
+      :row.values.length===1?row.values[0]
+      :`${row.values[0]} +${row.values.length-1}`;
+    const label=`${prop.label} ${row.operator} ${valStr}`;
+    const div=document.createElement('div');
+    div.className='filter-row';
+    div.innerHTML=`
+      <div class="row-token" onclick="openDrawer('${row.id}')">
+        <span class="row-token-text" title="${esc(label)}">${esc(label)}</span>
+        <span class="row-token-x" onclick="event.stopPropagation();removeRow('${row.id}')"><span class="mi" style="font-size:15px">close</span></span>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+function removeRow(id){
+  filterRows=filterRows.filter(r=>r.id!==id);
+  renderFilterTokens();
+  applyFilters();
+  updateFooter();
+}
+
+function clearAll(){
+  filterRows=[];
+  renderFilterTokens();
+  applyFilters();
+  updateFooter();
+}
+
+function updateFooter(){
+  const has=filterRows.length>0;
+  document.getElementById('save-seg-btn').classList.toggle('show',has);
+}
+
+// ── Match mode ────────────────────────────────────────────────
+function setMatchMode(mode){
+  matchMode=mode;
+  document.getElementById('match-label').textContent=mode;
+  document.querySelectorAll('.match-dd-opt').forEach((el,i)=>{
+    const isSel=(i===0&&mode==='all filters')||(i===1&&mode==='any filter');
+    el.classList.toggle('selected',isSel);
+    el.querySelector('.match-dd-chk').textContent=isSel?'✓':'';
+  });
+  closeAllDds();
+  applyFilters();
+}
+
+// ── Filtering ─────────────────────────────────────────────────
+function applyFilters(){
+  const active=filterRows.filter(r=>r.values.length>0);
+  let data=[...COMPANIES];
+  if(active.length){
+    data=data.filter(c=>{
+      const results=active.map(row=>{
+        const prop=ALL_PROPS.find(p=>p.id===row.propId);
+        let field=c[prop.field];
+        if(prop.id==='signal-type') field=c.signalTypes.map(s=>SIG_MAP[s]).filter(Boolean);
+        const arr=Array.isArray(field)?field:[field];
+        if(row.operator==='includes any of'||row.operator==='is') return row.values.some(v=>arr.includes(v));
+        if(row.operator==='includes all of') return row.values.every(v=>arr.includes(v));
+        if(row.operator==='excludes'||row.operator==='is not') return !row.values.some(v=>arr.includes(v));
+        return true;
+      });
+      return matchMode==='all filters'?results.every(Boolean):results.some(Boolean);
+    });
+  }
+  filteredData=data.sort((a,b)=>INTENT_ORDER[a.activity]-INTENT_ORDER[b.activity]);
+  currentPage=1;
+  renderTable();
+}
+
+// ── ICP ───────────────────────────────────────────────────────
+function selectICP(idx,name){
+  document.querySelectorAll('[id^=icp-opt-]').forEach((o,i)=>{
+    o.classList.toggle('selected',i===idx);
+    const mi=o.querySelector('.mi');if(mi) mi.style.opacity=i===idx?'1':'0';
+  });
+  document.getElementById('icp-label').textContent=name;
+  document.getElementById('empty-icp-name').textContent=name;
+  closeAllDds();showToast('ICP: '+name);
+}
+
+// ── Segments ──────────────────────────────────────────────────
+function openSaveModal(){document.getElementById('save-modal').classList.add('open');document.getElementById('seg-name-input').value='';setTimeout(()=>document.getElementById('seg-name-input').focus(),50)}
+function closeSaveModal(){document.getElementById('save-modal').classList.remove('open')}
+function saveSegment(){
+  const name=document.getElementById('seg-name-input').value.trim();
+  if(!name){showToast('Please enter a name');return;}
+  savedSegments.push({name,rows:JSON.parse(JSON.stringify(filterRows))});
+  renderSegList();closeSaveModal();showToast('Saved: '+name);
+}
+function renderSegList(){
+  const list=document.getElementById('seg-list');
+  list.innerHTML=`<div class="simple-dd-opt" onclick="loadSegment('All signals',[])"><span class="mi" style="font-size:15px;opacity:0">check</span>All signals</div>`
+    +savedSegments.map((s,i)=>`<div class="simple-dd-opt" onclick="loadSegment('${esc(s.name)}',savedSegments[${i}].rows)"><span class="mi" style="font-size:15px;opacity:0">check</span>${esc(s.name)}</div>`).join('');
+}
+function loadSegment(name,rows){
+  filterRows=JSON.parse(JSON.stringify(rows));
+  rowCounter=filterRows.length;
+  document.getElementById('seg-label').textContent=name;
+  document.getElementById('seg-pill').classList.toggle('filled',rows.length>0);
+  closeAllDds();renderFilterTokens();applyFilters();updateFooter();showToast('Loaded: '+name);
+}
+
+// ── Simple dropdowns ──────────────────────────────────────────
+function toggleSimpleDd(ddId,triggerId){
+  const dd=document.getElementById(ddId),t=document.getElementById(triggerId);
+  const isOpen=dd.classList.contains('open');
+  closeAllDds();
+  if(!isOpen){dd.classList.add('open');if(t)t.classList.add('open');}
+}
+function closeAllDds(){
+  document.querySelectorAll('.simple-dd.open,.match-dd.open').forEach(d=>d.classList.remove('open'));
+  document.querySelectorAll('.icp-pill.open,.seg-pill.open,.match-sel.open').forEach(e=>e.classList.remove('open'));
+}
+document.addEventListener('mousedown',e=>{
+  if(!e.target.closest('.dd-anchor')&&!e.target.closest('.icp-pill')&&!e.target.closest('.seg-pill')) closeAllDds();
+  if(!e.target.closest('.modal')&&e.target.id!=='save-seg-btn') closeSaveModal();
+});
+
+function setDate(btn){document.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+
+// ── Table ─────────────────────────────────────────────────────
+function fmtEmp(n){return n>=100000?(n/1000).toFixed(0)+'k':n>=1000?(n/1000).toFixed(1)+'k':n}
+function fmtRev(n){return n>=1e12?'$'+(n/1e12).toFixed(1)+'T':n>=1e9?'$'+(n/1e9).toFixed(1)+'B':n>=1e6?'$'+(n/1e6).toFixed(0)+'M':'$'+n.toLocaleString()}
+function badge(lvl){const c=lvl==='High'?'badge-high':lvl==='Medium'?'badge-medium':'badge-low';return`<span class="badge ${c}">${lvl}</span>`}
+function sigDots(t){return'<div class="sig-dots">'+t.slice(0,4).map(s=>`<span class="sdot" title="${SIG_LABELS[s]||s}" style="background:${SIG_COLORS[s]||'#ccc'}"></span>`).join('')+(t.length>4?`<span style="font-size:11px;color:var(--text-sec)">+${t.length-4}</span>`:'')+' </div>'}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function renderTable(){
+  const tbody=document.getElementById('tableBody'),empty=document.getElementById('empty-state'),countEl=document.getElementById('results-count');
+  const total=filteredData.length,tp=Math.max(1,Math.ceil(total/PAGE_SIZE));
+  currentPage=Math.min(currentPage,tp);
+  const start=(currentPage-1)*PAGE_SIZE;
+  pageRows=filteredData.slice(start,start+PAGE_SIZE);
+  countEl.textContent=total?`Showing ${start+1}–${Math.min(start+PAGE_SIZE,total)} of ${total} companies`:'';
+  if(!total){tbody.innerHTML='';empty.style.display='block';document.getElementById('pagination').innerHTML='';updateMetrics();return;}
+  empty.style.display='none';
+  tbody.innerHTML=pageRows.map((c,i)=>`
+    <tr onclick="openSidePanel(${i})">
+      <td><div class="co-cell"><a class="co-link" href="#" onclick="event.stopPropagation()">${c.name}</a><button class="det-btn" onclick="event.stopPropagation();openSidePanel(${i})"><span class="mi" style="font-size:14px">open_in_new</span>Details</button></div></td>
+      <td>${badge(c.activity)}</td><td>${c.industry}</td>
+      <td style="text-align:right">${fmtEmp(c.employees)}</td>
+      <td>${c.hqRegion}, ${c.hqCountry}</td>
+      <td>${sigDots(c.signalTypes)}</td>
+      <td style="text-align:right;color:var(--text-pri);font-weight:700">${CONTACTS.length}</td>
+    </tr>`).join('');
+  renderPagination(tp);updateMetrics();
+}
+
+function renderPagination(tp){
+  const el=document.getElementById('pagination');
+  if(tp<=1){el.innerHTML='';return;}
+  const s=(currentPage-1)*PAGE_SIZE+1,e=Math.min(currentPage*PAGE_SIZE,filteredData.length);
+  let pages=[];
+  for(let i=1;i<=tp;i++){if(i===1||i===tp||(i>=currentPage-2&&i<=currentPage+2))pages.push(i);else if(pages[pages.length-1]!=='…')pages.push('…');}
+  const nums=pages.map(p=>p==='…'?`<span style="padding:0 4px;color:var(--text-sec)">…</span>`:`<button class="page-btn${p===currentPage?' active':''}" onclick="goPage(${p})">${p}</button>`).join('');
+  el.innerHTML=`<span class="page-info">${s}–${e} of ${filteredData.length}</span><div class="page-btns"><button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><span class="mi" style="font-size:18px">chevron_left</span></button>${nums}<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===tp?'disabled':''}><span class="mi" style="font-size:18px">chevron_right</span></button></div>`;
+}
+function goPage(p){const tp=Math.ceil(filteredData.length/PAGE_SIZE);if(p<1||p>tp)return;currentPage=p;renderTable();}
+function updateMetrics(){
+  document.getElementById('met-market').textContent=filteredData.length.toLocaleString();
+  document.getElementById('met-direct').textContent=filteredData.filter(c=>c.productIntent.length>0).length.toLocaleString();
+  document.getElementById('met-competitor').textContent=filteredData.filter(c=>c.signalTypes.includes('compare')||c.signalTypes.includes('alternative')).length.toLocaleString();
+}
+
+// ── Side panel ────────────────────────────────────────────────
+function openSidePanel(idx){
+  const c=pageRows[idx];if(!c)return;
+  document.getElementById('spLogo').textContent=c.name.charAt(0);
+  document.getElementById('spName').textContent=c.name;
+  const slug=c.name.toLowerCase().replace(/[^a-z0-9]/g,'-');
+  const soaL=['G2 (You)','Salesforce','HubSpot','SAP','Adobe'],soaP=[38,22,17,13,10],soaC=['#5746b2','#dfdfe2','#dfdfe2','#dfdfe2','#dfdfe2'];
+  const acts=[
+    {icon:'visibility',color:'#5746b2',bg:'#ebe9f6',text:'<strong>3 visitors</strong> viewed your G2 profile',time:'2 hours ago'},
+    {icon:'compare_arrows',color:'#ff6b35',bg:'#fff1eb',text:'<strong>1 visitor</strong> compared you to Salesforce',time:'5 hours ago'},
+    {icon:'star',color:'#f5a623',bg:'#fff8eb',text:'<strong>1 visitor</strong> read your reviews',time:'2 days ago'},
+    {icon:'category',color:'#0062ff',bg:'#e6f0ff',text:'<strong>4 visitors</strong> researched your category',time:'3 days ago'},
+  ];
+  document.getElementById('spBody').innerHTML=`
+    <div class="sp-sec">
+      <div class="sp-grid">
+        <div class="sp-detail" style="grid-column:1/-1"><span class="sp-detail-lbl">Website</span><span class="sp-detail-val"><a href="#" onclick="return false">www.${slug}.com</a></span></div>
+        <div class="sp-detail"><span class="sp-detail-lbl">HQ Location</span><span class="sp-detail-val">${c.hqRegion}, ${c.hqCountry}</span></div>
+        <div class="sp-detail"><span class="sp-detail-lbl">Year Founded</span><span class="sp-detail-val">${FOUNDED[c.name]||'—'}</span></div>
+        <div class="sp-detail"><span class="sp-detail-lbl">Annual Revenue</span><span class="sp-detail-val">${fmtRev(c.revenue)}</span></div>
+        <div class="sp-detail"><span class="sp-detail-lbl">Employees</span><span class="sp-detail-val">${c.employees.toLocaleString()}</span></div>
+      </div>
+    </div>
+    <hr class="sp-divider">
+    <div class="sp-sec">
+      <div class="sp-sec-title">Contacts</div>
+      <div class="contacts">${CONTACTS.map(ct=>`<div class="contact-card"><div class="c-avatar" style="background:${ct.color}">${ct.initials}</div><div class="c-info"><div class="c-name">${ct.name}</div><div class="c-title">${ct.title}</div></div><div class="c-actions"><button class="c-action"><span class="mi" style="font-size:16px">mail</span></button><button class="c-action"><span class="mi" style="font-size:16px">person</span></button></div></div>`).join('')}</div>
+    </div>
+    <hr class="sp-divider">
+    <div class="sp-sec">
+      <div class="sp-sec-title">Share of Attention</div>
+      <div class="soa-chart">${soaL.map((l,i)=>`<div class="soa-row"><div class="soa-lbl">${l}</div><div class="soa-track"><div class="soa-fill" style="width:${soaP[i]}%;background:${soaC[i]}"></div></div><div class="soa-pct">${soaP[i]}%</div></div>`).join('')}</div>
+    </div>
+    <hr class="sp-divider">
+    <div class="sp-sec">
+      <div class="sp-sec-title">Activity Feed</div>
+      <div class="act-feed">${acts.map(a=>`<div class="act-item"><div class="act-icon" style="background:${a.bg}"><span class="mi" style="font-size:16px;color:${a.color}">${a.icon}</span></div><div><div class="act-text">${a.text}</div><div class="act-meta">${a.time}</div></div></div>`).join('')}</div>
+    </div>`;
+  document.getElementById('spBackdrop').classList.add('open');
+  requestAnimationFrame(()=>document.getElementById('sidePanel').classList.add('open'));
+}
+function closeSidePanel(){document.getElementById('sidePanel').classList.remove('open');setTimeout(()=>document.getElementById('spBackdrop').classList.remove('open'),250)}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._tid);t._tid=setTimeout(()=>t.classList.remove('show'),2000)}
+
+// ── Init ──────────────────────────────────────────────────────
+renderTable();
+</script>
+</body>
+</html>
