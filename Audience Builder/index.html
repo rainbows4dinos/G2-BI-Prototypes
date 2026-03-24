@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>G2 Audience Builder</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    /* ── Elevate Design Tokens ─────────────────────────────────────────────── */
+    :root {
+      --primary:       #5746b2;
+      --primary-hover: #4535a0;
+      --primary-20:    #ebe9f6;
+      --primary-10:    #f5f3fb;
+      --neutral-5:     #fafafa;
+      --card:          #fff;
+      --border-light:  #e5e3f0;
+      --border-med:    #b0afb6;
+      --border-brand:  #ddd8f8;
+      --text:          #1a1a2e;
+      --text-sec:      #49495a;
+      --text-ter:      #8b8fa8;
+      --text-pri:      #5746b2;
+      --r-sm:          8px;
+      --r-md:          12px;
+      --r-pill:        20px;
+      --sh-card:       0 0 1px rgba(32,31,35,.18), 0 2px 8px rgba(32,31,35,.06);
+      --sh-dd:         0 8px 24px rgba(0,0,0,.12), 0 0 1px rgba(32,31,35,.14);
+      --font:          'Figtree', system-ui, sans-serif;
+      --surface:       #f5f4fb;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: var(--surface); color: var(--text); font-size: 14px; }
+    button { font-family: var(--font); cursor: pointer; }
+    a { color: var(--text-pri); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Material Icons */
+    .mi { font-family: 'Material Icons'; font-size: 18px; line-height: 1; vertical-align: middle;
+          display: inline-flex; align-items: center; justify-content: center;
+          user-select: none; flex-shrink: 0; }
+
+    /* ── Shell ────────────────────────────────────────────────────────────── */
+    .shell       { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .shell-body  { display: flex; flex: 1; min-height: 0; }
+    .main-area   { flex: 1; overflow-y: auto; min-height: 0; background: var(--surface); }
+    .main-area::-webkit-scrollbar { width: 4px; }
+    .main-area::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+    /* ── Top Bar ──────────────────────────────────────────────────────────── */
+    .top-bar { background: var(--primary); height: 48px; display: flex; align-items: center;
+               padding: 0 20px; gap: 12px; flex-shrink: 0; }
+    .top-bar-logo { color: #fff; font-weight: 800; font-size: 15px; letter-spacing: -.2px; }
+    .top-bar-search { flex: 1; max-width: 300px; margin: 0 auto; height: 30px;
+                      display: flex; align-items: center; gap: 6px;
+                      background: rgba(255,255,255,.12); border-radius: var(--r-sm);
+                      padding: 0 10px; border: 1px solid rgba(255,255,255,.1); }
+    .top-bar-search-text { font-size: 12px; color: rgba(255,255,255,.5); flex: 1; }
+    .top-bar-search-kbd  { font-size: 10px; color: rgba(255,255,255,.35);
+                           background: rgba(255,255,255,.1); border-radius: 3px; padding: 1px 5px; }
+    .top-bar-actions { margin-left: auto; display: flex; align-items: center; gap: 2px; }
+    .top-bar-icon  { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+                     border-radius: var(--r-sm); color: rgba(255,255,255,.65); background: none; border: none;
+                     transition: background .12s; }
+    .top-bar-icon:hover { background: rgba(255,255,255,.14); }
+    .top-bar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,.2);
+                      display: flex; align-items: center; justify-content: center;
+                      font-size: 11px; font-weight: 700; color: #fff; margin-left: 4px; }
+
+    /* ── Sidebar ──────────────────────────────────────────────────────────── */
+    .sidebar { width: 140px; background: #fff; border-right: 0.5px solid var(--border-light);
+               display: flex; flex-direction: column; flex-shrink: 0; }
+    .sidebar-logo { padding: 10px 12px; border-bottom: 0.5px solid var(--border-light);
+                    display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+    .sidebar-logomark { width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0;
+                        background: linear-gradient(135deg,#ff6b35,#f7931e);
+                        display: flex; align-items: center; justify-content: center;
+                        font-size: 9px; font-weight: 800; color: #fff; }
+    .sidebar-orgname { font-size: 12px; font-weight: 700; color: var(--text);
+                       overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sidebar-nav { flex: 1; overflow-y: auto; padding: 4px 0; }
+    .sidebar-nav::-webkit-scrollbar { width: 3px; }
+    .sidebar-nav::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+    .nav-item { display: block; width: 100%; text-align: left; padding: 6px 12px; font-size: 12px;
+                font-weight: 500; color: var(--text-sec); background: none; border: none;
+                white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+                transition: background .1s, color .1s; font-family: var(--font); }
+    .nav-item:hover   { background: var(--primary-10); color: var(--text-pri); }
+    .nav-item.parent  { font-weight: 700; color: var(--text); }
+    .nav-item.active  { background: var(--primary-20); color: var(--text-pri); font-weight: 700; }
+    .nav-sub { border-left: 0.5px solid var(--border-light); margin-left: 12px; }
+    .sidebar-footer { padding: 10px 12px; border-top: 0.5px solid var(--border-light); flex-shrink: 0; }
+    .sidebar-footer a { font-size: 11px; font-weight: 600; color: var(--text-pri); }
+
+    /* ── Page Header ──────────────────────────────────────────────────────── */
+    .page-header { background: #fff; border-bottom: 0.5px solid var(--border-light);
+                   padding: 16px 32px 0; position: sticky; top: 0; z-index: 40; }
+    .breadcrumb { font-size: 12px; color: var(--text-sec); margin-bottom: 8px; }
+    .breadcrumb a { color: var(--text-pri); }
+    .page-title { font-size: 22px; font-weight: 800; margin-bottom: 12px;
+                  display: flex; align-items: center; gap: 6px; line-height: 1.2; }
+    .page-tabs { display: flex; }
+    .page-tab { padding: 8px 16px; font-size: 14px; font-weight: 600; color: var(--text-sec);
+                border-bottom: 2px solid transparent; background: none;
+                border-top: none; border-left: none; border-right: none;
+                font-family: var(--font); transition: color .12s; }
+    .page-tab.active       { color: var(--primary); border-bottom-color: var(--primary); }
+    .page-tab:hover:not(.active) { color: var(--text); }
+
+    /* Content */
+    .content { padding: 24px 32px; display: flex; flex-direction: column; gap: 20px; }
+
+    /* ── Buttons ──────────────────────────────────────────────────────────── */
+    .btn { display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 14px;
+           border-radius: var(--r-pill); font-size: 13px; font-weight: 700; border: none;
+           white-space: nowrap; font-family: var(--font); transition: background .12s, color .12s, border-color .12s; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-ghost { background: var(--neutral-5); border: 0.5px solid var(--border-med); color: var(--primary); }
+    .btn-ghost:hover { background: var(--primary-20); border-color: var(--primary); }
+    .btn-text { background: transparent; color: var(--primary); border: none; font-size: 13px; height: auto; padding: 0; font-weight: 600; }
+    .btn-text:hover { text-decoration: underline; }
+    .btn:disabled { opacity: .35; cursor: not-allowed; }
+
+    /* ── Action Bar ───────────────────────────────────────────────────────── */
+    .action-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .action-bar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+
+    /* ICP toggle (ICP_SAVED) */
+    .icp-toggle { display: inline-flex; border: 0.5px solid var(--border-med); border-radius: var(--r-pill); overflow: hidden; }
+    .icp-toggle-btn { height: 32px; padding: 0 14px; font-size: 13px; font-weight: 700;
+                      background: var(--neutral-5); color: var(--text-sec); border: none;
+                      font-family: var(--font); white-space: nowrap; transition: background .12s, color .12s; }
+    .icp-toggle-btn + .icp-toggle-btn { border-left: 0.5px solid var(--border-med); }
+    .icp-toggle-btn.active { background: var(--primary); color: #fff; }
+    .icp-toggle-btn:hover:not(.active) { background: var(--primary-20); color: var(--text-pri); }
+
+    /* ── Filter Bar ───────────────────────────────────────────────────────── */
+    .filter-bar { background: var(--card); border: 0.5px solid var(--border-light);
+                  border-radius: var(--r-md); box-shadow: var(--sh-card);
+                  padding: 12px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+    .filter-pill { display: inline-flex; align-items: center; height: 30px;
+                   background: var(--neutral-5); border: 0.5px solid var(--border-med);
+                   border-radius: var(--r-sm); overflow: hidden; flex-shrink: 0;
+                   transition: border-color .12s, background .12s; }
+    .filter-pill:hover { border-color: var(--primary); background: var(--primary-20); }
+    .fp-label { padding: 0 6px 0 10px; font-size: 13px; font-weight: 600; color: var(--text-sec); white-space: nowrap; }
+    .filter-pill:hover .fp-label { color: var(--text-pri); }
+    .fp-caret { border-left: 0.5px solid var(--border-med); width: 24px; height: 100%;
+                display: flex; align-items: center; justify-content: center; color: var(--text-ter); }
+    .filter-pill:hover .fp-caret { color: var(--text-pri); }
+    .date-range { display: flex; border: 0.5px solid var(--border-med); border-radius: var(--r-sm); overflow: hidden; flex-shrink: 0; }
+    .ctrl-btn { height: 30px; padding: 0 10px; background: var(--neutral-5); border: none;
+                border-right: 0.5px solid var(--border-med); font-size: 13px; font-weight: 600;
+                color: var(--text-sec); white-space: nowrap; display: flex; align-items: center; gap: 4px;
+                font-family: var(--font); transition: background .1s, color .1s; }
+    .ctrl-btn:last-child { border-right: none; }
+    .ctrl-btn.active { background: var(--primary-20); color: var(--text-pri); }
+    .ctrl-btn:hover:not(.active) { background: #ebebef; }
+
+    /* ── Metric Cards ─────────────────────────────────────────────────────── */
+    .metrics-row  { display: grid; gap: 16px; }
+    .metrics-4    { grid-template-columns: repeat(4, 1fr); }
+    .metrics-3    { grid-template-columns: repeat(3, 1fr); }
+    .metric-card  { background: var(--card); border: 0.5px solid var(--border-light);
+                    border-radius: var(--r-md); box-shadow: var(--sh-card);
+                    padding: 20px; display: flex; flex-direction: column; gap: 4px; }
+    .metric-card-promo { background: linear-gradient(135deg,#eae6f9 0%,var(--primary-10) 100%);
+                         border-color: var(--border-brand); }
+    .metric-promo-badge { display: inline-flex; align-items: center; padding: 2px 8px;
+                          background: var(--primary-20); border-radius: var(--r-pill);
+                          font-size: 10px; font-weight: 800; color: var(--text-pri);
+                          text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+    .metric-label { font-size: 13px; font-weight: 600; color: var(--text-sec);
+                    display: flex; align-items: center; gap: 4px; }
+    .metric-num   { font-size: 32px; font-weight: 800; line-height: 1.1; color: var(--text); }
+    .metric-sub   { font-size: 12px; color: var(--text-sec); margin-top: 2px; }
+    .metric-title { font-size: 15px; font-weight: 800; color: var(--text-pri); margin-bottom: 4px; }
+    .metric-body  { font-size: 13px; color: var(--text-sec); line-height: 1.5; }
+    .metric-action { font-size: 13px; font-weight: 700; color: var(--text-pri); margin-top: 10px;
+                     background: none; border: none; font-family: var(--font); padding: 0; }
+    .metric-action:hover { text-decoration: underline; }
+
+    /* ── Table ────────────────────────────────────────────────────────────── */
+    .table-section { background: var(--card); border: 0.5px solid var(--border-light);
+                     border-radius: var(--r-md); box-shadow: var(--sh-card); overflow: hidden; }
+    .table-tabs { display: flex; border-bottom: 0.5px solid var(--border-light); padding: 0 16px; }
+    .table-tab { padding: 10px 12px; font-size: 14px; font-weight: 600; color: var(--text-sec);
+                 border-bottom: 2px solid transparent; background: none;
+                 border-top: none; border-left: none; border-right: none;
+                 font-family: var(--font); transition: color .12s; }
+    .table-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .table-toolbar { padding: 10px 16px; display: flex; justify-content: space-between;
+                     align-items: center; border-bottom: 0.5px solid var(--border-light); }
+    .table-wrap { overflow-x: auto; }
+    .table-wrap table { width: 100%; border-collapse: collapse; min-width: max-content; }
+    .table-wrap th { text-align: left; font-size: 12px; font-weight: 600; color: var(--text-sec);
+                     padding: 10px 16px; border-bottom: 0.5px solid var(--border-light);
+                     background: var(--neutral-5); white-space: nowrap; }
+    .table-wrap td { padding: 9px 16px; font-size: 13px; border-bottom: 0.5px solid var(--border-light);
+                     color: var(--text-sec); white-space: nowrap; height: 44px; background: #fff; }
+    .table-wrap tbody tr:last-child td { border-bottom: none; }
+    .table-wrap tbody tr:hover td { background: var(--primary-10); }
+    .co-cell { display: flex; align-items: center; gap: 8px; }
+    .co-init { width: 26px; height: 26px; border-radius: 5px; background: var(--primary-10);
+               border: 0.5px solid var(--border-brand); display: inline-flex; align-items: center;
+               justify-content: center; font-size: 11px; font-weight: 700; color: var(--text-pri); flex-shrink: 0; }
+    .co-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .badge     { display: inline-flex; align-items: center; padding: 2px 8px;
+                 border-radius: var(--r-pill); font-size: 12px; font-weight: 600; }
+    .badge-high { background: #dcfce7; color: #166534; }
+    .badge-low  { background: var(--neutral-5); color: var(--text-sec);
+                  border: 0.5px solid var(--border-med); }
+    .sig-link { color: #3b61e8; font-weight: 600; font-size: 13px; }
+    .sig-link:hover { text-decoration: underline; }
+
+    /* ── Modal ────────────────────────────────────────────────────────────── */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(26,26,46,.35); z-index: 900;
+                      display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .modal-panel    { background: #fff; border-radius: var(--r-md);
+                      box-shadow: 0 16px 48px rgba(0,0,0,.18), 0 0 1px rgba(32,31,35,.1);
+                      width: 100%; max-width: 520px; max-height: 90vh;
+                      display: flex; flex-direction: column; }
+    .modal-hdr      { padding: 20px 24px 16px; border-bottom: 0.5px solid var(--border-light); flex-shrink: 0; }
+    .modal-hdr-top  { display: flex; align-items: flex-start; justify-content: space-between;
+                      gap: 16px; margin-bottom: 16px; }
+    .modal-title    { font-size: 18px; font-weight: 800; color: var(--text); }
+    .modal-subtitle { font-size: 13px; color: var(--text-ter); margin-top: 2px; }
+    .modal-close    { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+                      background: none; border: none; color: var(--text-ter); border-radius: var(--r-sm);
+                      transition: background .12s, color .12s; flex-shrink: 0; }
+    .modal-close:hover { background: var(--border-light); color: var(--text-sec); }
+    .modal-body     { flex: 1; overflow-y: auto; padding: 20px 24px; }
+    .modal-body::-webkit-scrollbar { width: 4px; }
+    .modal-body::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+    .modal-footer   { padding: 14px 24px; border-top: 0.5px solid var(--border-light);
+                      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+
+    /* Progress bar */
+    .progress-bar   { display: flex; flex-direction: column; gap: 5px; }
+    .progress-segs  { display: flex; gap: 4px; }
+    .progress-seg   { height: 4px; flex: 1; border-radius: 2px; background: var(--border-light); transition: background .2s; }
+    .progress-seg.filled { background: var(--primary); }
+    .progress-label { font-size: 11px; font-weight: 600; color: var(--text-ter); }
+
+    /* ── Step 1 form ──────────────────────────────────────────────────────── */
+    .form-section + .form-section { margin-top: 24px; padding-top: 24px; border-top: 0.5px solid var(--border-light); }
+    .form-sec-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .form-sec-sub   { font-size: 12px; color: var(--text-ter); margin-bottom: 12px; }
+    .optional-badge { display: inline-flex; padding: 1px 7px; background: var(--neutral-5);
+                      border: 0.5px solid var(--border-med); border-radius: var(--r-pill);
+                      font-size: 11px; font-weight: 600; color: var(--text-ter); margin-left: 7px;
+                      vertical-align: middle; }
+    .form-group     { display: flex; flex-direction: column; gap: 4px; }
+    .form-group + .form-group { margin-top: 10px; }
+    .form-label     { font-size: 11px; font-weight: 700; color: var(--text-sec);
+                      text-transform: uppercase; letter-spacing: .05em; }
+    .form-grid-2    { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+
+    /* Form dropdown */
+    .form-dd        { position: relative; }
+    .form-dd-btn    { width: 100%; height: 34px; display: flex; align-items: center;
+                      justify-content: space-between; gap: 4px; padding: 0 8px 0 10px;
+                      background: var(--neutral-5); border: 0.5px solid var(--border-med);
+                      border-radius: var(--r-sm); font-size: 13px; font-weight: 500; color: var(--text);
+                      font-family: var(--font); transition: border-color .12s; }
+    .form-dd-btn:hover      { border-color: var(--primary); }
+    .form-dd-btn .ph        { color: var(--text-ter); font-weight: 400; flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .form-dd-btn .val       { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .form-dd-panel  { position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 600;
+                      background: #fff; border: 0.5px solid var(--border-light);
+                      border-radius: var(--r-md); box-shadow: var(--sh-dd);
+                      max-height: 200px; overflow-y: auto; }
+    .form-dd-panel::-webkit-scrollbar { width: 4px; }
+    .form-dd-panel::-webkit-scrollbar-thumb { background: var(--border-light); }
+    .form-dd-opt    { display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+                      font-size: 13px; font-weight: 500; color: var(--text); }
+    .form-dd-opt:hover    { background: var(--primary-10); cursor: pointer; }
+    .form-dd-opt.selected { background: var(--primary-20); color: var(--text-pri); font-weight: 700; }
+    .form-dd-chk    { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--border-med);
+                      display: inline-flex; align-items: center; justify-content: center;
+                      font-size: 10px; flex-shrink: 0; color: #fff; }
+    .form-dd-opt.selected .form-dd-chk { background: var(--primary); border-color: var(--primary); }
+
+    /* Segmented toggle (geo region) */
+    .seg-toggle     { display: inline-flex; border: 0.5px solid var(--border-med); border-radius: var(--r-sm); overflow: hidden; }
+    .seg-toggle-btn { height: 30px; padding: 0 12px; font-size: 13px; font-weight: 600;
+                      background: var(--neutral-5); color: var(--text-sec); border: none;
+                      border-right: 0.5px solid var(--border-med); font-family: var(--font);
+                      transition: background .12s, color .12s; white-space: nowrap; }
+    .seg-toggle-btn:last-child { border-right: none; }
+    .seg-toggle-btn.active      { background: var(--primary-20); color: var(--text-pri); }
+    .seg-toggle-btn:hover:not(.active) { background: #ebebef; }
+
+    /* ── Step 2 ───────────────────────────────────────────────────────────── */
+    .intg-list { display: flex; flex-direction: column; gap: 8px; }
+    .intg-row  { display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+                 border: 0.5px solid var(--border-light); border-radius: var(--r-sm);
+                 transition: border-color .12s, background .12s; }
+    .intg-row:hover          { border-color: var(--primary); background: var(--primary-10); cursor: pointer; }
+    .intg-row.checked        { border-color: var(--border-brand); background: var(--primary-10); }
+    .intg-chk  { width: 16px; height: 16px; border-radius: 3px; border: 1.5px solid var(--border-med);
+                 display: flex; align-items: center; justify-content: center;
+                 flex-shrink: 0; color: #fff; transition: background .12s, border-color .12s; }
+    .intg-row.checked .intg-chk { background: var(--primary); border-color: var(--primary); }
+    .intg-logo { width: 36px; height: 36px; border-radius: var(--r-sm); display: flex;
+                 align-items: center; justify-content: center; color: #fff;
+                 font-size: 11px; font-weight: 800; flex-shrink: 0; }
+    .intg-info { flex: 1; min-width: 0; }
+    .intg-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .intg-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+    .intg-tag  { display: inline-flex; padding: 1px 6px; background: var(--neutral-5);
+                 border: 0.5px solid var(--border-med); border-radius: 4px;
+                 font-size: 11px; font-weight: 600; color: var(--text-ter); }
+    .intg-status { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+    .status-dot  { width: 7px; height: 7px; border-radius: 50%; background: #16a34a; }
+    .status-text { font-size: 12px; font-weight: 600; color: #16a34a; }
+
+    /* ── Step 3 ───────────────────────────────────────────────────────────── */
+    .review-sec + .review-sec { margin-top: 16px; }
+    .review-label  { font-size: 11px; font-weight: 700; color: var(--text-ter);
+                     text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip     { display: inline-flex; align-items: center; height: 26px; padding: 0 10px;
+                background: var(--primary-10); border: 0.5px solid var(--border-brand);
+                border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--text-pri); }
+    .empty-review { padding: 8px 12px; background: var(--neutral-5);
+                    border: 0.5px dashed var(--border-light); border-radius: var(--r-sm);
+                    font-size: 12px; color: var(--text-ter); font-style: italic; }
+    .intg-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px;
+                 background: var(--card); border: 0.5px solid var(--border-light);
+                 border-radius: var(--r-sm); box-shadow: var(--sh-card); }
+    .intg-chip-logo { width: 20px; height: 20px; border-radius: 4px; display: flex;
+                      align-items: center; justify-content: center; color: #fff;
+                      font-size: 9px; font-weight: 800; flex-shrink: 0; }
+    .intg-chip-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+  const { useState, useRef, useEffect } = React;
+
+  // ── Data ──────────────────────────────────────────────────────────────────────
+
+  const INDUSTRIES    = ['Technology','Healthcare','Financial Services','Manufacturing','Retail',
+    'Education','Media & Entertainment','Professional Services','Transportation & Logistics',
+    'Energy & Utilities','Government','Non-Profit','Real Estate','Telecommunications'];
+  const COUNTRIES     = ['United States','Canada','United Kingdom','Germany','France',
+    'Australia','India','Japan','Brazil','Mexico','Singapore','Netherlands'];
+  const STATES        = ['California','Texas','New York','Florida','Illinois',
+    'Washington','Massachusetts','Georgia','Colorado','Arizona'];
+  const EMP_RANGES    = ['1–50','51–200','201–500','501–1,000','1,001–5,000','5,000+'];
+  const REV_RANGES    = ['< $1M','$1M–$10M','$10M–$50M','$50M–$100M','$100M–$500M','$500M+'];
+  const GEO_OPTIONS   = ['All AMER','All APAC','All EMEA'];
+
+  const INTEGRATIONS  = [
+    { id:'hubspot',   name:'HubSpot',                   tags:['CRM'],                                          color:'#FF7A59', init:'HS' },
+    { id:'6sense',    name:'6sense Revenue Marketing',  tags:['ABM'],                                          color:'#5C4EE5', init:'6S' },
+    { id:'snowflake', name:'Snowflake',                 tags:['ABM','Data Quality','Operations'],              color:'#29B5E8', init:'SF' },
+    { id:'slack',     name:'Slack',                     tags:['Customer Success','Productivity','Prospecting'],color:'#4A154B', init:'SL' },
+  ];
+
+  const TABLE_ROWS = [
+    { id:1, co:'VFW Post 7686',         act:'Low',  loc:'Texas, US',      last:'6 days ago', bom:3, cmp:'—',           vis:12,  sig:18  },
+    { id:2, co:'Echo Global Logistics', act:'High', loc:'Illinois, US',   last:'a day ago',  bom:7, cmp:'Competitor A', vis:84,  sig:142 },
+    { id:3, co:'Alexandria Capital',    act:'Low',  loc:'New York, US',   last:'3 days ago', bom:2, cmp:'—',           vis:8,   sig:9   },
+    { id:4, co:'LPL Financial',         act:'Low',  loc:'California, US', last:'5 days ago', bom:4, cmp:'Competitor B', vis:21,  sig:31  },
+    { id:5, co:'PepsiCo',               act:'Low',  loc:'New York, US',   last:'2 days ago', bom:5, cmp:'—',           vis:34,  sig:47  },
+    { id:6, co:'CIG',                   act:'Low',  loc:'Florida, US',    last:'7 days ago', bom:1, cmp:'—',           vis:5,   sig:6   },
+    { id:7, co:'Kajabi',                act:'Low',  loc:'California, US', last:'4 days ago', bom:3, cmp:'Competitor A', vis:19,  sig:27  },
+    { id:8, co:'Adobe',                 act:'Low',  loc:'California, US', last:'a day ago',  bom:6, cmp:'Competitor C', vis:61,  sig:88  },
+  ];
+
+  const EMPTY_FORM = {
+    industries:[], geoRegion:null, countries:[], stateRegion:'',
+    employeeCount:'', annualRevenue:'', excludedIndustries:[], excludedGeoRegion:null
+  };
+
+  // ── Hooks ─────────────────────────────────────────────────────────────────────
+
+  function useClickOutside(ref, handler) {
+    useEffect(() => {
+      const fn = e => { if (ref.current && !ref.current.contains(e.target)) handler(e); };
+      document.addEventListener('mousedown', fn);
+      return () => document.removeEventListener('mousedown', fn);
+    }, [ref, handler]);
+  }
+
+  // ── Shared: Form Dropdown Components ─────────────────────────────────────────
+
+  function MultiDD({ options, selected, onChange, placeholder }) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+    useClickOutside(ref, () => setOpen(false));
+    const toggle = opt => onChange(selected.includes(opt)
+      ? selected.filter(s => s !== opt)
+      : [...selected, opt]);
+    const label = selected.length === 0 ? null
+      : selected.length === 1 ? selected[0]
+      : `${selected.length} selected`;
+    return (
+      <div ref={ref} className="form-dd">
+        <button className="form-dd-btn" onClick={() => setOpen(o => !o)}>
+          {label
+            ? <span className="val">{label}</span>
+            : <span className="ph">{placeholder}</span>}
+          <span className="mi" style={{fontSize:16,color:'var(--text-ter)',flexShrink:0}}>expand_more</span>
+        </button>
+        {open && (
+          <div className="form-dd-panel">
+            {options.map(opt => {
+              const sel = selected.includes(opt);
+              return (
+                <div key={opt} className={`form-dd-opt${sel?' selected':''}`} onClick={() => toggle(opt)}>
+                  <span className="form-dd-chk">{sel && <span className="mi" style={{fontSize:10}}>check</span>}</span>
+                  {opt}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  function SingleDD({ options, value, onChange, placeholder }) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+    useClickOutside(ref, () => setOpen(false));
+    return (
+      <div ref={ref} className="form-dd">
+        <button className="form-dd-btn" onClick={() => setOpen(o => !o)}>
+          {value
+            ? <span className="val">{value}</span>
+            : <span className="ph">{placeholder}</span>}
+          <span className="mi" style={{fontSize:16,color:'var(--text-ter)',flexShrink:0}}>expand_more</span>
+        </button>
+        {open && (
+          <div className="form-dd-panel">
+            {options.map(opt => (
+              <div key={opt} className={`form-dd-opt${value===opt?' selected':''}`}
+                onClick={() => { onChange(opt); setOpen(false); }}>
+                {opt}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  function SegToggle({ options, value, onChange }) {
+    return (
+      <div className="seg-toggle">
+        {options.map(opt => (
+          <button key={opt}
+            className={`seg-toggle-btn${value===opt?' active':''}`}
+            onClick={() => onChange(value === opt ? null : opt)}>
+            {opt}
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  // ── Modal: Progress Bar ───────────────────────────────────────────────────────
+
+  function ProgressBar({ step }) {
+    return (
+      <div className="progress-bar">
+        <div className="progress-segs">
+          {[1,2,3].map(s => <div key={s} className={`progress-seg${s<=step?' filled':''}`} />)}
+        </div>
+        <div className="progress-label">Step {step}/3</div>
+      </div>
+    );
+  }
+
+  // ── Modal: Step 1 ─────────────────────────────────────────────────────────────
+
+  function Step1({ form, setForm }) {
+    const set = key => val => setForm(f => ({ ...f, [key]: val }));
+    return (
+      <div>
+        <div className="form-section">
+          <div className="form-sec-title">Define Your ICP</div>
+          <div className="form-sec-sub">Signals matching these criteria will be routed to your integrations.</div>
+          <div className="form-group">
+            <MultiDD options={INDUSTRIES} selected={form.industries} onChange={set('industries')} placeholder="Select one or more industries.." />
+          </div>
+          <div className="form-group" style={{marginTop:10}}>
+            <div className="form-label">Geographic Region</div>
+            <SegToggle options={GEO_OPTIONS} value={form.geoRegion} onChange={set('geoRegion')} />
+          </div>
+          <div className="form-grid-2">
+            <MultiDD options={COUNTRIES} selected={form.countries} onChange={set('countries')} placeholder="Select one or more countries.." />
+            <SingleDD options={STATES} value={form.stateRegion} onChange={set('stateRegion')} placeholder="Select regions.." />
+          </div>
+          <div className="form-grid-2">
+            <SingleDD options={EMP_RANGES} value={form.employeeCount} onChange={set('employeeCount')} placeholder="Select range.." />
+            <SingleDD options={REV_RANGES} value={form.annualRevenue} onChange={set('annualRevenue')} placeholder="$ Select range.." />
+          </div>
+        </div>
+
+        <div className="form-section">
+          <div style={{marginBottom:2}}>
+            <span className="form-sec-title">Define Exclusions</span>
+            <span className="optional-badge">Optional</span>
+          </div>
+          <div className="form-sec-sub">Reduce signal noise before it hits your CRM.</div>
+          <div className="form-group">
+            <MultiDD options={INDUSTRIES} selected={form.excludedIndustries} onChange={set('excludedIndustries')} placeholder="Select one or more industries.." />
+          </div>
+          <div className="form-group" style={{marginTop:10}}>
+            <div className="form-label">Excluded Geographic Region</div>
+            <SegToggle options={GEO_OPTIONS} value={form.excludedGeoRegion} onChange={set('excludedGeoRegion')} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Modal: Step 2 ─────────────────────────────────────────────────────────────
+
+  function Step2({ selectedIntegrations, setSelectedIntegrations }) {
+    const toggle = id => setSelectedIntegrations(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+    return (
+      <div>
+        <div className="form-sec-title">Apply to Integrations</div>
+        <div className="form-sec-sub">Signals are stopped entirely for non-matching accounts.</div>
+        <div className="intg-list" style={{marginTop:4}}>
+          {INTEGRATIONS.map(intg => {
+            const checked = selectedIntegrations.includes(intg.id);
+            return (
+              <div key={intg.id} className={`intg-row${checked?' checked':''}`} onClick={() => toggle(intg.id)}>
+                <div className="intg-chk">
+                  {checked && <span className="mi" style={{fontSize:11}}>check</span>}
+                </div>
+                <div className="intg-logo" style={{backgroundColor:intg.color}}>{intg.init}</div>
+                <div className="intg-info">
+                  <div className="intg-name">{intg.name}</div>
+                  <div className="intg-tags">
+                    {intg.tags.map(t => <span key={t} className="intg-tag">{t}</span>)}
+                  </div>
+                </div>
+                <div className="intg-status">
+                  <span className="status-dot"></span>
+                  <span className="status-text">Connected</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Modal: Step 3 ─────────────────────────────────────────────────────────────
+
+  function Step3({ form, selectedIntegrations }) {
+    const icpChips = [
+      ...form.industries,
+      form.geoRegion     ? `Region: ${form.geoRegion}`         : null,
+      ...form.countries,
+      form.stateRegion   ? `State: ${form.stateRegion}`        : null,
+      form.employeeCount ? `Employees: ${form.employeeCount}`  : null,
+      form.annualRevenue ? `Revenue: ${form.annualRevenue}`    : null,
+    ].filter(Boolean);
+
+    const exclChips = [
+      ...form.excludedIndustries,
+      form.excludedGeoRegion ? `Region: ${form.excludedGeoRegion}` : null,
+    ].filter(Boolean);
+
+    const appliedIntgs = INTEGRATIONS.filter(i => selectedIntegrations.includes(i.id));
+
+    const Empty = ({ text }) => <div className="empty-review">{text}</div>;
+
+    return (
+      <div>
+        <div className="form-sec-title">Review & Save</div>
+        <div className="form-sec-sub" style={{marginBottom:20}}>Confirm your settings before saving.</div>
+
+        <div className="review-sec">
+          <div className="review-label">ICP Filters</div>
+          {icpChips.length > 0
+            ? <div className="chip-row">{icpChips.map((c,i) => <span key={i} className="chip">{c}</span>)}</div>
+            : <Empty text="No ICP filters defined" />}
+        </div>
+
+        <div className="review-sec">
+          <div className="review-label">Anti-ICP Exclusions</div>
+          {exclChips.length > 0
+            ? <div className="chip-row">{exclChips.map((c,i) => <span key={i} className="chip">{c}</span>)}</div>
+            : <Empty text="No exclusions defined" />}
+        </div>
+
+        <div className="review-sec">
+          <div className="review-label">Applied To</div>
+          {appliedIntgs.length > 0
+            ? (
+              <div className="chip-row">
+                {appliedIntgs.map(intg => (
+                  <div key={intg.id} className="intg-chip">
+                    <div className="intg-chip-logo" style={{backgroundColor:intg.color}}>{intg.init}</div>
+                    <span className="intg-chip-name">{intg.name}</span>
+                  </div>
+                ))}
+              </div>
+            )
+            : <Empty text="No integrations selected" />}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Audience Builder Modal ────────────────────────────────────────────────────
+
+  function AudienceBuilderModal({ isOpen, onClose, onSave }) {
+    const [step, setStep]   = useState(1);
+    const [form, setForm]   = useState(EMPTY_FORM);
+    const [selIntgs, setSelIntgs] = useState([]);
+
+    const reset = () => { setStep(1); setForm(EMPTY_FORM); setSelIntgs([]); };
+    const handleClose = () => { reset(); onClose(); };
+    const handleSave  = () => { onSave(); reset(); };
+
+    if (!isOpen) return null;
+
+    return (
+      <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && handleClose()}>
+        <div className="modal-panel">
+          <div className="modal-hdr">
+            <div className="modal-hdr-top">
+              <div>
+                <div className="modal-title">Audience Builder</div>
+                <div className="modal-subtitle">Define who receives your intent signals.</div>
+              </div>
+              <button className="modal-close" onClick={handleClose}>
+                <span className="mi" style={{fontSize:18}}>close</span>
+              </button>
+            </div>
+            <ProgressBar step={step} />
+          </div>
+
+          <div className="modal-body">
+            {step === 1 && <Step1 form={form} setForm={setForm} />}
+            {step === 2 && <Step2 selectedIntegrations={selIntgs} setSelectedIntegrations={setSelIntgs} />}
+            {step === 3 && <Step3 form={form} selectedIntegrations={selIntgs} />}
+          </div>
+
+          <div className="modal-footer">
+            <button className="btn btn-ghost" disabled={step === 1}
+              style={step===1?{opacity:.3,cursor:'not-allowed'}:{}}
+              onClick={() => setStep(s => s - 1)}>Back</button>
+            {step < 3
+              ? <button className="btn btn-primary" onClick={() => setStep(s => s + 1)}>Next →</button>
+              : <button className="btn btn-primary" onClick={handleSave}>Save Audience</button>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Top Bar ───────────────────────────────────────────────────────────────────
+
+  function TopBar() {
+    return (
+      <div className="top-bar">
+        <span className="top-bar-logo">my.G2</span>
+        <div className="top-bar-search">
+          <span className="mi" style={{fontSize:14,color:'rgba(255,255,255,.4)'}}>search</span>
+          <span className="top-bar-search-text">Quick nav...</span>
+          <span className="top-bar-search-kbd">⌘K</span>
+        </div>
+        <div className="top-bar-actions">
+          <button className="top-bar-icon">
+            <span className="mi" style={{fontSize:18}}>notifications_none</span>
+          </button>
+          <button className="top-bar-icon">
+            <span className="mi" style={{fontSize:18}}>help_outline</span>
+          </button>
+          <div className="top-bar-avatar">LR</div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Left Sidebar ──────────────────────────────────────────────────────────────
+
+  function Sidebar() {
+    const topItems    = ['Home','Product Profile','Reviews'];
+    const subItems    = ['Your Signals','Notifications','AI SDR','Recent Visit Events'];
+    const bottomItems = ['Leads Activity','Lead Form','Lead Emails','Lead Webhooks',
+                         'CTA Settings','G2 Advertising','Marketing Content','Analytics',
+                         'Market Intelligence','Integrations','ROI','Account'];
+    return (
+      <div className="sidebar">
+        <div className="sidebar-logo">
+          <div className="sidebar-logomark">G2</div>
+          <span className="sidebar-orgname">Acme Inc.</span>
+        </div>
+        <nav className="sidebar-nav">
+          {topItems.map(l => <button key={l} className="nav-item">{l}</button>)}
+          <button className="nav-item parent">Buyer Activity</button>
+          <div className="nav-sub">
+            {subItems.map(l => (
+              <button key={l} className={`nav-item${l==='Your Signals'?' active':''}`}>{l}</button>
+            ))}
+          </div>
+          {bottomItems.map(l => <button key={l} className="nav-item">{l}</button>)}
+        </nav>
+        <div className="sidebar-footer">
+          <a href="#">View on G2.com ↗</a>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Dashboard: Action Bar ─────────────────────────────────────────────────────
+
+  function ActionBar({ appState, onOpenModal, icpToggle, setIcpToggle }) {
+    return (
+      <div className="action-bar">
+        {appState === 'NO_ICP' ? (
+          <button className="btn btn-primary" onClick={onOpenModal}>Define Your ICP</button>
+        ) : (
+          <div className="icp-toggle">
+            <button className={`icp-toggle-btn${icpToggle==='only_icp'?' active':''}`}
+              onClick={() => setIcpToggle('only_icp')}>Only Show ICP</button>
+            <button className={`icp-toggle-btn${icpToggle==='show_all'?' active':''}`}
+              onClick={() => setIcpToggle('show_all')}>Show All Signals</button>
+          </div>
+        )}
+        <button className="btn btn-ghost">Save Segment</button>
+        <button className="btn btn-ghost">View Segments</button>
+        <div className="action-bar-right">
+          <button className="btn btn-text">
+            <span className="mi" style={{fontSize:16}}>cable</span>Manage Integrations
+          </button>
+          <button className="btn btn-text">
+            <span className="mi" style={{fontSize:16}}>notifications</span>Manage Notifications
+          </button>
+          <button className="btn btn-primary">
+            <span className="mi" style={{fontSize:16}}>add</span>Create a Notification
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Dashboard: Filter Bar ─────────────────────────────────────────────────────
+
+  function FilterBar() {
+    const [activeTime, setActiveTime] = useState('7d');
+    const filters = ['Location','Firmographics','Companies','Product Intent','Category Intent','Signal Type'];
+    return (
+      <div className="filter-bar">
+        <div className="filter-pills">
+          {filters.map(f => (
+            <div key={f} className="filter-pill">
+              <span className="fp-label">{f}</span>
+              <span className="fp-caret">
+                <span className="mi" style={{fontSize:15}}>expand_more</span>
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="date-range">
+          {['7d','30d','90d','1yr'].map(t => (
+            <button key={t} className={`ctrl-btn${activeTime===t?' active':''}`}
+              onClick={() => setActiveTime(t)}>{t}</button>
+          ))}
+          <button className={`ctrl-btn${activeTime==='custom'?' active':''}`}
+            onClick={() => setActiveTime('custom')}
+            style={{display:'flex',alignItems:'center',gap:4}}>
+            <span className="mi" style={{fontSize:15}}>calendar_today</span>Custom
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Dashboard: Metric Cards ───────────────────────────────────────────────────
+
+  function MetricCards({ appState, onOpenModal }) {
+    return (
+      <div className={`metrics-row ${appState==='NO_ICP'?'metrics-4':'metrics-3'}`}>
+        {appState === 'NO_ICP' && (
+          <div className="metric-card metric-card-promo">
+            <div className="metric-promo-badge">Recommended Action</div>
+            <div className="metric-title">Audience Builder</div>
+            <div className="metric-body">Set up your Ideal Customer Profile and get more actionable signals.</div>
+            <button className="metric-action" onClick={onOpenModal}>Get Started →</button>
+          </div>
+        )}
+        <div className="metric-card">
+          <div className="metric-label">
+            Companies In Market
+            <span className="mi" style={{fontSize:14,color:'var(--text-ter)'}}>info_outline</span>
+          </div>
+          <div className="metric-num">1,860</div>
+          <div className="metric-sub">Researched your categories</div>
+          <button className="metric-action">Download CSV ↓</button>
+        </div>
+        <div className="metric-card">
+          <div className="metric-label">
+            Looking at You Directly
+            <span className="mi" style={{fontSize:14,color:'var(--text-ter)'}}>info_outline</span>
+          </div>
+          <div className="metric-num">230</div>
+          <div className="metric-sub">Intent toward your product</div>
+          <button className="metric-action">Set Up Notification</button>
+        </div>
+        <div className="metric-card">
+          <div className="metric-label">
+            Looking at Competitors
+            <span className="mi" style={{fontSize:14,color:'var(--text-ter)'}}>info_outline</span>
+          </div>
+          <div className="metric-num">156</div>
+          <div className="metric-sub">Intent to alternatives in your categories</div>
+          <button className="metric-action">Select Your Top Competitors</button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Dashboard: Table ──────────────────────────────────────────────────────────
+
+  function TableSection() {
+    const [view, setView] = useState('table');
+    const cols = ['Company Name','Activity Level','Visitor Locations','Last Activity',
+                  'Bombora Signals','Compared You To','Total Visitors','Total Signals'];
+    return (
+      <div className="table-section">
+        <div className="table-tabs">
+          {['Table View','Chart View'].map(v => {
+            const key = v === 'Table View' ? 'table' : 'chart';
+            return (
+              <button key={v} className={`table-tab${view===key?' active':''}`}
+                onClick={() => setView(key)}>{v}</button>
+            );
+          })}
+        </div>
+        <div className="table-toolbar">
+          <button className="btn btn-ghost" style={{height:30,fontSize:12,padding:'0 10px'}}>
+            Download CSV
+            <span className="mi" style={{fontSize:15}}>expand_more</span>
+          </button>
+          <button className="btn btn-ghost" style={{height:30,fontSize:12,padding:'0 10px'}}>
+            Modify Columns
+            <span className="mi" style={{fontSize:15}}>expand_more</span>
+          </button>
+        </div>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                {cols.map(c => (
+                  <th key={c}>
+                    {c}
+                    {(c==='Activity Level'||c==='Compared You To') && (
+                      <span className="mi" style={{fontSize:13,color:'var(--text-ter)',marginLeft:3}}>info_outline</span>
+                    )}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {TABLE_ROWS.map(row => (
+                <tr key={row.id}>
+                  <td>
+                    <div className="co-cell">
+                      <div className="co-init">{row.co[0]}</div>
+                      <span className="co-name">{row.co}</span>
+                    </div>
+                  </td>
+                  <td>
+                    {row.act === 'High'
+                      ? <span className="badge badge-high">High</span>
+                      : <span className="badge badge-low">Low</span>}
+                  </td>
+                  <td>{row.loc}</td>
+                  <td>{row.last}</td>
+                  <td>{row.bom}</td>
+                  <td>{row.cmp}</td>
+                  <td>{row.vis}</td>
+                  <td><a href="#" className="sig-link">{row.sig}</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+
+  // ── App ───────────────────────────────────────────────────────────────────────
+
+  function App() {
+    const [appState,   setAppState]   = useState('NO_ICP');
+    const [modalOpen,  setModalOpen]  = useState(false);
+    const [icpToggle,  setIcpToggle]  = useState('only_icp');
+    const [activeTab,  setActiveTab]  = useState('Intent Signals');
+
+    return (
+      <div className="shell">
+        <TopBar />
+        <div className="shell-body">
+          <Sidebar />
+          <div className="main-area">
+            <div className="page-header">
+              <div className="breadcrumb">
+                <a href="#">Buyer Activity</a> › <a href="#">Buyer Intent</a> › Intent Signals
+              </div>
+              <div className="page-title">
+                Buyer Intent
+                <span className="mi" style={{fontSize:16,color:'var(--text-sec)'}}>info</span>
+              </div>
+              <div className="page-tabs">
+                {['Intent Signals','Churn Risks','Settings'].map(tab => (
+                  <button key={tab}
+                    className={`page-tab${activeTab===tab?' active':''}`}
+                    onClick={() => setActiveTab(tab)}>{tab}</button>
+                ))}
+              </div>
+            </div>
+
+            <div className="content">
+              <ActionBar
+                appState={appState}
+                onOpenModal={() => setModalOpen(true)}
+                icpToggle={icpToggle}
+                setIcpToggle={setIcpToggle}
+              />
+              <FilterBar />
+              <MetricCards appState={appState} onOpenModal={() => setModalOpen(true)} />
+              <TableSection />
+            </div>
+          </div>
+        </div>
+
+        <AudienceBuilderModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onSave={() => { setAppState('ICP_SAVED'); setModalOpen(false); }}
+        />
+      </div>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
