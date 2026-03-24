@@ -265,6 +265,8 @@
 
     /* Form dropdown */
     .form-dd        { position: relative; }
+
+    /* Single-select trigger */
     .form-dd-btn    { width: 100%; height: 34px; display: flex; align-items: center;
                       justify-content: space-between; gap: 4px; padding: 0 8px 0 10px;
                       background: var(--neutral-5); border: 0.5px solid var(--border-med);
@@ -273,6 +275,27 @@
     .form-dd-btn:hover      { border-color: var(--primary); }
     .form-dd-btn .ph        { color: var(--text-ter); font-weight: 400; flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .form-dd-btn .val       { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Multi-select combobox trigger */
+    .form-dd-trigger { width: 100%; min-height: 34px; display: flex; align-items: center;
+                       gap: 4px; padding: 4px 6px 4px 8px; background: var(--neutral-5);
+                       border: 0.5px solid var(--border-med); border-radius: var(--r-sm);
+                       cursor: pointer; transition: border-color .12s; }
+    .form-dd-trigger:hover { border-color: var(--primary); }
+    .form-dd-chips   { flex: 1; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; min-width: 0; }
+    .form-dd-trigger .ph { font-size: 13px; color: var(--text-ter); font-weight: 400; line-height: 26px; }
+    .form-dd-caret   { flex-shrink: 0; color: var(--text-ter); }
+
+    /* Chips inside multi-select */
+    .input-chip   { display: inline-flex; align-items: center; gap: 2px; height: 22px;
+                    padding: 0 3px 0 8px; background: var(--primary-20);
+                    border: 0.5px solid var(--border-brand); border-radius: 4px;
+                    font-size: 12px; font-weight: 600; color: var(--text-pri); white-space: nowrap; }
+    .input-chip-x { width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center;
+                    background: none; border: none; color: var(--text-pri); border-radius: 3px;
+                    padding: 0; transition: background .1s; }
+    .input-chip-x:hover { background: rgba(87,70,178,.2); }
+
     .form-dd-panel  { position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 600;
                       background: #fff; border: 0.5px solid var(--border-light);
                       border-radius: var(--r-md); box-shadow: var(--sh-dd);
@@ -379,8 +402,8 @@
   ];
 
   const EMPTY_FORM = {
-    industries:[], geoRegion:null, countries:[], stateRegion:'',
-    employeeCount:'', annualRevenue:'', excludedIndustries:[], excludedGeoRegion:null
+    industries:[], geoRegion:[], countries:[], stateRegion:'',
+    employeeCount:'', annualRevenue:'', excludedIndustries:[], excludedGeoRegion:[]
   };
 
   // ── Hooks ─────────────────────────────────────────────────────────────────────
@@ -402,17 +425,24 @@
     const toggle = opt => onChange(selected.includes(opt)
       ? selected.filter(s => s !== opt)
       : [...selected, opt]);
-    const label = selected.length === 0 ? null
-      : selected.length === 1 ? selected[0]
-      : `${selected.length} selected`;
+    const remove = (e, opt) => { e.stopPropagation(); onChange(selected.filter(s => s !== opt)); };
     return (
       <div ref={ref} className="form-dd">
-        <button className="form-dd-btn" onClick={() => setOpen(o => !o)}>
-          {label
-            ? <span className="val">{label}</span>
-            : <span className="ph">{placeholder}</span>}
-          <span className="mi" style={{fontSize:16,color:'var(--text-ter)',flexShrink:0}}>expand_more</span>
-        </button>
+        <div className="form-dd-trigger" onClick={() => setOpen(o => !o)}>
+          <div className="form-dd-chips">
+            {selected.length === 0
+              ? <span className="ph">{placeholder}</span>
+              : selected.map(opt => (
+                  <span key={opt} className="input-chip">
+                    {opt}
+                    <button className="input-chip-x" onClick={e => remove(e, opt)}>
+                      <span className="mi" style={{fontSize:11}}>close</span>
+                    </button>
+                  </span>
+                ))}
+          </div>
+          <span className="mi form-dd-caret" style={{fontSize:16}}>expand_more</span>
+        </div>
         {open && (
           <div className="form-dd-panel">
             {options.map(opt => {
@@ -457,12 +487,16 @@
   }
 
   function SegToggle({ options, value, onChange }) {
+    // value is an array; clicking toggles membership
+    const toggle = opt => onChange(value.includes(opt)
+      ? value.filter(v => v !== opt)
+      : [...value, opt]);
     return (
       <div className="seg-toggle">
         {options.map(opt => (
           <button key={opt}
-            className={`seg-toggle-btn${value===opt?' active':''}`}
-            onClick={() => onChange(value === opt ? null : opt)}>
+            className={`seg-toggle-btn${value.includes(opt)?' active':''}`}
+            onClick={() => toggle(opt)}>
             {opt}
           </button>
         ))}
@@ -568,7 +602,7 @@
   function Step3({ form, selectedIntegrations }) {
     const icpChips = [
       ...form.industries,
-      form.geoRegion     ? `Region: ${form.geoRegion}`         : null,
+      ...form.geoRegion.map(r => `Region: ${r}`),
       ...form.countries,
       form.stateRegion   ? `State: ${form.stateRegion}`        : null,
       form.employeeCount ? `Employees: ${form.employeeCount}`  : null,
@@ -577,7 +611,7 @@
 
     const exclChips = [
       ...form.excludedIndustries,
-      form.excludedGeoRegion ? `Region: ${form.excludedGeoRegion}` : null,
+      ...form.excludedGeoRegion.map(r => `Region: ${r}`),
     ].filter(Boolean);
 
     const appliedIntgs = INTEGRATIONS.filter(i => selectedIntegrations.includes(i.id));
