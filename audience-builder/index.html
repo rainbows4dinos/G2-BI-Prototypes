@@ -253,15 +253,17 @@
     .form-section + .form-section { margin-top: 24px; padding-top: 24px; border-top: 0.5px solid var(--border-light); }
     .form-sec-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
     .form-sec-sub   { font-size: 12px; color: var(--text-ter); margin-bottom: 12px; }
-    .optional-badge { display: inline-flex; padding: 1px 7px; background: var(--neutral-5);
-                      border: 0.5px solid var(--border-med); border-radius: var(--r-pill);
-                      font-size: 11px; font-weight: 600; color: var(--text-ter); margin-left: 7px;
+    .optional-badge { display: inline-flex; padding: 2px 10px; background: #fff;
+                      border: 1.5px solid var(--primary); border-radius: var(--r-pill);
+                      font-size: 12px; font-weight: 700; color: var(--primary); margin-left: 8px;
                       vertical-align: middle; }
     .form-group     { display: flex; flex-direction: column; gap: 4px; }
-    .form-group + .form-group { margin-top: 10px; }
-    .form-label     { font-size: 11px; font-weight: 700; color: var(--text-sec);
-                      text-transform: uppercase; letter-spacing: .05em; }
-    .form-grid-2    { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .form-group + .form-group { margin-top: 12px; }
+    .form-grid-2 + .form-group,
+    .form-group + .form-grid-2 { margin-top: 12px; }
+    .form-label     { font-size: 13px; font-weight: 700; color: var(--text);
+                      display: flex; align-items: center; gap: 4px; }
+    .form-grid-2    { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: end; }
 
     /* Form dropdown */
     .form-dd        { position: relative; }
@@ -519,27 +521,42 @@
 
   // ── Modal: Step 1 ─────────────────────────────────────────────────────────────
 
+  const InfoI = () => <span className="mi" style={{fontSize:14,color:'var(--text-ter)'}}>info</span>;
+
   function Step1({ form, setForm }) {
     const set = key => val => setForm(f => ({ ...f, [key]: val }));
     return (
       <div>
         <div className="form-section">
-          <div className="form-sec-title">Define Your ICP</div>
+          <div className="form-sec-title">Define your ICP</div>
           <div className="form-sec-sub">Signals matching these criteria will be routed to your integrations.</div>
           <div className="form-group">
-            <MultiDD options={INDUSTRIES} selected={form.industries} onChange={set('industries')} placeholder="Select one or more industries.." />
+            <div className="form-label">Industries <InfoI /></div>
+            <MultiDD options={INDUSTRIES} selected={form.industries} onChange={set('industries')} placeholder="Select one or more industries..." />
           </div>
-          <div className="form-group" style={{marginTop:10}}>
-            <div className="form-label">Geographic Region</div>
+          <div className="form-group">
+            <div className="form-label">Geographic Region <InfoI /></div>
             <SegToggle options={GEO_OPTIONS} value={form.geoRegion} onChange={set('geoRegion')} />
           </div>
           <div className="form-grid-2">
-            <MultiDD options={COUNTRIES} selected={form.countries} onChange={set('countries')} placeholder="Select one or more countries.." />
-            <SingleDD options={STATES} value={form.stateRegion} onChange={set('stateRegion')} placeholder="Select regions.." />
+            <div className="form-group">
+              <div className="form-label">Country <InfoI /></div>
+              <MultiDD options={COUNTRIES} selected={form.countries} onChange={set('countries')} placeholder="Select one or more countries..." />
+            </div>
+            <div className="form-group">
+              <div className="form-label">State/Region <InfoI /></div>
+              <SingleDD options={STATES} value={form.stateRegion} onChange={set('stateRegion')} placeholder="Select regions..." />
+            </div>
           </div>
           <div className="form-grid-2">
-            <SingleDD options={EMP_RANGES} value={form.employeeCount} onChange={set('employeeCount')} placeholder="Select range.." />
-            <SingleDD options={REV_RANGES} value={form.annualRevenue} onChange={set('annualRevenue')} placeholder="$ Select range.." />
+            <div className="form-group">
+              <div className="form-label">Employee Count <InfoI /></div>
+              <SingleDD options={EMP_RANGES} value={form.employeeCount} onChange={set('employeeCount')} placeholder="Select range..." />
+            </div>
+            <div className="form-group">
+              <div className="form-label">Annual Revenue <InfoI /></div>
+              <SingleDD options={REV_RANGES} value={form.annualRevenue} onChange={set('annualRevenue')} placeholder="$ Select range..." />
+            </div>
           </div>
         </div>
 
@@ -550,10 +567,11 @@
           </div>
           <div className="form-sec-sub">Reduce signal noise before it hits your CRM.</div>
           <div className="form-group">
-            <MultiDD options={INDUSTRIES} selected={form.excludedIndustries} onChange={set('excludedIndustries')} placeholder="Select one or more industries.." />
+            <div className="form-label">Excluded Industries <InfoI /></div>
+            <MultiDD options={INDUSTRIES} selected={form.excludedIndustries} onChange={set('excludedIndustries')} placeholder="Select one or more industries..." />
           </div>
-          <div className="form-group" style={{marginTop:10}}>
-            <div className="form-label">Excluded Geographic Region</div>
+          <div className="form-group">
+            <div className="form-label">Excluded Geographic Region <InfoI /></div>
             <SegToggle options={GEO_OPTIONS} value={form.excludedGeoRegion} onChange={set('excludedGeoRegion')} />
           </div>
         </div>
