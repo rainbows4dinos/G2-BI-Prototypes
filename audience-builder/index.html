@@ -112,7 +112,7 @@
     .page-tab:hover:not(.active) { color: var(--text); }
 
     /* Content */
-    .content { padding: 24px 32px; display: flex; flex-direction: column; gap: 20px; }
+    .content { padding: 24px 24px; display: flex; flex-direction: column; gap: 24px; }
 
     /* ── Buttons ──────────────────────────────────────────────────────────── */
     .btn { display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 14px;
@@ -128,7 +128,7 @@
 
     /* ── Action Bar ───────────────────────────────────────────────────────── */
     .action-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .action-bar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+    .action-bar-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
 
     /* ICP toggle (ICP_SAVED) */
     .icp-toggle { display: inline-flex; border: 0.5px solid var(--border-med); border-radius: var(--r-pill); overflow: hidden; }
@@ -139,29 +139,151 @@
     .icp-toggle-btn.active { background: var(--primary); color: #fff; }
     .icp-toggle-btn:hover:not(.active) { background: var(--primary-20); color: var(--text-pri); }
 
-    /* ── Filter Bar ───────────────────────────────────────────────────────── */
+    /* ── Filters UI ──────────────────────────────────────────────────────── */
+    .filters-ui { display: flex; flex-direction: column; gap: 16px; }
+    .filters-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .fh-left, .fh-right { display: flex; gap: 8px; align-items: center; }
     .filter-bar { background: var(--card); border: 0.5px solid var(--border-light);
                   border-radius: var(--r-md); box-shadow: var(--sh-card);
-                  padding: 12px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
-    .filter-pill { display: inline-flex; align-items: center; height: 30px;
-                   background: var(--neutral-5); border: 0.5px solid var(--border-med);
-                   border-radius: var(--r-sm); overflow: hidden; flex-shrink: 0;
-                   transition: border-color .12s, background .12s; }
-    .filter-pill:hover { border-color: var(--primary); background: var(--primary-20); }
-    .fp-label { padding: 0 6px 0 10px; font-size: 13px; font-weight: 600; color: var(--text-sec); white-space: nowrap; }
-    .filter-pill:hover .fp-label { color: var(--text-pri); }
-    .fp-caret { border-left: 0.5px solid var(--border-med); width: 24px; height: 100%;
-                display: flex; align-items: center; justify-content: center; color: var(--text-ter); }
-    .filter-pill:hover .fp-caret { color: var(--text-pri); }
-    .date-range { display: flex; border: 0.5px solid var(--border-med); border-radius: var(--r-sm); overflow: hidden; flex-shrink: 0; }
-    .ctrl-btn { height: 30px; padding: 0 10px; background: var(--neutral-5); border: none;
-                border-right: 0.5px solid var(--border-med); font-size: 13px; font-weight: 600;
-                color: var(--text-sec); white-space: nowrap; display: flex; align-items: center; gap: 4px;
-                font-family: var(--font); transition: background .1s, color .1s; }
-    .ctrl-btn:last-child { border-right: none; }
+                  padding: 16px 24px; display: flex; align-items: flex-start; gap: 12px; }
+    .filter-pills-zone { flex: 1; min-width: 0; }
+    .filter-pills-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+    /* Pill anchors & filter selects */
+    .pill-anchor { position: relative; display: inline-flex; }
+    .filter-select { display: inline-flex; align-items: center; height: 32px; background: var(--neutral-5);
+                     border: 0.5px solid var(--border-med); border-radius: var(--r-sm); overflow: hidden;
+                     cursor: pointer; user-select: none; transition: border-color .12s, background .12s; }
+    .filter-select:hover, .filter-select.open-state, .filter-select.filled { border-color: var(--primary); background: var(--primary-20); }
+    .fs-label { padding: 0 6px 0 10px; font-size: 13px; font-weight: 600; color: var(--text); }
+    .filter-select.open-state .fs-label, .filter-select.filled .fs-label { color: var(--text-pri); }
+    .fs-caret { border-left: 0.5px solid var(--border-med); width: 28px; height: 100%;
+                display: flex; align-items: center; justify-content: center; color: var(--text-sec); flex-shrink: 0; }
+    .fs-close { border-left: 0.5px solid rgba(87,70,178,.3); width: 28px; height: 100%;
+                display: flex; align-items: center; justify-content: center; color: var(--text-pri); flex-shrink: 0; }
+    .fs-close:hover { background: rgba(87,70,178,.15); }
+
+    /* ICP selector pill */
+    .icp-select { display: inline-flex; align-items: center; height: 32px; background: var(--primary);
+                  border: 0.5px solid var(--primary); border-radius: var(--r-sm); overflow: hidden;
+                  cursor: pointer; user-select: none; transition: background .12s; }
+    .icp-select:hover, .icp-select.open-state { background: #4535a0; border-color: #4535a0; }
+    .icp-label { padding: 0 6px 0 10px; font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; }
+    .icp-caret { border-left: 0.5px solid rgba(255,255,255,.25); width: 28px; height: 100%;
+                 display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.8); flex-shrink: 0; }
+    .icp-option { display: flex; align-items: center; gap: 8px; padding: 9px 12px; font-size: 13px;
+                  font-weight: 500; color: var(--text); cursor: pointer; }
+    .icp-option:hover { background: var(--primary-10); }
+    .icp-option.selected { font-weight: 600; color: var(--text-pri); }
+    .icp-add { color: var(--text-pri); font-weight: 600; border-top: 0.5px solid var(--border-light); margin-top: 4px; }
+
+    /* Date range & ctrl buttons */
+    .date-range { display: flex; align-items: center; flex-shrink: 0; }
+    .ctrl-btn { height: 32px; padding: 0 10px; background: var(--neutral-5); border: 0.5px solid var(--border-med);
+                border-right: none; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer;
+                white-space: nowrap; display: flex; align-items: center; gap: 4px; font-family: var(--font); }
+    .ctrl-btn:first-child { border-radius: var(--r-sm) 0 0 var(--r-sm); }
+    .ctrl-btn:last-child  { border-right: 0.5px solid var(--border-med); border-radius: 0 var(--r-sm) var(--r-sm) 0; }
     .ctrl-btn.active { background: var(--primary-20); color: var(--text-pri); }
-    .ctrl-btn:hover:not(.active) { background: #ebebef; }
+    .ctrl-btn:hover:not(.active) { background: #f0f0f3; }
+
+    /* Date picker dropdown */
+    .date-picker-dd { position: fixed; background: #fff; border: 0.5px solid var(--border-light);
+                      border-radius: var(--r-md); box-shadow: var(--sh-dd); z-index: 9999; width: 300px;
+                      display: none; flex-direction: column; padding: 16px; gap: 12px; }
+    .date-picker-dd.open { display: flex; }
+    .dp-title { font-size: 13px; font-weight: 700; }
+    .dp-row { display: flex; gap: 10px; }
+    .dp-field { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .dp-field label { font-size: 11px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: .4px; }
+    .dp-field input[type=date] { height: 32px; border: 0.5px solid var(--border-med); border-radius: var(--r-sm);
+                                  background: var(--neutral-5); padding: 0 8px; font-size: 13px;
+                                  font-family: var(--font); color: var(--text); width: 100%; }
+    .dp-field input[type=date]:focus { outline: none; border-color: var(--primary); }
+    .dp-actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 4px;
+                  border-top: 0.5px solid var(--border-light); }
+    .dp-actions .btn { height: 28px; font-size: 12px; padding: 0 12px; }
+
+    /* Filter dropdown panel */
+    .filter-dropdown { position: absolute; top: calc(100% + 6px); left: 0; z-index: 200; width: 296px;
+                       background: #fff; border: 0.5px solid var(--border-light); border-radius: var(--r-md);
+                       box-shadow: var(--sh-dd); display: none; flex-direction: column; max-height: 540px; }
+    .filter-dropdown.open { display: flex; }
+    .dd-header { display: flex; align-items: center; justify-content: space-between;
+                 padding: 12px 12px 12px 14px; border-bottom: 0.5px solid var(--border-light); flex-shrink: 0; }
+    .dd-title-block { display: flex; align-items: center; gap: 4px; }
+    .dd-title { font-size: 14px; font-weight: 700; }
+    .dd-tip { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--border-med);
+              display: flex; align-items: center; justify-content: center; font-size: 10px;
+              color: var(--text-sec); cursor: default; flex-shrink: 0; }
+    .dd-hr { display: flex; align-items: center; gap: 8px; }
+    .dd-clear { font-size: 13px; font-weight: 600; color: var(--text-pri); cursor: pointer;
+                background: none; border: none; font-family: var(--font); }
+    .dd-clear:hover { text-decoration: underline; }
+    .dd-x { background: none; border: none; cursor: pointer; color: var(--text-sec); padding: 2px;
+            border-radius: 4px; display: flex; align-items: center; }
+    .dd-x:hover { background: var(--border-light); }
+    .dd-body { padding: 12px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+    .dd-footer { padding: 10px 12px; border-top: 0.5px solid var(--border-light);
+                 display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+    .dd-footer .btn { height: 30px; font-size: 13px; padding: 0 14px; }
+
+    /* Filter form fields */
+    .field-group { display: flex; flex-direction: column; gap: 5px; }
+    .field-label { font-size: 12px; font-weight: 600; color: var(--text-sec); }
+    .dd-divider { border: none; border-top: 0.5px solid var(--border-light); margin: 0 -12px; }
+    .geo-group { display: flex; flex-direction: column; gap: 6px; }
+    .cb-row { display: flex; gap: 2px; }
+    .cb-label { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 500; cursor: pointer; flex: 1; }
+    .cb-label input[type=checkbox] { accent-color: var(--primary); width: 14px; height: 14px; flex-shrink: 0; }
+    .range-row { display: flex; gap: 8px; align-items: center; width: 100%; }
+    .num-input { flex: 1; min-width: 0; width: 0; height: 32px; border: 0.5px solid var(--border-med);
+                 border-radius: var(--r-sm); background: var(--neutral-5); padding: 0 8px;
+                 font-size: 13px; font-family: var(--font); color: var(--text); }
+    .num-input:focus { outline: none; border-color: var(--primary); }
+    .range-sep { font-size: 12px; color: var(--text-sec); flex-shrink: 0; }
+    .plain-sel { width: 100%; height: 32px; border: 0.5px solid var(--border-med); border-radius: var(--r-sm);
+                 background: var(--neutral-5); padding: 0 28px 0 10px; font-size: 13px; font-family: var(--font);
+                 color: var(--text); appearance: none; cursor: pointer;
+                 background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='%23615f6b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+                 background-repeat: no-repeat; background-position: right 8px center; }
+    .plain-sel:focus { outline: none; border-color: var(--primary); }
+    .textarea { width: 100%; border: 0.5px solid var(--border-med); border-radius: var(--r-sm);
+                background: var(--neutral-5); padding: 6px 10px; font-size: 13px; font-family: var(--font);
+                color: var(--text); resize: vertical; min-height: 60px; }
+    .textarea:focus { outline: none; border-color: var(--primary); }
+    .sig-list { display: flex; flex-direction: column; gap: 8px; }
+
+    /* Chip combobox */
+    .cbox { width: 100%; min-height: 36px; border: 0.5px solid var(--border-med); border-radius: var(--r-sm);
+            background: var(--neutral-5); padding: 4px 36px 4px 6px; display: flex; flex-wrap: wrap;
+            gap: 4px; align-items: center; position: relative; cursor: text; }
+    .cbox:focus-within { border-color: var(--primary); background: #fff; }
+    .cbox-input { border: none; background: transparent; outline: none; font-size: 13px;
+                  font-family: var(--font); color: var(--text); min-width: 80px; flex: 1; padding: 2px 4px; height: 24px; }
+    .cbox-input::placeholder { color: var(--text-sec); }
+    .cbox-actions { position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+                    display: flex; align-items: center; gap: 2px; }
+    .cbox-clr, .cbox-caret { background: none; border: none; cursor: pointer; color: var(--text-sec);
+                              padding: 2px; border-radius: 3px; display: flex; align-items: center; }
+    .cbox-clr:hover, .cbox-caret:hover { background: var(--border-light); }
+    .cbox-dd { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff;
+               border: 0.5px solid var(--border-light); border-radius: var(--r-sm);
+               box-shadow: 0 4px 12px rgba(32,31,35,.12); z-index: 300; max-height: 180px;
+               overflow-y: auto; display: none; }
+    .cbox-dd.open { display: block; }
+    .cbox-opt { padding: 8px 10px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+    .cbox-opt:hover, .cbox-opt.focused { background: var(--primary-10); }
+    .cbox-opt.selected { background: var(--primary-20); }
+    .cbox-chk { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--border-med);
+                display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; }
+    .cbox-opt.selected .cbox-chk { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .cbox-chip { display: inline-flex; align-items: center; gap: 3px; background: var(--primary-20);
+                 border: 0.5px solid rgba(87,70,178,.35); border-radius: 4px; padding: 2px 4px 2px 7px;
+                 font-size: 12px; font-weight: 600; color: var(--text-pri); white-space: nowrap; max-width: 140px; }
+    .cbox-chip span:first-child { overflow: hidden; text-overflow: ellipsis; }
+    .chip-x { cursor: pointer; display: flex; align-items: center; opacity: .55; flex-shrink: 0; }
+    .chip-x:hover { opacity: 1; }
 
     /* ── Metric Cards ─────────────────────────────────────────────────────── */
     .metrics-row  { display: grid; gap: 16px; }
@@ -206,17 +328,29 @@
     .table-wrap td { padding: 9px 16px; font-size: 13px; border-bottom: 0.5px solid var(--border-light);
                      color: var(--text-sec); white-space: nowrap; height: 44px; background: #fff; }
     .table-wrap tbody tr:last-child td { border-bottom: none; }
+    .table-wrap th:first-child { position: sticky; left: 0; z-index: 3; background: var(--neutral-5); border-right: 1px solid var(--border-light); }
+    .table-wrap td:first-child { position: sticky; left: 0; z-index: 2; background: #fff; border-right: 1px solid var(--border-light); }
+    .table-wrap tbody tr { cursor: pointer; }
     .table-wrap tbody tr:hover td { background: var(--primary-10); }
-    .co-cell { display: flex; align-items: center; gap: 8px; }
-    .co-init { width: 26px; height: 26px; border-radius: 5px; background: var(--primary-10);
-               border: 0.5px solid var(--border-brand); display: inline-flex; align-items: center;
-               justify-content: center; font-size: 11px; font-weight: 700; color: var(--text-pri); flex-shrink: 0; }
-    .co-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .table-wrap tbody tr:hover td:first-child { background: var(--primary-10); }
+    .co-cell { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 180px; }
+    .co-link { color: var(--text-pri); font-weight: 600; text-decoration: none; }
+    .co-link:hover { text-decoration: underline; }
+    .det-btn { display: none; align-items: center; gap: 3px; height: 24px; padding: 0 8px; border-radius: 4px;
+               border: 0.5px solid var(--border-med); background: #fff; font-size: 12px; font-weight: 600;
+               color: var(--text-pri); cursor: pointer; font-family: var(--font); white-space: nowrap; flex-shrink: 0; }
+    .det-btn:hover { background: var(--primary-20); border-color: var(--primary); }
+    .table-wrap tbody tr:hover .det-btn { display: inline-flex; }
+    .sig-dots { display: flex; gap: 4px; align-items: center; }
+    .sdot { width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0; }
+    .results-count { padding: 8px 16px 0; font-size: 12px; color: var(--text-sec); }
+    .empty-state { padding: 48px 16px; text-align: center; color: var(--text-sec); font-size: 14px; display: none; }
     .badge     { display: inline-flex; align-items: center; padding: 2px 8px;
                  border-radius: var(--r-pill); font-size: 12px; font-weight: 600; }
-    .badge-high { background: #dcfce7; color: #166534; }
-    .badge-low  { background: var(--neutral-5); color: var(--text-sec);
-                  border: 0.5px solid var(--border-med); }
+    .badge-high   { background: #dcfce7; color: #166534; }
+    .badge-medium { background: #fef9c3; color: #854d0e; }
+    .badge-low    { background: var(--neutral-5); color: var(--text-sec);
+                    border: 0.5px solid var(--border-med); }
     .sig-link { color: #3b61e8; font-weight: 600; font-size: 13px; }
     .sig-link:hover { text-decoration: underline; }
 
@@ -225,7 +359,7 @@
                       display: flex; align-items: center; justify-content: center; padding: 16px; }
     .modal-panel    { background: #fff; border-radius: var(--r-md);
                       box-shadow: 0 16px 48px rgba(0,0,0,.18), 0 0 1px rgba(32,31,35,.1);
-                      width: 100%; max-width: 520px; max-height: 90vh;
+                      width: 100%; max-width: 680px; height: 85vh; max-height: 600px;
                       display: flex; flex-direction: column; }
     .modal-hdr      { padding: 20px 24px 16px; border-bottom: 0.5px solid var(--border-light); flex-shrink: 0; }
     .modal-hdr-top  { display: flex; align-items: flex-start; justify-content: space-between;
@@ -248,6 +382,21 @@
     .progress-seg   { height: 4px; flex: 1; border-radius: 2px; background: var(--border-light); transition: background .2s; }
     .progress-seg.filled { background: var(--primary); }
     .progress-label { font-size: 11px; font-weight: 600; color: var(--text-ter); }
+
+    /* ── Nested Form Cards & Accordion ──────────────────────────────────── */
+    .form-card      { border: 1.5px solid var(--border-light); border-radius: var(--r-md);
+                      padding: 20px; background: #fff; }
+    .form-card-excl { border: 1.5px solid #f87171; border-radius: var(--r-md);
+                      padding: 16px 20px; margin-top: 16px; background: #fff; }
+    .accordion-header { display: flex; align-items: flex-start; justify-content: space-between;
+                        cursor: pointer; gap: 16px; }
+    .accordion-toggle { display: flex; align-items: center; gap: 2px; background: none;
+                        border: none; font-family: var(--font); font-size: 13px; font-weight: 700;
+                        color: var(--primary); cursor: pointer; flex-shrink: 0; padding: 0;
+                        white-space: nowrap; }
+    .accordion-toggle:hover { text-decoration: underline; }
+    .accordion-body { margin-top: 16px; padding-top: 16px;
+                      border-top: 0.5px solid rgba(248,113,113,.25); }
 
     /* ── Step 1 form ──────────────────────────────────────────────────────── */
     .form-section + .form-section { margin-top: 24px; padding-top: 24px; border-top: 0.5px solid var(--border-light); }
@@ -356,7 +505,7 @@
                 background: var(--primary-10); border: 0.5px solid var(--border-brand);
                 border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--text-pri); }
     .empty-review { padding: 8px 12px; background: var(--neutral-5);
-                    border: 0.5px dashed var(--border-light); border-radius: var(--r-sm);
+                    border: 0.5px solid var(--border-light); border-radius: var(--r-sm);
                     font-size: 12px; color: var(--text-ter); font-style: italic; }
     .intg-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px;
                  background: var(--card); border: 0.5px solid var(--border-light);
@@ -365,10 +514,624 @@
                       align-items: center; justify-content: center; color: #fff;
                       font-size: 9px; font-weight: 800; flex-shrink: 0; }
     .intg-chip-name { font-size: 12px; font-weight: 600; color: var(--text); }
+
+    /* ── Settings Tab ────────────────────────────────────────────────────── */
+    .settings-content { padding: 24px 24px 0; display: flex; flex-direction: column; gap: 24px;
+                        flex: 1; min-height: 0; overflow: hidden; }
+
+    /* Pristine empty state */
+    .settings-pristine { display: flex; flex-direction: column; align-items: center; justify-content: center;
+                         text-align: center; padding: 60px 40px; background: var(--card);
+                         border: 1.5px solid var(--border-brand); border-radius: var(--r-md);
+                         max-width: 480px; margin: 40px auto 0; }
+    .settings-pristine-icon { width: 56px; height: 56px; border-radius: 16px;
+                              background: linear-gradient(135deg, var(--primary-20), var(--primary-10));
+                              display: flex; align-items: center; justify-content: center;
+                              margin-bottom: 16px; }
+    .settings-pristine-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+    .settings-pristine-desc  { font-size: 14px; color: var(--text-sec); line-height: 1.5;
+                               margin-bottom: 20px; max-width: 320px; }
+
+    /* Filled state */
+    .settings-header    { display: flex; align-items: center; justify-content: space-between; }
+    .settings-title     { font-size: 18px; font-weight: 800; color: var(--text); }
+    .settings-subtitle  { font-size: 13px; color: var(--text-sec); margin-top: 2px; }
+    .settings-cards-grid { display: flex; flex-direction: column; gap: 16px; }
+    .settings-card      { background: var(--card); border: 0.5px solid var(--border-light);
+                          border-radius: var(--r-md); box-shadow: var(--sh-card); }
+    .settings-card-hdr  { padding: 14px 20px; border-bottom: 0.5px solid var(--border-light);
+                          display: flex; align-items: center; justify-content: space-between; }
+    .settings-card-title { font-size: 14px; font-weight: 700; color: var(--text); display: flex;
+                           align-items: center; gap: 6px; }
+    .settings-card-body { padding: 4px 20px; }
+    .settings-field     { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0;
+                          border-bottom: 0.5px solid var(--border-light); }
+    .settings-field:last-child { border-bottom: none; }
+    .settings-field-label { width: 150px; flex-shrink: 0; font-size: 13px; font-weight: 600;
+                            color: var(--text-sec); padding-top: 3px; }
+    .settings-field-value { flex: 1; display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px;
+                            color: var(--text); align-items: center; }
+    .settings-empty-val { color: var(--text-ter); font-style: italic; font-weight: 400; }
+
+    /* Settings layout: jump nav + card */
+    .settings-layout { display: flex; gap: 24px; flex: 1; min-height: 0; }
+
+    /* Jump side nav */
+    .settings-jump-nav { width: 170px; flex-shrink: 0; padding: 12px 0 0; }
+    .jump-nav-item { display: flex; align-items: center; gap: 6px; width: 100%; text-align: left;
+                     padding: 9px 16px; font-size: 13px; font-weight: 600; color: var(--text-sec);
+                     background: none; border: none; border-left: 2.5px solid transparent;
+                     font-family: var(--font); cursor: pointer; transition: all .12s;
+                     white-space: nowrap; }
+    .jump-nav-item:hover { color: var(--text-pri); background: var(--primary-10); }
+    .jump-nav-item.active { color: var(--primary); border-left-color: var(--primary); font-weight: 700;
+                            background: var(--primary-10); }
+
+    /* Outer settings card wrapper */
+    .settings-outer-card { background: var(--card); border: 0.5px solid var(--border-light);
+                           border-radius: var(--r-md); box-shadow: var(--sh-card);
+                           display: flex; flex-direction: column; flex: 1; min-height: 0;
+                           margin-bottom: 24px; }
+    .settings-outer-body { padding: 24px; display: flex; flex-direction: column; gap: 24px;
+                           flex: 1; overflow-y: auto; min-height: 0; }
+    .settings-outer-body::-webkit-scrollbar { width: 4px; }
+    .settings-outer-body::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+    .settings-outer-body .form-card,
+    .settings-outer-body .form-card-excl { box-shadow: none; }
+    .settings-outer-footer { padding: 16px 24px; border-top: 0.5px solid var(--border-light);
+                             display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+                             flex-shrink: 0; background: var(--card);
+                             border-radius: 0 0 var(--r-md) var(--r-md); }
+
+    .settings-status    { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
+                          background: #dcfce7; border-radius: var(--r-pill);
+                          font-size: 12px; font-weight: 700; color: #166534; }
+    .settings-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #16a34a; }
+
+    /* ── Pagination ───────────────────────────────────────────────────────── */
+    .pagination { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;
+                  border-top: 0.5px solid var(--border-light); }
+    .page-info { font-size: 13px; color: var(--text-sec); }
+    .page-btns { display: flex; gap: 4px; align-items: center; }
+    .page-btn { width: 32px; height: 32px; border-radius: 6px; border: 0.5px solid var(--border-med);
+                background: var(--neutral-5); cursor: pointer; display: flex; align-items: center;
+                justify-content: center; font-size: 13px; font-weight: 600; color: var(--text); font-family: var(--font); }
+    .page-btn:hover:not(:disabled):not(.active) { background: var(--primary-20); border-color: var(--primary); color: var(--text-pri); }
+    .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .page-btn:disabled { opacity: .35; cursor: default; }
+
+    /* ── Side Panel ──────────────────────────────────────────────────────── */
+    .sp-backdrop { position: fixed; inset: 0; background: rgba(32,31,35,.25); z-index: 500; display: none; }
+    .sp-backdrop.open { display: block; }
+    .side-panel { position: fixed; top: 0; right: -480px; width: 460px; height: 100vh; background: #fff;
+                  box-shadow: -4px 0 24px rgba(32,31,35,.14); display: flex; flex-direction: column;
+                  transition: right .25s ease; z-index: 501; overflow: hidden; }
+    .side-panel.open { right: 0; }
+    .sp-hdr { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px;
+              border-bottom: 0.5px solid var(--border-light); flex-shrink: 0; }
+    .sp-hdr-l { display: flex; align-items: center; gap: 10px; }
+    .sp-logo { width: 36px; height: 36px; border-radius: 8px; background: var(--primary-20);
+               display: flex; align-items: center; justify-content: center; font-size: 15px;
+               font-weight: 700; color: var(--text-pri); flex-shrink: 0; }
+    .sp-name { font-size: 16px; font-weight: 700; }
+    .sp-close { background: none; border: none; cursor: pointer; color: var(--text-sec);
+                display: flex; align-items: center; padding: 4px; border-radius: 6px; }
+    .sp-close:hover { background: var(--border-light); }
+    .sp-body { flex: 1; overflow-y: auto; padding: 0 20px 24px; display: flex; flex-direction: column; }
+    .sp-sec { display: flex; flex-direction: column; gap: 12px; padding: 20px 0; }
+    .sp-sec-title { font-size: 11px; font-weight: 700; color: var(--text-sec); text-transform: uppercase; letter-spacing: .6px; }
+    .sp-divider { border: none; border-top: 0.5px solid var(--border-light); }
+    .sp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+    .sp-detail { display: flex; flex-direction: column; gap: 3px; }
+    .sp-detail-lbl { font-size: 11px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: .4px; }
+    .sp-detail-val { font-size: 13px; font-weight: 500; }
+    .sp-detail-val a { color: var(--text-pri); text-decoration: none; }
+    .sp-detail-val a:hover { text-decoration: underline; }
+    .sp-social { display: flex; gap: 6px; margin-top: 2px; }
+    .sp-social a { width: 28px; height: 28px; border-radius: 6px; border: 0.5px solid var(--border-med);
+                   display: flex; align-items: center; justify-content: center; color: var(--text-sec);
+                   text-decoration: none; font-size: 13px; font-weight: 700; }
+    .sp-social a:hover { border-color: var(--primary); color: var(--text-pri); background: var(--primary-20); }
+    .contacts { display: flex; flex-direction: column; gap: 8px; }
+    .contact-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+                    border: 0.5px solid var(--border-light); border-radius: var(--r-sm); }
+    .c-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center;
+                justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .c-info { flex: 1; min-width: 0; }
+    .c-name { font-size: 13px; font-weight: 600; }
+    .c-title { font-size: 12px; color: var(--text-sec); }
+    .c-actions { display: flex; gap: 4px; }
+    .c-action { width: 26px; height: 26px; border-radius: 5px; border: 0.5px solid var(--border-med);
+                background: none; display: flex; align-items: center; justify-content: center;
+                cursor: pointer; color: var(--text-sec); }
+    .c-action:hover { background: var(--primary-20); border-color: var(--primary); color: var(--text-pri); }
+    .soa-chart { display: flex; flex-direction: column; gap: 9px; }
+    .soa-row { display: flex; align-items: center; gap: 8px; }
+    .soa-lbl { font-size: 12px; font-weight: 600; width: 110px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; }
+    .soa-track { flex: 1; height: 8px; background: var(--border-light); border-radius: 4px; overflow: hidden; }
+    .soa-fill { height: 100%; border-radius: 4px; }
+    .soa-pct { font-size: 12px; font-weight: 600; color: var(--text-sec); width: 32px; text-align: right; flex-shrink: 0; }
+    .act-feed { display: flex; flex-direction: column; }
+    .act-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid var(--border-light); }
+    .act-item:last-child { border-bottom: none; }
+    .act-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center;
+                justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .act-text { font-size: 13px; line-height: 1.4; }
+    .act-text strong { font-weight: 600; }
+    .act-meta { font-size: 11px; color: var(--text-sec); margin-top: 2px; }
+
+    /* ── Toast ────────────────────────────────────────────────────────────── */
+    #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+             background: #201f23; color: #fff; padding: 10px 20px; border-radius: 8px;
+             font-size: 13px; font-weight: 600; transition: transform .25s; z-index: 9999; pointer-events: none; }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* Churn Risks placeholder */
+    .placeholder-tab { display: flex; flex-direction: column; align-items: center; justify-content: center;
+                       min-height: 300px; color: var(--text-ter); text-align: center; padding: 40px; }
   </style>
 </head>
 <body>
 <div id="root"></div>
+
+<!-- ── Vanilla JS: Intent Signals Island Data & Logic ────────────────────── -->
+<script>
+// ── Data ─────────────────────────────────────────────────────
+var INTENT_ORDER = { High: 0, Medium: 1, Low: 2 };
+var PAGE_SIZE = 15;
+
+var COMPANIES = [
+  { name:"Adobe",                   activity:"High",   visitorCountry:"India",         visitorRegion:"Karnataka",         hqCountry:"United States", hqRegion:"California",        geoRegion:"APAC", hqGeoRegion:"AMER", employees:25000,  revenue:17000000000,  industry:"Software & Technology", type:"Public",    productIntent:["G2 Buyer Intent"],                               categoryIntent:["Marketing Automation","Analytics & BI"],           signalTypes:["profile","compare","sponsored"]              },
+  { name:"Atlassian",               activity:"High",   visitorCountry:"Australia",      visitorRegion:"New South Wales",   hqCountry:"Australia",     hqRegion:"New South Wales",   geoRegion:"APAC", hqGeoRegion:"APAC", employees:11000,  revenue:3500000000,   industry:"Software & Technology", type:"Public",    productIntent:["G2 Reviews","G2 Buyer Intent"],                   categoryIntent:["CRM","Sales Intelligence"],                        signalTypes:["profile","review","compare"]                 },
+  { name:"Salesforce",              activity:"High",   visitorCountry:"United States",  visitorRegion:"California",        hqCountry:"United States", hqRegion:"California",        geoRegion:"AMER", hqGeoRegion:"AMER", employees:79000,  revenue:31400000000,  industry:"Software & Technology", type:"Public",    productIntent:["G2 Reviews","G2 Buyer Intent","G2 Data Solutions"],categoryIntent:["CRM","Sales Intelligence"],                        signalTypes:["profile","compare","alternative","review"]   },
+  { name:"HubSpot",                 activity:"High",   visitorCountry:"United States",  visitorRegion:"Massachusetts",     hqCountry:"United States", hqRegion:"Massachusetts",     geoRegion:"AMER", hqGeoRegion:"AMER", employees:7400,   revenue:2200000000,   industry:"Software & Technology", type:"Public",    productIntent:["G2 Buyer Intent","G2 Reviews"],                   categoryIntent:["Marketing Automation","CRM"],                      signalTypes:["profile","sponsored","compare"]              },
+  { name:"SAP",                     activity:"High",   visitorCountry:"Germany",        visitorRegion:"Baden-Württemberg", hqCountry:"Germany",       hqRegion:"Baden-Württemberg", geoRegion:"EMEA", hqGeoRegion:"EMEA", employees:105000, revenue:33000000000,  industry:"Software & Technology", type:"Public",    productIntent:["G2 Market Intelligence","G2 Data Solutions"],     categoryIntent:["CRM","Analytics & BI","Marketing Automation"],     signalTypes:["profile","compare","alternative","sponsored","category"] },
+  { name:"Revolut",                 activity:"High",   visitorCountry:"United Kingdom", visitorRegion:"England",           hqCountry:"United Kingdom",hqRegion:"England",           geoRegion:"EMEA", hqGeoRegion:"EMEA", employees:8000,   revenue:2200000000,   industry:"Financial Services",    type:"Private",   productIntent:["G2 Reviews","G2 Buyer Intent"],                   categoryIntent:["CRM","Marketing Automation"],                      signalTypes:["profile","compare","review","alternative"]   },
+  { name:"Shopify",                 activity:"High",   visitorCountry:"Canada",         visitorRegion:"Ontario",           hqCountry:"Canada",        hqRegion:"Ontario",           geoRegion:"AMER", hqGeoRegion:"AMER", employees:11600,  revenue:7100000000,   industry:"Retail & E-Commerce",   type:"Public",    productIntent:["G2 Reviews","G2 Buyer Intent"],                   categoryIntent:["Marketing Automation","CRM"],                      signalTypes:["profile","sponsored","compare","review"]     },
+  { name:"Stripe",                  activity:"High",   visitorCountry:"United States",  visitorRegion:"California",        hqCountry:"United States", hqRegion:"California",        geoRegion:"AMER", hqGeoRegion:"AMER", employees:8000,   revenue:14000000000,  industry:"Financial Services",    type:"Private",   productIntent:["G2 Buyer Intent","G2 Data Solutions"],            categoryIntent:["Analytics & BI","Sales Intelligence"],             signalTypes:["profile","compare","sponsored"]              },
+  { name:"Zendesk",                 activity:"High",   visitorCountry:"United States",  visitorRegion:"California",        hqCountry:"United States", hqRegion:"California",        geoRegion:"AMER", hqGeoRegion:"AMER", employees:6000,   revenue:1700000000,   industry:"Software & Technology", type:"Private",   productIntent:["G2 Reviews","G2 Buyer Intent"],                   categoryIntent:["Customer Success","CRM"],                          signalTypes:["profile","compare","review","alternative"]   },
+  { name:"Workday",                 activity:"High",   visitorCountry:"United States",  visitorRegion:"California",        hqCountry:"United States", hqRegion:"California",        geoRegion:"AMER", hqGeoRegion:"AMER", employees:18800,  revenue:7300000000,   industry:"Software & Technology", type:"Public",    productIntent:["G2 Buyer Intent","G2 Data Solutions"],            categoryIntent:["Analytics & BI","CRM"],                            signalTypes:["profile","sponsored","compare"]              },
+  { name:"Datadog",                 activity:"High",   visitorCountry:"United States",  visitorRegion:"New York",          hqCountry:"United States", hqRegion:"New York",          geoRegion:"AMER", hqGeoRegion:"AMER", employees:5200,   revenue:2100000000,   industry:"Software & Technology", type:"Public",    productIntent:["G2 Reviews","G2 Buyer Intent","G2 Market Intelligence"], categoryIntent:["Analytics & BI","Customer Success"],          signalTypes:["profile","compare","review","sponsored"]     },
+  { name:"McKinsey & Company",      activity:"High",   visitorCountry:"United States",  visitorRegion:"New York",          hqCountry:"United States", hqRegion:"New York",          geoRegion:"AMER", hqGeoRegion:"AMER", employees:45000,  revenue:15000000000,  industry:"Financial Services",    type:"Private",   productIntent:["G2 Buyer Intent","G2 Data Solutions"],            categoryIntent:["Analytics & BI","Sales Intelligence"],             signalTypes:["profile","compare","sponsored","alternative"] },
+  { name:"PepsiCo",                 activity:"Medium", visitorCountry:"United States",  visitorRegion:"New York",          hqCountry:"United States", hqRegion:"New York",          geoRegion:"AMER", hqGeoRegion:"AMER", employees:310000, revenue:86000000000,  industry:"Retail & E-Commerce",   type:"Public",    productIntent:["G2 Market Intelligence"],                         categoryIntent:["Analytics & BI"],                                  signalTypes:["category","review"]                          },
+  { name:"Siemens",                 activity:"Medium", visitorCountry:"Germany",        visitorRegion:"Bavaria",           hqCountry:"Germany",       hqRegion:"Bavaria",           geoRegion:"EMEA", hqGeoRegion:"EMEA", employees:311000, revenue:72000000000,  industry:"Manufacturing",         type:"Public",    productIntent:["G2 Market Intelligence"],                         categoryIntent:["Analytics & BI"],                                  signalTypes:["category","review"]                          },
+  { name:"HSBC",                    activity:"Medium", visitorCountry:"United Kingdom", visitorRegion:"England",           hqCountry:"United Kingdom",hqRegion:"England",           geoRegion:"EMEA", hqGeoRegion:"EMEA", employees:219000, revenue:51000000000,  industry:"Financial Services",    type:"Public",    productIntent:["G2 Buyer Intent"],                                categoryIntent:["CRM","Sales Intelligence"],                        signalTypes:["profile","sponsored"]                        },
+  { name:"Zoom",                    activity:"Medium", visitorCountry:"United States",  visitorRegion:"California",        hqCountry:"United States", hqRegion:"California",        geoRegion:"AMER", hqGeoRegion:"AMER", employees:7400,   revenue:4500000000,   industry:"Software & Technology", type:"Public",    productIntent:["G2 Reviews"],                                     categoryIntent:["Customer Success","CRM"],                          signalTypes:["profile","review"]                           },
+  { name:"Grab",                    activity:"Medium", visitorCountry:"Singapore",      visitorRegion:"Central Region",    hqCountry:"Singapore",     hqRegion:"Central Region",    geoRegion:"APAC", hqGeoRegion:"APAC", employees:9000,   revenue:1700000000,   industry:"Retail & E-Commerce",   type:"Public",    productIntent:["G2 Market Intelligence"],                         categoryIntent:["Marketing Automation","Customer Success"],         signalTypes:["category","sponsored"]                       },
+  { name:"Infosys",                 activity:"Medium", visitorCountry:"India",          visitorRegion:"Karnataka",         hqCountry:"India",         hqRegion:"Karnataka",         geoRegion:"APAC", hqGeoRegion:"APAC", employees:343000, revenue:18200000000,  industry:"Software & Technology", type:"Public",    productIntent:["G2 Reviews","G2 Market Intelligence"],            categoryIntent:["CRM","Analytics & BI"],                            signalTypes:["profile","review","category"]                },
+  { name:"Canva",                   activity:"Medium", visitorCountry:"Australia",      visitorRegion:"New South Wales",   hqCountry:"Australia",     hqRegion:"New South Wales",   geoRegion:"APAC", hqGeoRegion:"APAC", employees:4500,   revenue:1700000000,   industry:"Software & Technology", type:"Private",   productIntent:["G2 Reviews","G2 Buyer Intent"],                   categoryIntent:["Marketing Automation"],                            signalTypes:["profile","compare","sponsored"]              },
+  { name:"Klarna",                  activity:"Medium", visitorCountry:"Sweden",         visitorRegion:"Stockholm",         hqCountry:"Sweden",        hqRegion:"Stockholm",         geoRegion:"EMEA", hqGeoRegion:"EMEA", employees:5000,   revenue:2500000000,   industry:"Financial Services",    type:"Private",   productIntent:["G2 Reviews"],                                     categoryIntent:["Marketing Automation","CRM"],                      signalTypes:["profile","alternative"]                      },
+  { name:"Kajabi",                  activity:"Low",    visitorCountry:"United States",  visitorRegion:"California",        hqCountry:"United States", hqRegion:"California",        geoRegion:"AMER", hqGeoRegion:"AMER", employees:400,    revenue:100000000,    industry:"Software & Technology", type:"Private",   productIntent:["G2 Reviews"],                                     categoryIntent:["Marketing Automation"],                            signalTypes:["profile","review"]                           },
+  { name:"LPL Financial",           activity:"Low",    visitorCountry:"United States",  visitorRegion:"California",        hqCountry:"United States", hqRegion:"South Carolina",    geoRegion:"AMER", hqGeoRegion:"AMER", employees:5200,   revenue:8900000000,   industry:"Financial Services",    type:"Public",    productIntent:["G2 Market Intelligence"],                         categoryIntent:["Analytics & BI"],                                  signalTypes:["category"]                                   },
+  { name:"Alexandria Capital",      activity:"Low",    visitorCountry:"United States",  visitorRegion:"Oregon",            hqCountry:"United States", hqRegion:"California",        geoRegion:"AMER", hqGeoRegion:"AMER", employees:120,    revenue:50000000,     industry:"Financial Services",    type:"Private",   productIntent:["G2 Buyer Intent"],                                categoryIntent:["Sales Intelligence"],                              signalTypes:["compare","alternative"]                      },
+  { name:"Echo Global Logistics",   activity:"Low",    visitorCountry:"United States",  visitorRegion:"Oklahoma",          hqCountry:"United States", hqRegion:"Illinois",          geoRegion:"AMER", hqGeoRegion:"AMER", employees:2800,   revenue:900000000,    industry:"Manufacturing",         type:"Public",    productIntent:["G2 Reviews"],                                     categoryIntent:["Analytics & BI"],                                  signalTypes:["profile","review"]                           },
+  { name:"VFW Post 7686",           activity:"Low",    visitorCountry:"United States",  visitorRegion:"California",        hqCountry:"United States", hqRegion:"California",        geoRegion:"AMER", hqGeoRegion:"AMER", employees:50,     revenue:5000000,      industry:"Education",             type:"Non-profit",productIntent:["G2 Reviews"],                                     categoryIntent:["CRM"],                                             signalTypes:["profile"]                                    },
+  { name:"Sentris Network",         activity:"Low",    visitorCountry:"United States",  visitorRegion:"New York",          hqCountry:"United States", hqRegion:"New York",          geoRegion:"AMER", hqGeoRegion:"AMER", employees:85,     revenue:12000000,     industry:"Software & Technology", type:"Private",   productIntent:["G2 Buyer Intent"],                                categoryIntent:["Sales Intelligence"],                              signalTypes:["compare"]                                    },
+  { name:"BNP Paribas",             activity:"Low",    visitorCountry:"France",         visitorRegion:"Île-de-France",     hqCountry:"France",        hqRegion:"Île-de-France",     geoRegion:"EMEA", hqGeoRegion:"EMEA", employees:190000, revenue:47000000000,  industry:"Financial Services",    type:"Public",    productIntent:["G2 Market Intelligence"],                         categoryIntent:["Analytics & BI"],                                  signalTypes:["category"]                                   },
+  { name:"Stripe Japan",            activity:"Low",    visitorCountry:"Japan",          visitorRegion:"Tokyo",             hqCountry:"Japan",         hqRegion:"Tokyo",             geoRegion:"APAC", hqGeoRegion:"APAC", employees:200,    revenue:80000000,     industry:"Financial Services",    type:"Private",   productIntent:["G2 Buyer Intent"],                                categoryIntent:["Sales Intelligence"],                              signalTypes:["profile"]                                    },
+  { name:"Toyota",                  activity:"Low",    visitorCountry:"Japan",          visitorRegion:"Aichi",             hqCountry:"Japan",         hqRegion:"Aichi",             geoRegion:"APAC", hqGeoRegion:"APAC", employees:375000, revenue:274000000000, industry:"Manufacturing",         type:"Public",    productIntent:["G2 Market Intelligence"],                         categoryIntent:["Analytics & BI"],                                  signalTypes:["category","review"]                          },
+  { name:"University of Michigan",  activity:"Low",    visitorCountry:"United States",  visitorRegion:"Michigan",          hqCountry:"United States", hqRegion:"Michigan",          geoRegion:"AMER", hqGeoRegion:"AMER", employees:48000,  revenue:2900000000,   industry:"Education",             type:"Non-profit",productIntent:["G2 Reviews"],                                     categoryIntent:["Customer Success"],                                signalTypes:["profile","review"]                           },
+];
+
+var SIG_COLORS = { profile:'#5746b2', compare:'#ff6b35', sponsored:'#0062ff', category:'#00b86b', review:'#f5a623', competitor:'#e91e63', alternative:'#9c27b0' };
+var SIG_LABELS = { profile:'Viewed G2 profile', compare:'Compared to competitor', sponsored:'Viewed sponsored content', category:'Researched category', review:'Read reviews', competitor:'Researched competitor', alternative:'Looked at alternatives' };
+var FOUNDED = { Adobe:1982, Atlassian:2002, PepsiCo:1965, Salesforce:1999, HubSpot:2006, Kajabi:2010, "LPL Financial":1989, "Alexandria Capital":2004, "Echo Global Logistics":2005, "VFW Post 7686":1944, "Sentris Network":2011, SAP:1972, Siemens:1847, HSBC:1865, Revolut:2015, Shopify:2006, Zoom:2011, Stripe:2010, Grab:2012, Infosys:1981, Zendesk:2007, Workday:2005, "BNP Paribas":1848, Canva:2012, "Stripe Japan":2020, Toyota:1937, Datadog:2010, Klarna:2005, "University of Michigan":1817, "McKinsey & Company":1926 };
+var ISLAND_CONTACTS = [
+  { name:'Sarah Chen',  title:'VP of Marketing',     color:'#5746b2', initials:'SC' },
+  { name:'James Okoye', title:'Head of Demand Gen',  color:'#0062ff', initials:'JO' },
+  { name:'Priya Nair',  title:'Marketing Operations',color:'#00b86b', initials:'PN' },
+  { name:'Tom Ricci',   title:'Director of Sales',   color:'#ff6b35', initials:'TR' },
+];
+
+// ── State ────────────────────────────────────────────────────
+var currentPage = 1;
+var filteredRows = [];
+var pageRows = [];
+var activeFilters = {};
+var activeDate = '7d';
+var _islandMousedownHandler = null;
+
+var FILTER_IDS = ['location','firmographics','companies','product-intent','category-intent','signal-type'];
+var FILTER_NAMES = { location:'Location', firmographics:'Firmographics', companies:'Companies', 'product-intent':'Product Intent', 'category-intent':'Category Intent', 'signal-type':'Signal Type' };
+
+// ── Utility ──────────────────────────────────────────────────
+function sortByIntent(arr) { return arr.slice().sort(function(a,b){ return INTENT_ORDER[a.activity] - INTENT_ORDER[b.activity]; }); }
+function fmtEmp(n) { return n>=100000?(n/1000).toFixed(0)+'k':n>=1000?(n/1000).toFixed(1)+'k':n; }
+function fmtRev(n) { return n>=1e12?'$'+(n/1e12).toFixed(1)+'T':n>=1e9?'$'+(n/1e9).toFixed(1)+'B':n>=1e6?'$'+(n/1e6).toFixed(0)+'M':'$'+n.toLocaleString(); }
+function badge(lvl) { var c=lvl==='High'?'badge-high':lvl==='Medium'?'badge-medium':'badge-low'; return '<span class="badge '+c+'">'+lvl+'</span>'; }
+function sigDots(types) { return '<div class="sig-dots">'+types.slice(0,4).map(function(t){return '<span class="sdot" title="'+(SIG_LABELS[t]||t)+'" style="background:'+(SIG_COLORS[t]||'#ccc')+'"></span>';}).join('')+(types.length>4?'<span style="font-size:11px;color:var(--text-sec)">+'+(types.length-4)+'</span>':'')+'</div>'; }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── Render ───────────────────────────────────────────────────
+function renderTable() {
+  var tbody=document.getElementById('tableBody'), empty=document.getElementById('empty-state'), countEl=document.getElementById('results-count');
+  if(!tbody) return;
+  var total=filteredRows.length, totalPages=Math.max(1,Math.ceil(total/PAGE_SIZE));
+  currentPage=Math.min(currentPage,totalPages);
+  var start=(currentPage-1)*PAGE_SIZE;
+  pageRows=filteredRows.slice(start,start+PAGE_SIZE);
+  countEl.textContent=total?'Showing '+(start+1)+'\u2013'+Math.min(start+PAGE_SIZE,total)+' of '+total+' companies':'';
+  if(!total){ tbody.innerHTML=''; empty.style.display='block'; document.getElementById('pagination').innerHTML=''; updateMetrics(); return; }
+  empty.style.display='none';
+  tbody.innerHTML=pageRows.map(function(c,i){return '<tr onclick="openSidePanel('+i+')"><td><div class="co-cell"><a class="co-link" href="#" onclick="event.stopPropagation()">'+c.name+'</a><button class="det-btn" onclick="event.stopPropagation();openSidePanel('+i+')"><span class="mi" style="font-size:14px">open_in_new</span> Details</button></div></td><td>'+badge(c.activity)+'</td><td>'+c.industry+'</td><td style="text-align:right">'+fmtEmp(c.employees)+'</td><td>'+c.hqRegion+', '+c.hqCountry+'</td><td>'+sigDots(c.signalTypes)+'</td><td style="text-align:right;color:var(--text-pri);font-weight:700">'+ISLAND_CONTACTS.length+'</td></tr>';}).join('');
+  renderPagination(totalPages);
+  updateMetrics();
+}
+
+function renderPagination(totalPages) {
+  var el=document.getElementById('pagination');
+  if(!el) return;
+  if(totalPages<=1){el.innerHTML='';return;}
+  var start=(currentPage-1)*PAGE_SIZE+1, end=Math.min(currentPage*PAGE_SIZE,filteredRows.length);
+  var pages=[];
+  for(var i=1;i<=totalPages;i++){ if(i===1||i===totalPages||(i>=currentPage-2&&i<=currentPage+2))pages.push(i); else if(pages[pages.length-1]!=='…')pages.push('…'); }
+  var nums=pages.map(function(p){return p==='…'?'<span style="padding:0 4px;color:var(--text-sec)">\u2026</span>':'<button class="page-btn'+(p===currentPage?' active':'')+'" onclick="goPage('+p+')">'+p+'</button>';}).join('');
+  el.innerHTML='<span class="page-info">'+start+'\u2013'+end+' of '+filteredRows.length+'</span><div class="page-btns"><button class="page-btn" onclick="goPage('+(currentPage-1)+')" '+(currentPage===1?'disabled':'')+'><span class="mi" style="font-size:18px">chevron_left</span></button>'+nums+'<button class="page-btn" onclick="goPage('+(currentPage+1)+')" '+(currentPage===totalPages?'disabled':'')+'><span class="mi" style="font-size:18px">chevron_right</span></button></div>';
+}
+
+function goPage(p){ var tp=Math.ceil(filteredRows.length/PAGE_SIZE); if(p<1||p>tp)return; currentPage=p; renderTable(); }
+
+function updateMetrics() {
+  var m1=document.getElementById('met-market'), m2=document.getElementById('met-direct'), m3=document.getElementById('met-competitor');
+  if(m1) m1.textContent = filteredRows.length.toLocaleString();
+  if(m2) m2.textContent = filteredRows.filter(function(c){return c.productIntent.length>0;}).length.toLocaleString();
+  if(m3) m3.textContent = filteredRows.filter(function(c){return c.signalTypes.includes('compare')||c.signalTypes.includes('alternative');}).length.toLocaleString();
+}
+
+// ── Filtering ────────────────────────────────────────────────
+function filterAndRender() {
+  currentPage=1;
+  var raw=COMPANIES.filter(function(c){
+    if(activeFilters.location){
+      var dd=document.getElementById('dd-location');
+      var vr=[].slice.call(dd.querySelectorAll('input[name=vis-region]:checked')).map(function(x){return x.value;});
+      var vco=dd.querySelector('#cc-vis-country')._getSelected();
+      var vreg=dd.querySelector('#cc-vis-region')._getSelected();
+      var hr=[].slice.call(dd.querySelectorAll('input[name=hq-region]:checked')).map(function(x){return x.value;});
+      var hco=dd.querySelector('#cc-hq-country')._getSelected();
+      var hreg=dd.querySelector('#cc-hq-region')._getSelected();
+      if(vr.length&&!vr.includes(c.geoRegion))return false;
+      if(vco.length&&!vco.includes(c.visitorCountry))return false;
+      if(vreg.length&&!vreg.some(function(r){return c.visitorRegion.includes(r);}))return false;
+      if(hr.length&&!hr.includes(c.hqGeoRegion))return false;
+      if(hco.length&&!hco.includes(c.hqCountry))return false;
+      if(hreg.length&&!hreg.some(function(r){return c.hqRegion.includes(r);}))return false;
+    }
+    if(activeFilters.firmographics){
+      var dd=document.getElementById('dd-firmographics');
+      var eMin=parseInt(dd.querySelector('#emp-min').value)||0, eMax=parseInt(dd.querySelector('#emp-max').value)||Infinity;
+      var rMin=parseInt(dd.querySelector('#rev-min').value)||0, rMax=parseInt(dd.querySelector('#rev-max').value)||Infinity;
+      var ind=dd.querySelector('#firmo-industry').value, typ=dd.querySelector('#firmo-type').value;
+      if(c.employees<eMin||c.employees>eMax)return false;
+      if(c.revenue<rMin||c.revenue>rMax)return false;
+      if(ind&&c.industry!==ind)return false;
+      if(typ&&c.type!==typ)return false;
+    }
+    if(activeFilters.companies){
+      var dd=document.getElementById('dd-companies');
+      var inc=dd.querySelector('#cc-co-include')._getSelected(), exc=dd.querySelector('#cc-co-exclude')._getSelected();
+      if(inc.length&&!inc.includes(c.name))return false;
+      if(exc.length&&exc.includes(c.name))return false;
+    }
+    if(activeFilters['product-intent']){
+      var dd=document.getElementById('dd-product-intent');
+      var prods=dd.querySelector('#cc-pi-product')._getSelected(), levels=dd.querySelector('#cc-pi-level')._getSelected();
+      if(prods.length&&!prods.some(function(p){return c.productIntent.includes(p);}))return false;
+      if(levels.length&&!levels.includes(c.activity))return false;
+    }
+    if(activeFilters['category-intent']){
+      var dd=document.getElementById('dd-category-intent');
+      var cats=dd.querySelector('#cc-ci-cat')._getSelected(), levels=dd.querySelector('#cc-ci-level')._getSelected();
+      if(cats.length&&!cats.some(function(cat){return c.categoryIntent.includes(cat);}))return false;
+      if(levels.length&&!levels.includes(c.activity))return false;
+    }
+    if(activeFilters['signal-type']){
+      var dd=document.getElementById('dd-signal-type');
+      var sigs=[].slice.call(dd.querySelectorAll('input[name=sig-type]:checked')).map(function(x){return x.value;});
+      if(sigs.length&&!sigs.some(function(s){return c.signalTypes.includes(s);}))return false;
+    }
+    return true;
+  });
+  filteredRows=sortByIntent(raw);
+  renderTable();
+}
+
+// ── ICP Selector ─────────────────────────────────────────────
+function selectICP(idx, name) {
+  for(var i=0;i<3;i++){
+    var opt=document.getElementById('icp-opt-'+i);
+    if(!opt) continue;
+    opt.classList.remove('selected');
+    opt.querySelector('.mi').style.visibility='hidden';
+  }
+  var sel=document.getElementById('icp-opt-'+idx);
+  if(sel){ sel.classList.add('selected'); sel.querySelector('.mi').style.visibility='visible'; }
+  var lbl=document.getElementById('label-icp');
+  if(lbl) lbl.textContent=name;
+  closeDropdown('icp');
+  showToast('ICP: '+name);
+}
+
+// ── Dropdown Management ──────────────────────────────────────
+function toggleDropdown(id){
+  var dd=document.getElementById('dd-'+id);
+  if(!dd) return;
+  var isOpen=dd.classList.contains('open');
+  closeAllDropdowns();
+  if(!isOpen){ dd.classList.add('open'); var pill=document.getElementById('pill-'+id); if(pill)pill.classList.add('open-state'); }
+}
+function closeAllDropdowns(){
+  document.querySelectorAll('.filter-dropdown').forEach(function(d){d.classList.remove('open');});
+  document.querySelectorAll('.filter-select').forEach(function(p){p.classList.remove('open-state');});
+  document.querySelectorAll('.icp-select').forEach(function(p){p.classList.remove('open-state');});
+}
+function closeDropdown(id){
+  var dd=document.getElementById('dd-'+id);
+  if(dd) dd.classList.remove('open');
+  var pill=document.getElementById('pill-'+id);
+  if(pill) pill.classList.remove('open-state');
+}
+function cancelFilter(id){ resetForm(id); closeDropdown(id); }
+function clearFilter(id){ delete activeFilters[id]; resetForm(id); setPillEmpty(id); closeDropdown(id); filterAndRender(); showToast('Filter cleared'); }
+function applyFilter(id){
+  var s=buildSummary(id);
+  if(s&&s.length){ activeFilters[id]=s; setPillFilled(id,s); } else { delete activeFilters[id]; setPillEmpty(id); }
+  closeDropdown(id); filterAndRender(); showToast('Filter applied');
+}
+function resetForm(id){
+  var dd=document.getElementById('dd-'+id);
+  if(!dd) return;
+  dd.querySelectorAll('.cbox').forEach(function(c){if(c._clear)c._clear();});
+  dd.querySelectorAll('select').forEach(function(s){s.selectedIndex=0;});
+  dd.querySelectorAll('input[type=checkbox]').forEach(function(c){c.checked=false;});
+  dd.querySelectorAll('input[type=number],textarea').forEach(function(i){i.value='';});
+}
+function setPillEmpty(id){
+  var p=document.getElementById('pill-'+id);
+  if(!p) return;
+  p.classList.remove('filled','open-state');
+  document.getElementById('label-'+id).textContent=FILTER_NAMES[id];
+  var c=document.getElementById('caret-'+id); c.className='fs-caret'; c.innerHTML='<span class="mi" style="font-size:18px">expand_more</span>'; c.onclick=null;
+}
+function setPillFilled(id,summary){
+  var p=document.getElementById('pill-'+id);
+  if(!p) return;
+  p.classList.add('filled');
+  var first=summary[0], extra=summary.length-1;
+  document.getElementById('label-'+id).innerHTML=esc(first)+(extra>0?' <span style="color:var(--text-sec);font-weight:500;font-size:12px">+'+extra+'</span>':'');
+  var c=document.getElementById('caret-'+id); c.className='fs-close'; c.innerHTML='<span class="mi" style="font-size:18px">close</span>';
+  c.onclick=function(e){e.stopPropagation();clearFilter(id);};
+}
+function buildSummary(id){
+  var dd=document.getElementById('dd-'+id), p=[];
+  if(!dd) return p;
+  if(id==='location'){
+    var vr=[].slice.call(dd.querySelectorAll('input[name=vis-region]:checked')).map(function(c){return 'All '+c.value;}); if(vr.length)p.push('Visitor Region: '+vr.join(', '));
+    var vco=dd.querySelector('#cc-vis-country')._getSelected(); if(vco.length)p.push('Visitor Countries: '+vco.join(', '));
+    var vreg=dd.querySelector('#cc-vis-region')._getSelected(); if(vreg.length)p.push('Visitor Regions: '+vreg.join(', '));
+    var hr=[].slice.call(dd.querySelectorAll('input[name=hq-region]:checked')).map(function(c){return 'All '+c.value;}); if(hr.length)p.push('HQ Region: '+hr.join(', '));
+    var hco=dd.querySelector('#cc-hq-country')._getSelected(); if(hco.length)p.push('HQ Countries: '+hco.join(', '));
+    var hreg=dd.querySelector('#cc-hq-region')._getSelected(); if(hreg.length)p.push('HQ Regions: '+hreg.join(', '));
+  } else if(id==='firmographics'){
+    var eMin=dd.querySelector('#emp-min').value,eMax=dd.querySelector('#emp-max').value; if(eMin||eMax)p.push('Employees: '+(eMin||'0')+'\u2013'+(eMax||'\u221e'));
+    var rMin=dd.querySelector('#rev-min').value,rMax=dd.querySelector('#rev-max').value; if(rMin||rMax)p.push('Revenue: $'+(rMin||'0')+'\u2013$'+(rMax||'\u221e'));
+    var ind=dd.querySelector('#firmo-industry'); if(ind.value)p.push(ind.options[ind.selectedIndex].text);
+    var typ=dd.querySelector('#firmo-type'); if(typ.value)p.push(typ.options[typ.selectedIndex].text);
+  } else if(id==='companies'){
+    var inc=dd.querySelector('#cc-co-include')._getSelected(); if(inc.length)p.push('Include: '+inc.join(', '));
+    var exc=dd.querySelector('#cc-co-exclude')._getSelected(); if(exc.length)p.push('Exclude: '+exc.join(', '));
+    if(dd.querySelector('#co-inc-urls').value.trim())p.push('Include URLs');
+    if(dd.querySelector('#co-exc-urls').value.trim())p.push('Exclude URLs');
+  } else if(id==='product-intent'){
+    var pr=dd.querySelector('#cc-pi-product')._getSelected(); if(pr.length)p.push('Product: '+pr.join(', '));
+    var l=dd.querySelector('#cc-pi-level')._getSelected(); if(l.length)p.push('Intent: '+l.join(', '));
+  } else if(id==='category-intent'){
+    var cat=dd.querySelector('#cc-ci-cat')._getSelected(); if(cat.length)p.push(cat.join(', '));
+    var l=dd.querySelector('#cc-ci-level')._getSelected(); if(l.length)p.push('Intent: '+l.join(', '));
+  } else if(id==='signal-type'){
+    var b=dd.querySelector('#cc-st-buyer')._getSelected(); if(b.length)p.push('Buyer: '+b.join(', '));
+    var s=dd.querySelector('#cc-st-source')._getSelected(); if(s.length)p.push('Source: '+s.join(', '));
+    var sigs=[].slice.call(dd.querySelectorAll('input[name=sig-type]:checked')).map(function(c){return c.parentElement.textContent.trim();}); p.push.apply(p,sigs);
+  }
+  return p;
+}
+
+// ── Chip Combobox ────────────────────────────────────────────
+function initCbox(el){
+  var opts=(el.dataset.options||'').split(',').map(function(s){return s.trim();}).filter(Boolean);
+  var sel=[],fi=-1;
+  var inp=document.createElement('input'); inp.className='cbox-input'; inp.placeholder='Search\u2026'; inp.type='text'; inp.autocomplete='off';
+  var actions=document.createElement('div'); actions.className='cbox-actions';
+  var clrBtn=document.createElement('button'); clrBtn.type='button'; clrBtn.className='cbox-clr'; clrBtn.style.display='none';
+  clrBtn.innerHTML='<span class="mi" style="font-size:16px">close</span>';
+  var carBtn=document.createElement('button'); carBtn.type='button'; carBtn.className='cbox-caret';
+  carBtn.innerHTML='<span class="mi" style="font-size:16px">expand_more</span>';
+  actions.append(clrBtn,carBtn);
+  var dd=document.createElement('div'); dd.className='cbox-dd';
+  dd.addEventListener('mousedown',function(e){e.stopPropagation();});
+  el.append(inp,actions,dd);
+  var filtered=function(){var q=inp.value.toLowerCase();return opts.filter(function(o){return o.toLowerCase().includes(q);});};
+  function renderDd(){
+    var list=filtered(); dd.innerHTML=''; fi=-1;
+    if(!list.length){dd.innerHTML='<div class="cbox-opt" style="color:var(--text-sec);cursor:default">No results</div>';return;}
+    list.forEach(function(opt){
+      var item=document.createElement('div'); item.className='cbox-opt'+(sel.includes(opt)?' selected':''); item.dataset.value=opt;
+      var chk=document.createElement('span'); chk.className='cbox-chk'; if(sel.includes(opt))chk.textContent='\u2713';
+      var lbl=document.createElement('span'); lbl.textContent=opt;
+      item.append(chk,lbl); item.addEventListener('mousedown',function(e){e.preventDefault();toggle(opt);}); dd.append(item);
+    });
+  }
+  function toggle(val){ var i=sel.indexOf(val); if(i>-1)sel.splice(i,1); else sel.push(val); inp.value=''; renderChips(); renderDd(); clrBtn.style.display=sel.length?'':'none'; }
+  function renderChips(){
+    el.querySelectorAll('.cbox-chip').forEach(function(c){c.remove();});
+    sel.forEach(function(val){
+      var chip=document.createElement('span'); chip.className='cbox-chip';
+      chip.innerHTML='<span>'+val+'</span><span class="chip-x" data-val="'+val+'"><span class="mi" style="font-size:14px">close</span></span>';
+      chip.querySelector('.chip-x').addEventListener('mousedown',function(e){ e.preventDefault();e.stopPropagation(); sel=sel.filter(function(s){return s!==val;}); renderChips(); renderDd(); clrBtn.style.display=sel.length?'':'none'; });
+      el.insertBefore(chip,inp);
+    });
+  }
+  var openDd=function(){renderDd();dd.classList.add('open');};
+  var closeDd=function(){dd.classList.remove('open');fi=-1;};
+  inp.addEventListener('focus',openDd); inp.addEventListener('input',openDd);
+  carBtn.addEventListener('mousedown',function(e){e.preventDefault();dd.classList.contains('open')?closeDd():(inp.focus(),openDd());});
+  clrBtn.addEventListener('mousedown',function(e){e.preventDefault();sel=[];inp.value='';renderChips();renderDd();clrBtn.style.display='none';});
+  inp.addEventListener('keydown',function(e){
+    var items=[].slice.call(dd.querySelectorAll('.cbox-opt[data-value]'));
+    if(e.key==='ArrowDown'){fi=Math.min(fi+1,items.length-1);hl(items);e.preventDefault();}
+    else if(e.key==='ArrowUp'){fi=Math.max(fi-1,0);hl(items);e.preventDefault();}
+    else if(e.key==='Enter'&&fi>=0){toggle(items[fi].dataset.value);e.preventDefault();}
+    else if(e.key==='Escape')closeDd();
+  });
+  function hl(items){items.forEach(function(o,i){o.classList.toggle('focused',i===fi);});if(fi>=0)items[fi].scrollIntoView({block:'nearest'});}
+  el.addEventListener('click',function(e){if(e.target===el)inp.focus();});
+  el._getSelected=function(){return sel;};
+  el._clear=function(){sel=[];inp.value='';renderChips();clrBtn.style.display='none';closeDd();};
+}
+
+// ── Date Picker ──────────────────────────────────────────────
+function setDate(btn,val){ document.querySelectorAll('.ctrl-btn').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); activeDate=val; if(val!=='custom'){var cl=document.getElementById('custom-label');if(cl)cl.textContent='Custom';closeDatePicker();} }
+function toggleDatePicker(){ var dp=document.getElementById('datePicker'); if(!dp)return; if(dp.classList.contains('open')){closeDatePicker();return;} var r=document.getElementById('dr-custom'); if(!r)return; var rect=r.getBoundingClientRect(); dp.style.top=(rect.bottom+6)+'px'; dp.style.left=Math.max(8,rect.right-300)+'px'; dp.classList.add('open'); }
+function closeDatePicker(){ var dp=document.getElementById('datePicker'); if(dp) dp.classList.remove('open'); }
+function cancelDatePicker(){ closeDatePicker(); if(activeDate!=='custom'){document.querySelectorAll('.ctrl-btn').forEach(function(b){b.classList.remove('active');});var el=document.getElementById('dr-'+activeDate);if(el)el.classList.add('active');} }
+function applyDatePicker(){ var from=document.getElementById('dp-from').value,to=document.getElementById('dp-to').value; if(!from&&!to){showToast('Please select a date range');return;} var fmt=function(d){return d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'?';}; document.getElementById('custom-label').textContent=fmt(from)+' \u2013 '+fmt(to); document.querySelectorAll('.ctrl-btn').forEach(function(b){b.classList.remove('active');}); document.getElementById('dr-custom').classList.add('active'); activeDate='custom'; closeDatePicker(); showToast('Date range applied'); }
+
+// ── Side Panel ───────────────────────────────────────────────
+function openSidePanel(idx){
+  var c=pageRows[idx]; if(!c)return;
+  document.getElementById('spLogo').textContent=c.name.charAt(0);
+  document.getElementById('spName').textContent=c.name;
+  var slug=c.name.toLowerCase().replace(/[^a-z0-9]/g,'-');
+  var comps=['Salesforce','HubSpot','SAP','Adobe','Datadog'].filter(function(n){return n!==c.name;}).slice(0,4);
+  var soaL=['G2 (You)'].concat(comps),soaP=[38,22,17,13,10],soaC=['#5746b2','#dfdfe2','#dfdfe2','#dfdfe2','#dfdfe2'];
+  var acts=[
+    {icon:'visibility',    color:'#5746b2',bg:'#ebe9f6',text:'<strong>3 visitors</strong> viewed your G2 profile',              time:'2 hours ago'},
+    {icon:'compare_arrows',color:'#ff6b35',bg:'#fff1eb',text:'<strong>1 visitor</strong> compared you to Salesforce',             time:'5 hours ago'},
+    {icon:'attach_money',  color:'#00b86b',bg:'#e6f9f0',text:'<strong>2 visitors</strong> viewed your pricing page',             time:'1 day ago'},
+    {icon:'star',          color:'#f5a623',bg:'#fff8eb',text:'<strong>1 visitor</strong> read your customer reviews',            time:'2 days ago'},
+    {icon:'category',      color:'#0062ff',bg:'#e6f0ff',text:'<strong>4 visitors</strong> researched your product category',     time:'3 days ago'},
+    {icon:'alt_route',     color:'#9c27b0',bg:'#f5e6ff',text:'<strong>1 visitor</strong> looked at alternatives to your product',time:'4 days ago'},
+  ];
+  document.getElementById('spBody').innerHTML=
+    '<div class="sp-sec"><div class="sp-grid">'+
+    '<div class="sp-detail" style="grid-column:1/-1"><span class="sp-detail-lbl">Website</span><span class="sp-detail-val"><a href="#" onclick="return false">www.'+slug+'.com <span class="mi" style="font-size:13px">open_in_new</span></a></span></div>'+
+    '<div class="sp-detail" style="grid-column:1/-1"><span class="sp-detail-lbl">Social</span><div class="sp-social"><a href="#" onclick="return false" title="LinkedIn">in</a><a href="#" onclick="return false" title="X" style="font-family:serif">\ud835\udd4f</a><a href="#" onclick="return false" title="Facebook">f</a><a href="#" onclick="return false" title="YouTube">\u25b6</a></div></div>'+
+    '<div class="sp-detail"><span class="sp-detail-lbl">HQ Location</span><span class="sp-detail-val">'+c.hqRegion+', '+c.hqCountry+'</span></div>'+
+    '<div class="sp-detail"><span class="sp-detail-lbl">Year Founded</span><span class="sp-detail-val">'+(FOUNDED[c.name]||'\u2014')+'</span></div>'+
+    '<div class="sp-detail"><span class="sp-detail-lbl">Annual Revenue</span><span class="sp-detail-val">'+fmtRev(c.revenue)+'</span></div>'+
+    '<div class="sp-detail"><span class="sp-detail-lbl">Employees</span><span class="sp-detail-val">'+c.employees.toLocaleString()+'</span></div>'+
+    '</div></div>'+
+    '<hr class="sp-divider">'+
+    '<div class="sp-sec"><div class="sp-sec-title">Contacts</div><div class="contacts">'+ISLAND_CONTACTS.map(function(ct){return '<div class="contact-card"><div class="c-avatar" style="background:'+ct.color+'">'+ct.initials+'</div><div class="c-info"><div class="c-name">'+ct.name+'</div><div class="c-title">'+ct.title+'</div></div><div class="c-actions"><button class="c-action" title="Email"><span class="mi" style="font-size:16px">mail</span></button><button class="c-action" title="LinkedIn"><span class="mi" style="font-size:16px">person</span></button></div></div>';}).join('')+'</div></div>'+
+    '<hr class="sp-divider">'+
+    '<div class="sp-sec"><div class="sp-sec-title">Share of Attention</div><div class="soa-chart">'+soaL.map(function(l,i){return '<div class="soa-row"><div class="soa-lbl" title="'+l+'">'+l+'</div><div class="soa-track"><div class="soa-fill" style="width:'+soaP[i]+'%;background:'+soaC[i]+'"></div></div><div class="soa-pct">'+soaP[i]+'%</div></div>';}).join('')+'</div></div>'+
+    '<hr class="sp-divider">'+
+    '<div class="sp-sec"><div class="sp-sec-title">Activity Feed</div><div class="act-feed">'+acts.map(function(a){return '<div class="act-item"><div class="act-icon" style="background:'+a.bg+'"><span class="mi" style="font-size:16px;color:'+a.color+'">'+a.icon+'</span></div><div><div class="act-text">'+a.text+'</div><div class="act-meta">'+a.time+'</div></div></div>';}).join('')+'</div></div>';
+  document.getElementById('spBackdrop').classList.add('open');
+  requestAnimationFrame(function(){document.getElementById('sidePanel').classList.add('open');});
+}
+function closeSidePanel(){ document.getElementById('sidePanel').classList.remove('open'); setTimeout(function(){document.getElementById('spBackdrop').classList.remove('open');},250); }
+
+// ── Toast ────────────────────────────────────────────────────
+function showToast(msg){ var t=document.getElementById('toast'); if(!t)return; t.textContent=msg; t.classList.add('show'); clearTimeout(t._tid); t._tid=setTimeout(function(){t.classList.remove('show');},2000); }
+
+// ── Island HTML Template ─────────────────────────────────────
+var INTENT_SIGNALS_HTML = '<div class="filters-ui">' +
+'<div class="filter-bar"><div class="filter-pills-zone"><div class="filter-pills-row" id="pillsRow">' +
+'<div class="pill-anchor" id="anchor-location"><div class="filter-select" id="pill-location"><span class="fs-label" id="label-location">Location</span><span class="fs-caret" id="caret-location"><span class="mi" style="font-size:18px">expand_more</span></span></div><div class="filter-dropdown" id="dd-location"><div class="dd-header"><div class="dd-title-block"><span class="dd-title">Location</span><span class="dd-tip">i</span></div><div class="dd-hr"><button class="dd-clear" onclick="clearFilter(\'location\')">Clear</button><button class="dd-x" onclick="cancelFilter(\'location\')"><span class="mi">close</span></button></div></div><div class="dd-body"><div class="geo-group"><span class="field-label">Visitor Geographic Region</span><div class="cb-row"><label class="cb-label"><input type="checkbox" name="vis-region" value="AMER"> All AMER</label><label class="cb-label"><input type="checkbox" name="vis-region" value="APAC"> All APAC</label><label class="cb-label"><input type="checkbox" name="vis-region" value="EMEA"> All EMEA</label></div></div><div class="field-group"><label class="field-label">Visitor Country</label><div class="cbox" id="cc-vis-country" data-options="United Kingdom,France,Italy,Germany,Spain,United States,Canada,Australia,Japan,Brazil,India,South Korea,Singapore,Sweden"></div></div><div class="field-group"><label class="field-label">Visitor Region</label><div class="cbox" id="cc-vis-region" data-options="England,North Ireland,Wales,Scotland,\u00cele-de-France,Bavaria,Lombardy,Catalonia,Karnataka,New South Wales,Ontario,California,New York,Tokyo"></div></div><hr class="dd-divider"><div class="geo-group"><span class="field-label">Headquarters Geographic Region</span><div class="cb-row"><label class="cb-label"><input type="checkbox" name="hq-region" value="AMER"> All AMER</label><label class="cb-label"><input type="checkbox" name="hq-region" value="APAC"> All APAC</label><label class="cb-label"><input type="checkbox" name="hq-region" value="EMEA"> All EMEA</label></div></div><div class="field-group"><label class="field-label">HQ Country</label><div class="cbox" id="cc-hq-country" data-options="United States,United Kingdom,Germany,France,India,Canada,Australia,Japan,Singapore,Sweden"></div></div><div class="field-group"><label class="field-label">HQ Region</label><div class="cbox" id="cc-hq-region" data-options="California,New York,Texas,Washington,Illinois,Florida,Massachusetts,South Carolina,Michigan,Ontario,New South Wales,Karnataka,Bavaria,Baden-W\u00fcrttemberg,\u00cele-de-France,Stockholm,Aichi,Tokyo,Central Region"></div></div></div><div class="dd-footer"><button class="btn btn-ghost" onclick="cancelFilter(\'location\')">Cancel</button><button class="btn btn-primary" onclick="applyFilter(\'location\')">Apply</button></div></div></div>' +
+'<div class="pill-anchor" id="anchor-firmographics"><div class="filter-select" id="pill-firmographics"><span class="fs-label" id="label-firmographics">Firmographics</span><span class="fs-caret" id="caret-firmographics"><span class="mi" style="font-size:18px">expand_more</span></span></div><div class="filter-dropdown" id="dd-firmographics"><div class="dd-header"><div class="dd-title-block"><span class="dd-title">Firmographics</span><span class="dd-tip">i</span></div><div class="dd-hr"><button class="dd-clear" onclick="clearFilter(\'firmographics\')">Clear</button><button class="dd-x" onclick="cancelFilter(\'firmographics\')"><span class="mi">close</span></button></div></div><div class="dd-body"><div class="field-group"><label class="field-label">Employee Count</label><div class="range-row"><input class="num-input" type="number" placeholder="Min" id="emp-min"><span class="range-sep">\u2014</span><input class="num-input" type="number" placeholder="Max" id="emp-max"></div></div><div class="field-group"><label class="field-label">Annual Revenue ($)</label><div class="range-row"><input class="num-input" type="number" placeholder="Min" id="rev-min"><span class="range-sep">\u2014</span><input class="num-input" type="number" placeholder="Max" id="rev-max"></div></div><hr class="dd-divider"><div class="field-group"><label class="field-label">Industry</label><select class="plain-sel" id="firmo-industry"><option value="">Select industry\u2026</option><option>Software &amp; Technology</option><option>Financial Services</option><option>Healthcare</option><option>Manufacturing</option><option>Retail &amp; E-Commerce</option><option>Education</option></select></div><div class="field-group"><label class="field-label">Company Type</label><select class="plain-sel" id="firmo-type"><option value="">Select type\u2026</option><option>Public</option><option>Private</option><option>Non-profit</option><option>Government</option></select></div></div><div class="dd-footer"><button class="btn btn-ghost" onclick="cancelFilter(\'firmographics\')">Cancel</button><button class="btn btn-primary" onclick="applyFilter(\'firmographics\')">Apply</button></div></div></div>' +
+'<div class="pill-anchor" id="anchor-companies"><div class="filter-select" id="pill-companies"><span class="fs-label" id="label-companies">Companies</span><span class="fs-caret" id="caret-companies"><span class="mi" style="font-size:18px">expand_more</span></span></div><div class="filter-dropdown" id="dd-companies"><div class="dd-header"><div class="dd-title-block"><span class="dd-title">Companies</span><span class="dd-tip">i</span></div><div class="dd-hr"><button class="dd-clear" onclick="clearFilter(\'companies\')">Clear</button><button class="dd-x" onclick="cancelFilter(\'companies\')"><span class="mi">close</span></button></div></div><div class="dd-body"><div class="field-group"><label class="field-label">Include Companies</label><div class="cbox" id="cc-co-include" data-options="Adobe,Atlassian,PepsiCo,Salesforce,HubSpot,Kajabi,LPL Financial,Alexandria Capital,Echo Global Logistics,VFW Post 7686,Sentris Network,SAP,Siemens,HSBC,Revolut,Shopify,Zoom,Stripe,Grab,Infosys,Zendesk,Workday,BNP Paribas,Canva,Stripe Japan,Toyota,Datadog,Klarna,University of Michigan,McKinsey &amp; Company"></div></div><div class="field-group"><label class="field-label">Exclude Companies</label><div class="cbox" id="cc-co-exclude" data-options="Adobe,Atlassian,PepsiCo,Salesforce,HubSpot,Kajabi,LPL Financial,Alexandria Capital,Echo Global Logistics,VFW Post 7686,Sentris Network,SAP,Siemens,HSBC,Revolut,Shopify,Zoom,Stripe,Grab,Infosys,Zendesk,Workday,BNP Paribas,Canva,Stripe Japan,Toyota,Datadog,Klarna,University of Michigan,McKinsey &amp; Company"></div></div><hr class="dd-divider"><div class="field-group"><label class="field-label">Include URLs</label><textarea class="textarea" id="co-inc-urls" placeholder="Add list of URLs\u2026"></textarea></div><div class="field-group"><label class="field-label">Exclude URLs</label><textarea class="textarea" id="co-exc-urls" placeholder="Add list of URLs\u2026"></textarea></div></div><div class="dd-footer"><button class="btn btn-ghost" onclick="cancelFilter(\'companies\')">Cancel</button><button class="btn btn-primary" onclick="applyFilter(\'companies\')">Apply</button></div></div></div>' +
+'<div class="pill-anchor" id="anchor-product-intent"><div class="filter-select" id="pill-product-intent"><span class="fs-label" id="label-product-intent">Product Intent</span><span class="fs-caret" id="caret-product-intent"><span class="mi" style="font-size:18px">expand_more</span></span></div><div class="filter-dropdown" id="dd-product-intent"><div class="dd-header"><div class="dd-title-block"><span class="dd-title">Product Intent</span><span class="dd-tip">i</span></div><div class="dd-hr"><button class="dd-clear" onclick="clearFilter(\'product-intent\')">Clear</button><button class="dd-x" onclick="cancelFilter(\'product-intent\')"><span class="mi">close</span></button></div></div><div class="dd-body"><div class="field-group"><label class="field-label">Product</label><div class="cbox" id="cc-pi-product" data-options="G2 Reviews,G2 Buyer Intent,G2 Market Intelligence,G2 Data Solutions"></div></div><div class="field-group"><label class="field-label">Intent Level</label><div class="cbox" id="cc-pi-level" data-options="High,Medium,Low"></div></div></div><div class="dd-footer"><button class="btn btn-ghost" onclick="cancelFilter(\'product-intent\')">Cancel</button><button class="btn btn-primary" onclick="applyFilter(\'product-intent\')">Apply</button></div></div></div>' +
+'<div class="pill-anchor" id="anchor-category-intent"><div class="filter-select" id="pill-category-intent"><span class="fs-label" id="label-category-intent">Category Intent</span><span class="fs-caret" id="caret-category-intent"><span class="mi" style="font-size:18px">expand_more</span></span></div><div class="filter-dropdown" id="dd-category-intent"><div class="dd-header"><div class="dd-title-block"><span class="dd-title">Category Intent</span><span class="dd-tip">i</span></div><div class="dd-hr"><button class="dd-clear" onclick="clearFilter(\'category-intent\')">Clear</button><button class="dd-x" onclick="cancelFilter(\'category-intent\')"><span class="mi">close</span></button></div></div><div class="dd-body"><div class="field-group"><label class="field-label">Category</label><div class="cbox" id="cc-ci-cat" data-options="CRM,Marketing Automation,Sales Intelligence,Customer Success,Analytics &amp; BI"></div></div><div class="field-group"><label class="field-label">Intent Level</label><div class="cbox" id="cc-ci-level" data-options="High,Medium,Low"></div></div></div><div class="dd-footer"><button class="btn btn-ghost" onclick="cancelFilter(\'category-intent\')">Cancel</button><button class="btn btn-primary" onclick="applyFilter(\'category-intent\')">Apply</button></div></div></div>' +
+'<div class="pill-anchor" id="anchor-signal-type"><div class="filter-select" id="pill-signal-type"><span class="fs-label" id="label-signal-type">Signal Type</span><span class="fs-caret" id="caret-signal-type"><span class="mi" style="font-size:18px">expand_more</span></span></div><div class="filter-dropdown" id="dd-signal-type"><div class="dd-header"><div class="dd-title-block"><span class="dd-title">Signal Types</span><span class="dd-tip">i</span></div><div class="dd-hr"><button class="dd-clear" onclick="clearFilter(\'signal-type\')">Clear</button><button class="dd-x" onclick="cancelFilter(\'signal-type\')"><span class="mi">close</span></button></div></div><div class="dd-body"><div class="field-group"><label class="field-label">Buyer Type</label><div class="cbox" id="cc-st-buyer" data-options="Decision Maker,Influencer,End User"></div></div><div class="field-group"><label class="field-label">Signal Source</label><div class="cbox" id="cc-st-source" data-options="G2 Profile,Competitor Comparison,Category Page"></div></div><hr class="dd-divider"><div class="field-group"><label class="field-label">Signal Types</label><div class="sig-list"><label class="cb-label"><input type="checkbox" name="sig-type" value="profile"> Viewed your G2 profile</label><label class="cb-label"><input type="checkbox" name="sig-type" value="compare"> Compared you to a competitor</label><label class="cb-label"><input type="checkbox" name="sig-type" value="sponsored"> Viewed your sponsored content</label><label class="cb-label"><input type="checkbox" name="sig-type" value="category"> Researched your category</label><label class="cb-label"><input type="checkbox" name="sig-type" value="review"> Read your reviews</label><label class="cb-label"><input type="checkbox" name="sig-type" value="competitor"> Researched a competitor</label><label class="cb-label"><input type="checkbox" name="sig-type" value="alternative"> Looked at alternatives to you</label></div></div></div><div class="dd-footer"><button class="btn btn-ghost" onclick="cancelFilter(\'signal-type\')">Cancel</button><button class="btn btn-primary" onclick="applyFilter(\'signal-type\')">Apply</button></div></div></div>' +
+'</div></div>' +
+'<div class="date-range" id="dateRangeWrap"><button class="ctrl-btn active" id="dr-7d" onclick="setDate(this,\'7d\')">7d</button><button class="ctrl-btn" id="dr-30d" onclick="setDate(this,\'30d\')">30d</button><button class="ctrl-btn" id="dr-90d" onclick="setDate(this,\'90d\')">90d</button><button class="ctrl-btn" id="dr-1yr" onclick="setDate(this,\'1yr\')">1yr</button><button class="ctrl-btn" id="dr-custom" onclick="toggleDatePicker()"><span class="mi" style="font-size:16px">calendar_today</span><span id="custom-label">Custom</span><span class="mi" style="font-size:16px">expand_more</span></button></div></div></div>';
+
+var INTENT_TABLE_HTML = '<div class="table-section"><div class="table-tabs"><div class="table-tab active">Table View</div><div class="table-tab">Chart View</div></div><div class="table-toolbar"><button class="btn btn-ghost" style="height:28px;font-size:12px;border-radius:6px"><span class="mi" style="font-size:16px">download</span> Download CSV</button><button class="btn btn-ghost" style="height:28px;font-size:12px;border-radius:6px"><span class="mi" style="font-size:16px">view_column</span> Modify Columns</button></div><div class="results-count" id="results-count"></div><div class="table-wrap"><table><thead><tr><th>Company Name</th><th>Intent Level <span class="mi" style="font-size:14px">info</span></th><th>Industry</th><th style="text-align:right">Employees</th><th>Location</th><th>Signal Types</th><th style="text-align:right">Contacts</th></tr></thead><tbody id="tableBody"></tbody></table></div><div class="empty-state" id="empty-state"><span class="mi" style="font-size:40px;color:var(--border-med);display:block;margin-bottom:8px">search_off</span>No companies match the current filters.</div><div class="pagination" id="pagination"></div></div>';
+
+// ── Island Init & Cleanup ────────────────────────────────────
+function initIntentSignalsIsland() {
+  // Reset state
+  currentPage = 1;
+  filteredRows = sortByIntent(COMPANIES.slice());
+  pageRows = [];
+  activeFilters = {};
+  activeDate = '7d';
+
+  // Cleanup any previous overlays
+  cleanupIntentSignalsIsland();
+
+  // Create and append body-level overlays
+  var dp = document.createElement('div');
+  dp.id = 'datePicker';
+  dp.className = 'date-picker-dd';
+  dp.innerHTML = '<span class="dp-title">Custom date range</span><div class="dp-row"><div class="dp-field"><label>From</label><input type="date" id="dp-from"></div><div class="dp-field"><label>To</label><input type="date" id="dp-to"></div></div><div class="dp-actions"><button class="btn btn-ghost" onclick="cancelDatePicker()">Cancel</button><button class="btn btn-primary" onclick="applyDatePicker()">Apply</button></div>';
+  document.body.appendChild(dp);
+
+  var spBackdrop = document.createElement('div');
+  spBackdrop.id = 'spBackdrop';
+  spBackdrop.className = 'sp-backdrop';
+  spBackdrop.onclick = closeSidePanel;
+  document.body.appendChild(spBackdrop);
+
+  var sp = document.createElement('div');
+  sp.id = 'sidePanel';
+  sp.className = 'side-panel';
+  sp.innerHTML = '<div class="sp-hdr"><div class="sp-hdr-l"><div class="sp-logo" id="spLogo"></div><div class="sp-name" id="spName"></div></div><button class="sp-close" onclick="closeSidePanel()"><span class="mi">close</span></button></div><div class="sp-body" id="spBody"></div>';
+  document.body.appendChild(sp);
+
+  var toast = document.createElement('div');
+  toast.id = 'toast';
+  document.body.appendChild(toast);
+
+  // Set date constraints
+  var today = new Date().toISOString().split('T')[0];
+  var dpFrom = document.getElementById('dp-from');
+  var dpTo = document.getElementById('dp-to');
+  if(dpFrom) dpFrom.max = today;
+  if(dpTo) dpTo.max = today;
+
+  // Init comboboxes
+  document.querySelectorAll('.cbox').forEach(initCbox);
+
+  // ICP pill click
+  var icpPill = document.getElementById('pill-icp');
+  if(icpPill) icpPill.addEventListener('click', function(){ toggleDropdown('icp'); });
+
+  // Filter pill clicks
+  FILTER_IDS.forEach(function(id){
+    var pill = document.getElementById('pill-'+id);
+    if(pill) pill.addEventListener('click', function(e){
+      if(e.target.closest('.fs-close')) return;
+      toggleDropdown(id);
+    });
+  });
+
+  // Outside click handler
+  _islandMousedownHandler = function(e){
+    if(!e.target.closest('.pill-anchor')&&!e.target.closest('.icp-select')&&!e.target.closest('.cbox-dd')) closeAllDropdowns();
+    if(!e.target.closest('#dateRangeWrap')&&!e.target.closest('#datePicker')) closeDatePicker();
+  };
+  document.addEventListener('mousedown', _islandMousedownHandler);
+
+  // Initial render
+  renderTable();
+}
+
+function cleanupIntentSignalsIsland() {
+  // Remove body-appended overlays
+  ['datePicker','spBackdrop','sidePanel','toast'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el && el.parentNode === document.body) document.body.removeChild(el);
+  });
+  // Remove outside-click handler
+  if(_islandMousedownHandler) {
+    document.removeEventListener('mousedown', _islandMousedownHandler);
+    _islandMousedownHandler = null;
+  }
+}
+</script>
+
 <script type="text/babel">
   const { useState, useRef, useEffect } = React;
 
@@ -405,7 +1168,8 @@
 
   const EMPTY_FORM = {
     industries:[], geoRegion:[], countries:[], stateRegion:'',
-    employeeCount:'', annualRevenue:'', excludedIndustries:[], excludedGeoRegion:[]
+    employeeCount:'', annualRevenue:'', excludedIndustries:[], excludedGeoRegion:[],
+    excludedCountries:[], excludedStateRegion:'', excludedEmployeeCount:'', excludedAnnualRevenue:''
   };
 
   // ── Hooks ─────────────────────────────────────────────────────────────────────
@@ -524,11 +1288,13 @@
   const InfoI = () => <span className="mi" style={{fontSize:14,color:'var(--text-ter)'}}>info</span>;
 
   function Step1({ form, setForm }) {
+    const [exclOpen, setExclOpen] = useState(false);
     const set = key => val => setForm(f => ({ ...f, [key]: val }));
     return (
       <div>
-        <div className="form-section">
-          <div className="form-sec-title">Define your ICP</div>
+        {/* ICP Section — gray dashed card */}
+        <div className="form-card">
+          <div className="form-sec-title">Define your ICP <InfoI /></div>
           <div className="form-sec-sub">Signals matching these criteria will be routed to your integrations.</div>
           <div className="form-group">
             <div className="form-label">Industries <InfoI /></div>
@@ -560,20 +1326,53 @@
           </div>
         </div>
 
-        <div className="form-section">
-          <div style={{marginBottom:2}}>
-            <span className="form-sec-title">Define Exclusions</span>
-            <span className="optional-badge">Optional</span>
+        {/* Exclusions Section — red dashed accordion */}
+        <div className="form-card-excl">
+          <div className="accordion-header" onClick={() => setExclOpen(o => !o)}>
+            <div>
+              <div style={{marginBottom:2}}>
+                <span className="form-sec-title">Define Exclusions</span>
+                <span className="optional-badge">Optional</span>
+              </div>
+              <div className="form-sec-sub" style={{marginBottom:0}}>Reduce signal noise before it hits your CRM.</div>
+            </div>
+            <button className="accordion-toggle" onClick={e => { e.stopPropagation(); setExclOpen(o => !o); }}>
+              {exclOpen ? 'Hide' : 'Show'}
+              <span className="mi" style={{fontSize:16}}>{exclOpen ? 'expand_less' : 'expand_more'}</span>
+            </button>
           </div>
-          <div className="form-sec-sub">Reduce signal noise before it hits your CRM.</div>
-          <div className="form-group">
-            <div className="form-label">Excluded Industries <InfoI /></div>
-            <MultiDD options={INDUSTRIES} selected={form.excludedIndustries} onChange={set('excludedIndustries')} placeholder="Select one or more industries..." />
-          </div>
-          <div className="form-group">
-            <div className="form-label">Excluded Geographic Region <InfoI /></div>
-            <SegToggle options={GEO_OPTIONS} value={form.excludedGeoRegion} onChange={set('excludedGeoRegion')} />
-          </div>
+          {exclOpen && (
+            <div className="accordion-body">
+              <div className="form-group">
+                <div className="form-label">Excluded Industries <InfoI /></div>
+                <MultiDD options={INDUSTRIES} selected={form.excludedIndustries} onChange={set('excludedIndustries')} placeholder="Select one or more industries..." />
+              </div>
+              <div className="form-group">
+                <div className="form-label">Excluded Geographic Region <InfoI /></div>
+                <SegToggle options={GEO_OPTIONS} value={form.excludedGeoRegion} onChange={set('excludedGeoRegion')} />
+              </div>
+              <div className="form-grid-2">
+                <div className="form-group">
+                  <div className="form-label">Excluded Countries <InfoI /></div>
+                  <MultiDD options={COUNTRIES} selected={form.excludedCountries} onChange={set('excludedCountries')} placeholder="Select one or more countries..." />
+                </div>
+                <div className="form-group">
+                  <div className="form-label">Excluded States/Regions <InfoI /></div>
+                  <SingleDD options={STATES} value={form.excludedStateRegion} onChange={set('excludedStateRegion')} placeholder="Select regions..." />
+                </div>
+              </div>
+              <div className="form-grid-2">
+                <div className="form-group">
+                  <div className="form-label">Excluded Employee Count <InfoI /></div>
+                  <SingleDD options={EMP_RANGES} value={form.excludedEmployeeCount} onChange={set('excludedEmployeeCount')} placeholder="Select range..." />
+                </div>
+                <div className="form-group">
+                  <div className="form-label">Excluded Annual Revenue <InfoI /></div>
+                  <SingleDD options={REV_RANGES} value={form.excludedAnnualRevenue} onChange={set('excludedAnnualRevenue')} placeholder="$ Select range..." />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -630,6 +1429,10 @@
     const exclChips = [
       ...form.excludedIndustries,
       ...form.excludedGeoRegion.map(r => `Region: ${r}`),
+      ...form.excludedCountries,
+      form.excludedStateRegion   ? `State: ${form.excludedStateRegion}`          : null,
+      form.excludedEmployeeCount ? `Employees: ${form.excludedEmployeeCount}`    : null,
+      form.excludedAnnualRevenue ? `Revenue: ${form.excludedAnnualRevenue}`      : null,
     ].filter(Boolean);
 
     const appliedIntgs = INTEGRATIONS.filter(i => selectedIntegrations.includes(i.id));
@@ -676,14 +1479,21 @@
 
   // ── Audience Builder Modal ────────────────────────────────────────────────────
 
-  function AudienceBuilderModal({ isOpen, onClose, onSave }) {
+  function AudienceBuilderModal({ isOpen, onClose, onSave, initialData }) {
     const [step, setStep]   = useState(1);
     const [form, setForm]   = useState(EMPTY_FORM);
     const [selIntgs, setSelIntgs] = useState([]);
 
-    const reset = () => { setStep(1); setForm(EMPTY_FORM); setSelIntgs([]); };
-    const handleClose = () => { reset(); onClose(); };
-    const handleSave  = () => { onSave(); reset(); };
+    useEffect(() => {
+      if (isOpen) {
+        setStep(1);
+        setForm(initialData?.form ? { ...initialData.form } : EMPTY_FORM);
+        setSelIntgs(initialData?.integrations ? [...initialData.integrations] : []);
+      }
+    }, [isOpen]);
+
+    const handleClose = () => onClose();
+    const handleSave  = () => onSave(form, selIntgs);
 
     if (!isOpen) return null;
 
@@ -694,7 +1504,7 @@
             <div className="modal-hdr-top">
               <div>
                 <div className="modal-title">Audience Builder</div>
-                <div className="modal-subtitle">Define who receives your intent signals.</div>
+                <div className="modal-subtitle">Define what markets you want to focus on.</div>
               </div>
               <button className="modal-close" onClick={handleClose}>
                 <span className="mi" style={{fontSize:18}}>close</span>
@@ -710,9 +1520,9 @@
           </div>
 
           <div className="modal-footer">
-            <button className="btn btn-ghost" disabled={step === 1}
-              style={step===1?{opacity:.3,cursor:'not-allowed'}:{}}
-              onClick={() => setStep(s => s - 1)}>Back</button>
+            {step === 1
+              ? <button className="btn btn-text" onClick={handleClose}>Cancel</button>
+              : <button className="btn btn-ghost" onClick={() => setStep(s => s - 1)}>Back</button>}
             {step < 3
               ? <button className="btn btn-primary" onClick={() => setStep(s => s + 1)}>Next →</button>
               : <button className="btn btn-primary" onClick={handleSave}>Save Audience</button>}
@@ -777,13 +1587,15 @@
     );
   }
 
-  // ── Dashboard: Action Bar ─────────────────────────────────────────────────────
+  // ── PromoCard (NO_ICP state only) ──────────────────────────────────────────────
 
   function ActionBar({ appState, onOpenModal, icpToggle, setIcpToggle }) {
     return (
       <div className="action-bar">
         {appState === 'NO_ICP' ? (
-          <button className="btn btn-primary" onClick={onOpenModal}>Define Your ICP</button>
+          <button className="btn btn-primary" onClick={onOpenModal}>
+            <span className="mi" style={{fontSize:16}}>group</span>Define Your ICP
+          </button>
         ) : (
           <div className="icp-toggle">
             <button className={`icp-toggle-btn${icpToggle==='only_icp'?' active':''}`}
@@ -792,15 +1604,13 @@
               onClick={() => setIcpToggle('show_all')}>Show All Signals</button>
           </div>
         )}
-        <button className="btn btn-ghost">Save Segment</button>
+        <button className="btn btn-ghost">
+          <span className="mi" style={{fontSize:16}}>bookmark_border</span>Save Segment
+        </button>
         <button className="btn btn-ghost">View Segments</button>
         <div className="action-bar-right">
-          <button className="btn btn-text">
-            <span className="mi" style={{fontSize:16}}>cable</span>Manage Integrations
-          </button>
-          <button className="btn btn-text">
-            <span className="mi" style={{fontSize:16}}>notifications</span>Manage Notifications
-          </button>
+          <button className="btn btn-text">Manage Integrations</button>
+          <button className="btn btn-text">Manage Notifications</button>
           <button className="btn btn-primary">
             <span className="mi" style={{fontSize:16}}>add</span>Create a Notification
           </button>
@@ -809,41 +1619,7 @@
     );
   }
 
-  // ── Dashboard: Filter Bar ─────────────────────────────────────────────────────
-
-  function FilterBar() {
-    const [activeTime, setActiveTime] = useState('7d');
-    const filters = ['Location','Firmographics','Companies','Product Intent','Category Intent','Signal Type'];
-    return (
-      <div className="filter-bar">
-        <div className="filter-pills">
-          {filters.map(f => (
-            <div key={f} className="filter-pill">
-              <span className="fp-label">{f}</span>
-              <span className="fp-caret">
-                <span className="mi" style={{fontSize:15}}>expand_more</span>
-              </span>
-            </div>
-          ))}
-        </div>
-        <div className="date-range">
-          {['7d','30d','90d','1yr'].map(t => (
-            <button key={t} className={`ctrl-btn${activeTime===t?' active':''}`}
-              onClick={() => setActiveTime(t)}>{t}</button>
-          ))}
-          <button className={`ctrl-btn${activeTime==='custom'?' active':''}`}
-            onClick={() => setActiveTime('custom')}
-            style={{display:'flex',alignItems:'center',gap:4}}>
-            <span className="mi" style={{fontSize:15}}>calendar_today</span>Custom
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Dashboard: Metric Cards ───────────────────────────────────────────────────
-
-  function MetricCards({ appState, onOpenModal }) {
+  function MetricsRow({ appState, onOpenModal }) {
     return (
       <div className={`metrics-row ${appState==='NO_ICP'?'metrics-4':'metrics-3'}`}>
         {appState === 'NO_ICP' && (
@@ -859,7 +1635,7 @@
             Companies In Market
             <span className="mi" style={{fontSize:14,color:'var(--text-ter)'}}>info_outline</span>
           </div>
-          <div className="metric-num">1,860</div>
+          <div className="metric-num" id="met-market">1,860</div>
           <div className="metric-sub">Researched your categories</div>
           <button className="metric-action">Download CSV ↓</button>
         </div>
@@ -868,7 +1644,7 @@
             Looking at You Directly
             <span className="mi" style={{fontSize:14,color:'var(--text-ter)'}}>info_outline</span>
           </div>
-          <div className="metric-num">230</div>
+          <div className="metric-num" id="met-direct">230</div>
           <div className="metric-sub">Intent toward your product</div>
           <button className="metric-action">Set Up Notification</button>
         </div>
@@ -877,7 +1653,7 @@
             Looking at Competitors
             <span className="mi" style={{fontSize:14,color:'var(--text-ter)'}}>info_outline</span>
           </div>
-          <div className="metric-num">156</div>
+          <div className="metric-num" id="met-competitor">156</div>
           <div className="metric-sub">Intent to alternatives in your categories</div>
           <button className="metric-action">Select Your Top Competitors</button>
         </div>
@@ -885,71 +1661,260 @@
     );
   }
 
-  // ── Dashboard: Table ──────────────────────────────────────────────────────────
+  function IntentSignalsTab({ appState, onOpenModal, icpToggle, setIcpToggle }) {
+    const filtersRef = useRef(null);
+    const tableRef = useRef(null);
 
-  function TableSection() {
-    const [view, setView] = useState('table');
-    const cols = ['Company Name','Activity Level','Visitor Locations','Last Activity',
-                  'Bombora Signals','Compared You To','Total Visitors','Total Signals'];
+    useEffect(() => {
+      if (!filtersRef.current) return;
+      initIntentSignalsIsland();
+      return () => cleanupIntentSignalsIsland();
+    }, []);
+
     return (
-      <div className="table-section">
-        <div className="table-tabs">
-          {['Table View','Chart View'].map(v => {
-            const key = v === 'Table View' ? 'table' : 'chart';
-            return (
-              <button key={v} className={`table-tab${view===key?' active':''}`}
-                onClick={() => setView(key)}>{v}</button>
-            );
-          })}
-        </div>
-        <div className="table-toolbar">
-          <button className="btn btn-ghost" style={{height:30,fontSize:12,padding:'0 10px'}}>
-            Download CSV
-            <span className="mi" style={{fontSize:15}}>expand_more</span>
-          </button>
-          <button className="btn btn-ghost" style={{height:30,fontSize:12,padding:'0 10px'}}>
-            Modify Columns
-            <span className="mi" style={{fontSize:15}}>expand_more</span>
-          </button>
-        </div>
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                {cols.map(c => (
-                  <th key={c}>
-                    {c}
-                    {(c==='Activity Level'||c==='Compared You To') && (
-                      <span className="mi" style={{fontSize:13,color:'var(--text-ter)',marginLeft:3}}>info_outline</span>
-                    )}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {TABLE_ROWS.map(row => (
-                <tr key={row.id}>
-                  <td>
-                    <div className="co-cell">
-                      <div className="co-init">{row.co[0]}</div>
-                      <span className="co-name">{row.co}</span>
+      <>
+        <ActionBar appState={appState} onOpenModal={onOpenModal}
+          icpToggle={icpToggle} setIcpToggle={setIcpToggle} />
+        <div ref={filtersRef} dangerouslySetInnerHTML={{ __html: INTENT_SIGNALS_HTML }} />
+        <MetricsRow appState={appState} onOpenModal={onOpenModal} />
+        <div ref={tableRef} dangerouslySetInnerHTML={{ __html: INTENT_TABLE_HTML }} />
+      </>
+    );
+  }
+
+  // ── Settings Tab ───────────────────────────────────────────────────────────────
+
+  function SettingsTab({ savedIcp, onSave }) {
+    const [form, setForm] = useState(savedIcp?.form || EMPTY_FORM);
+    const [selIntgs, setSelIntgs] = useState(savedIcp?.integrations || []);
+    const [exclOpen, setExclOpen] = useState(false);
+    const [dirty, setDirty] = useState(false);
+    const [justSaved, setJustSaved] = useState(false);
+
+    useEffect(() => {
+      if (savedIcp) {
+        setForm({ ...savedIcp.form });
+        setSelIntgs([...savedIcp.integrations]);
+        const f = savedIcp.form;
+        if (f.excludedIndustries.length > 0 || f.excludedGeoRegion.length > 0 ||
+            f.excludedCountries.length > 0 || f.excludedStateRegion ||
+            f.excludedEmployeeCount || f.excludedAnnualRevenue) {
+          setExclOpen(true);
+        }
+      } else {
+        setForm(EMPTY_FORM);
+        setSelIntgs([]);
+      }
+      setDirty(false);
+    }, [savedIcp]);
+
+    const set = key => val => { setForm(f => ({ ...f, [key]: val })); setDirty(true); setJustSaved(false); };
+    const toggleIntg = id => { setSelIntgs(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]); setDirty(true); setJustSaved(false); };
+
+    const handleSave = () => {
+      onSave(form, selIntgs);
+      setDirty(false);
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 2000);
+    };
+
+    const scrollRef = useRef(null);
+    const [activeSection, setActiveSection] = useState('icp');
+
+    const NAV_ITEMS = [
+      { id: 'icp', label: 'Define your ICP', icon: 'filter_list' },
+      { id: 'exclusions', label: 'Define Exclusions', icon: 'block' },
+      { id: 'integrations', label: 'Apply to Integrations', icon: 'cable' },
+    ];
+
+    const scrollTo = (id) => {
+      setActiveSection(id);
+      const el = document.getElementById(`settings-${id}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    // Scroll spy
+    useEffect(() => {
+      const container = scrollRef.current;
+      if (!container) return;
+      const onScroll = () => {
+        const ids = ['icp', 'exclusions', 'integrations'];
+        const top = container.getBoundingClientRect().top + 40;
+        let current = 'icp';
+        for (const id of ids) {
+          const el = document.getElementById(`settings-${id}`);
+          if (el && el.getBoundingClientRect().top <= top) current = id;
+        }
+        setActiveSection(current);
+      };
+      container.addEventListener('scroll', onScroll, { passive: true });
+      return () => container.removeEventListener('scroll', onScroll);
+    }, []);
+
+    return (
+      <div className="settings-content">
+        <div className="settings-layout">
+          {/* Jump side nav */}
+          <nav className="settings-jump-nav">
+            {NAV_ITEMS.map(item => (
+              <button key={item.id}
+                className={`jump-nav-item${activeSection===item.id?' active':''}`}
+                onClick={() => scrollTo(item.id)}>
+                <span className="mi" style={{fontSize:15}}>{item.icon}</span>
+                {item.label}
+              </button>
+            ))}
+          </nav>
+
+          {/* Form card — fills viewport */}
+          <div className="settings-outer-card">
+            <div className="settings-outer-body" ref={scrollRef}>
+              {/* Card heading */}
+              <div className="settings-header" style={{padding:0}}>
+                <div>
+                  <div className="settings-title" style={{display:'flex',alignItems:'center',gap:6}}>
+                    Audience Builder <InfoI />
+                  </div>
+                  <div className="settings-subtitle">Define what markets you want to focus on.</div>
+                </div>
+                {savedIcp && (
+                  <div className="settings-status">
+                    <span className="settings-status-dot"></span>
+                    Active
+                  </div>
+                )}
+              </div>
+              {/* ICP Form — inset card */}
+              <div id="settings-icp" className="form-card">
+                <div className="form-sec-title">Define your ICP <InfoI /></div>
+                <div className="form-sec-sub">Signals matching these criteria will be routed to your integrations.</div>
+                <div className="form-group">
+                  <div className="form-label">Industries <InfoI /></div>
+                  <MultiDD options={INDUSTRIES} selected={form.industries} onChange={set('industries')} placeholder="Select one or more industries..." />
+                </div>
+                <div className="form-group">
+                  <div className="form-label">Geographic Region <InfoI /></div>
+                  <SegToggle options={GEO_OPTIONS} value={form.geoRegion} onChange={set('geoRegion')} />
+                </div>
+                <div className="form-grid-2">
+                  <div className="form-group">
+                    <div className="form-label">Country <InfoI /></div>
+                    <MultiDD options={COUNTRIES} selected={form.countries} onChange={set('countries')} placeholder="Select one or more countries..." />
+                  </div>
+                  <div className="form-group">
+                    <div className="form-label">State/Region <InfoI /></div>
+                    <SingleDD options={STATES} value={form.stateRegion} onChange={set('stateRegion')} placeholder="Select regions..." />
+                  </div>
+                </div>
+                <div className="form-grid-2">
+                  <div className="form-group">
+                    <div className="form-label">Employee Count <InfoI /></div>
+                    <SingleDD options={EMP_RANGES} value={form.employeeCount} onChange={set('employeeCount')} placeholder="Select range..." />
+                  </div>
+                  <div className="form-group">
+                    <div className="form-label">Annual Revenue <InfoI /></div>
+                    <SingleDD options={REV_RANGES} value={form.annualRevenue} onChange={set('annualRevenue')} placeholder="$ Select range..." />
+                  </div>
+                </div>
+              </div>
+
+              {/* Exclusions — red solid accordion inset */}
+              <div id="settings-exclusions" className="form-card-excl">
+                <div className="accordion-header" onClick={() => setExclOpen(o => !o)}>
+                  <div>
+                    <div style={{marginBottom:2}}>
+                      <span className="form-sec-title">Define Exclusions</span>
+                      <span className="optional-badge">Optional</span>
                     </div>
-                  </td>
-                  <td>
-                    {row.act === 'High'
-                      ? <span className="badge badge-high">High</span>
-                      : <span className="badge badge-low">Low</span>}
-                  </td>
-                  <td>{row.loc}</td>
-                  <td>{row.last}</td>
-                  <td>{row.bom}</td>
-                  <td>{row.cmp}</td>
-                  <td>{row.vis}</td>
-                  <td><a href="#" className="sig-link">{row.sig}</a></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    <div className="form-sec-sub" style={{marginBottom:0}}>Reduce signal noise before it hits your CRM.</div>
+                  </div>
+                  <button className="accordion-toggle" onClick={e => { e.stopPropagation(); setExclOpen(o => !o); }}>
+                    {exclOpen ? 'Hide' : 'Show'}
+                    <span className="mi" style={{fontSize:16}}>{exclOpen ? 'expand_less' : 'expand_more'}</span>
+                  </button>
+                </div>
+                {exclOpen && (
+                  <div className="accordion-body">
+                    <div className="form-group">
+                      <div className="form-label">Excluded Industries <InfoI /></div>
+                      <MultiDD options={INDUSTRIES} selected={form.excludedIndustries} onChange={set('excludedIndustries')} placeholder="Select one or more industries..." />
+                    </div>
+                    <div className="form-group">
+                      <div className="form-label">Excluded Geographic Region <InfoI /></div>
+                      <SegToggle options={GEO_OPTIONS} value={form.excludedGeoRegion} onChange={set('excludedGeoRegion')} />
+                    </div>
+                    <div className="form-grid-2">
+                      <div className="form-group">
+                        <div className="form-label">Excluded Countries <InfoI /></div>
+                        <MultiDD options={COUNTRIES} selected={form.excludedCountries} onChange={set('excludedCountries')} placeholder="Select one or more countries..." />
+                      </div>
+                      <div className="form-group">
+                        <div className="form-label">Excluded States/Regions <InfoI /></div>
+                        <SingleDD options={STATES} value={form.excludedStateRegion} onChange={set('excludedStateRegion')} placeholder="Select regions..." />
+                      </div>
+                    </div>
+                    <div className="form-grid-2">
+                      <div className="form-group">
+                        <div className="form-label">Excluded Employee Count <InfoI /></div>
+                        <SingleDD options={EMP_RANGES} value={form.excludedEmployeeCount} onChange={set('excludedEmployeeCount')} placeholder="Select range..." />
+                      </div>
+                      <div className="form-group">
+                        <div className="form-label">Excluded Annual Revenue <InfoI /></div>
+                        <SingleDD options={REV_RANGES} value={form.excludedAnnualRevenue} onChange={set('excludedAnnualRevenue')} placeholder="$ Select range..." />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Integrations — inset section */}
+              <div id="settings-integrations">
+                <div className="form-sec-title" style={{marginBottom:2}}>
+                  Apply to Integrations
+                </div>
+                <div className="form-sec-sub" style={{marginBottom:12}}>Signals are stopped entirely for non-matching accounts.</div>
+                <div className="intg-list">
+                  {INTEGRATIONS.map(intg => {
+                    const checked = selIntgs.includes(intg.id);
+                    return (
+                      <div key={intg.id} className={`intg-row${checked?' checked':''}`} onClick={() => toggleIntg(intg.id)}>
+                        <div className="intg-chk">
+                          {checked && <span className="mi" style={{fontSize:11}}>check</span>}
+                        </div>
+                        <div className="intg-logo" style={{backgroundColor:intg.color}}>{intg.init}</div>
+                        <div className="intg-info">
+                          <div className="intg-name">{intg.name}</div>
+                          <div className="intg-tags">
+                            {intg.tags.map(t => <span key={t} className="intg-tag">{t}</span>)}
+                          </div>
+                        </div>
+                        <div className="intg-status">
+                          <span className="status-dot"></span>
+                          <span className="status-text">Connected</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Pinned footer */}
+            <div className="settings-outer-footer">
+              {justSaved && (
+                <span style={{fontSize:13, fontWeight:600, color:'#16a34a', display:'flex', alignItems:'center', gap:4}}>
+                  <span className="mi" style={{fontSize:15}}>check_circle</span> Saved
+                </span>
+              )}
+              <button className="btn btn-primary" onClick={handleSave}
+                disabled={!dirty}
+                style={!dirty && !justSaved ? {opacity:.4, cursor:'not-allowed'} : {}}>
+                {savedIcp ? 'Save Changes' : (
+                  <><span className="mi" style={{fontSize:16}}>add</span> Save &amp; Activate</>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -962,23 +1927,32 @@
     const [modalOpen,  setModalOpen]  = useState(false);
     const [icpToggle,  setIcpToggle]  = useState('only_icp');
     const [activeTab,  setActiveTab]  = useState('Intent Signals');
+    const [savedIcp,   setSavedIcp]   = useState(null);
+
+    const handleOpenModal = () => setModalOpen(true);
+    const handleSave = (formData, integrations) => {
+      setSavedIcp({ form: formData, integrations });
+      setAppState('ICP_SAVED');
+      setModalOpen(false);
+    };
 
     return (
       <div className="shell">
         <TopBar />
         <div className="shell-body">
           <Sidebar />
-          <div className="main-area">
+          <div className="main-area"
+               style={activeTab === 'Audience Settings' ? {overflow:'hidden', display:'flex', flexDirection:'column'} : {}}>
             <div className="page-header">
               <div className="breadcrumb">
-                <a href="#">Buyer Activity</a> › <a href="#">Buyer Intent</a> › Intent Signals
+                <a href="#">Buyer Activity</a> › <a href="#">Buyer Intent</a> › {activeTab}
               </div>
               <div className="page-title">
                 Buyer Intent
                 <span className="mi" style={{fontSize:16,color:'var(--text-sec)'}}>info</span>
               </div>
               <div className="page-tabs">
-                {['Intent Signals','Churn Risks','Settings'].map(tab => (
+                {['Intent Signals','Churn Risks','Audience Settings'].map(tab => (
                   <button key={tab}
                     className={`page-tab${activeTab===tab?' active':''}`}
                     onClick={() => setActiveTab(tab)}>{tab}</button>
@@ -986,24 +1960,35 @@
               </div>
             </div>
 
-            <div className="content">
-              <ActionBar
-                appState={appState}
-                onOpenModal={() => setModalOpen(true)}
-                icpToggle={icpToggle}
-                setIcpToggle={setIcpToggle}
+            {activeTab === 'Intent Signals' && (
+              <div className="content">
+                <IntentSignalsTab appState={appState} onOpenModal={handleOpenModal}
+                  icpToggle={icpToggle} setIcpToggle={setIcpToggle} />
+              </div>
+            )}
+
+            {activeTab === 'Audience Settings' && (
+              <SettingsTab
+                savedIcp={savedIcp}
+                onSave={handleSave}
               />
-              <FilterBar />
-              <MetricCards appState={appState} onOpenModal={() => setModalOpen(true)} />
-              <TableSection />
-            </div>
+            )}
+
+            {activeTab === 'Churn Risks' && (
+              <div className="placeholder-tab">
+                <span className="mi" style={{fontSize:40, display:'block', marginBottom:12}}>trending_down</span>
+                <div style={{fontSize:15, fontWeight:700, color:'var(--text-sec)'}}>Churn Risks</div>
+                <div style={{fontSize:13, marginTop:4}}>Coming soon</div>
+              </div>
+            )}
           </div>
         </div>
 
         <AudienceBuilderModal
           isOpen={modalOpen}
           onClose={() => setModalOpen(false)}
-          onSave={() => { setAppState('ICP_SAVED'); setModalOpen(false); }}
+          onSave={handleSave}
+          initialData={savedIcp}
         />
       </div>
     );
