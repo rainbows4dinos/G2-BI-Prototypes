@@ -666,6 +666,18 @@
              font-size: 13px; font-weight: 600; transition: transform .25s; z-index: 9999; pointer-events: none; }
     #toast.show { transform: translateX(-50%) translateY(0); }
 
+    /* Signal stats panel (settings right sidebar) */
+    .signal-stats { width: 240px; flex-shrink: 0; position: sticky; top: 0; align-self: flex-start;
+                    background: var(--card); border: 0.5px solid var(--border-light);
+                    border-radius: var(--r-md); box-shadow: var(--sh-card); padding: 20px;
+                    display: flex; flex-direction: column; gap: 10px; }
+    .signal-stats-title { font-size: 15px; font-weight: 700; }
+    .stat-card { background: var(--neutral-5); border: 0.5px solid var(--border-light);
+                 border-radius: var(--r-sm); padding: 14px 16px; }
+    .stat-num { font-size: 28px; font-weight: 800; line-height: 1.1; }
+    .stat-num.filtered { color: #dc2626; }
+    .stat-label { font-size: 12px; color: var(--text-sec); margin-top: 2px; }
+
     /* Churn Risks placeholder */
     .placeholder-tab { display: flex; flex-direction: column; align-items: center; justify-content: center;
                        min-height: 300px; color: var(--text-ter); text-align: center; padding: 40px; }
@@ -1133,7 +1145,7 @@ function cleanupIntentSignalsIsland() {
 </script>
 
 <script type="text/babel">
-  const { useState, useRef, useEffect } = React;
+  const { useState, useRef, useEffect, useMemo } = React;
 
   // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -1721,6 +1733,26 @@ function cleanupIntentSignalsIsland() {
     const scrollRef = useRef(null);
     const [activeSection, setActiveSection] = useState('icp');
 
+    const TOTAL_SIGNALS = 4200;
+    const signalStats = useMemo(() => {
+      let filters = 0;
+      if (form.industries.length) filters += form.industries.length * 280;
+      if (form.geoRegion.length) filters += 400;
+      if (form.countries.length) filters += form.countries.length * 180;
+      if (form.stateRegion) filters += 200;
+      if (form.employeeCount) filters += 350;
+      if (form.annualRevenue) filters += 300;
+      if (form.excludedIndustries.length) filters += form.excludedIndustries.length * 220;
+      if (form.excludedGeoRegion.length) filters += 350;
+      if (form.excludedCountries.length) filters += form.excludedCountries.length * 150;
+      if (form.excludedStateRegion) filters += 180;
+      if (form.excludedEmployeeCount) filters += 280;
+      if (form.excludedAnnualRevenue) filters += 250;
+      const filtered = Math.min(filters, TOTAL_SIGNALS - 100);
+      const routed = TOTAL_SIGNALS - filtered;
+      return { routed, filtered };
+    }, [form]);
+
     const NAV_ITEMS = [
       { id: 'icp', label: 'Define your ICP', icon: 'filter_list' },
       { id: 'exclusions', label: 'Define Exclusions', icon: 'block' },
@@ -1909,10 +1941,23 @@ function cleanupIntentSignalsIsland() {
               <button className="btn btn-primary" onClick={handleSave}
                 disabled={!dirty}
                 style={!dirty && !justSaved ? {opacity:.4, cursor:'not-allowed'} : {}}>
-                {savedIcp ? 'Save Changes' : (
-                  <><span className="mi" style={{fontSize:16}}>add</span> Save &amp; Activate</>
-                )}
+                {savedIcp ? 'Save Changes' : 'Save & Activate'}
               </button>
+            </div>
+          </div>
+
+          {/* Signal stats right panel */}
+          <div className="signal-stats">
+            <div className="signal-stats-title">Total Signal vs. Audience</div>
+            <div className="stat-card">
+              <div className="stat-num">~{signalStats.routed.toLocaleString()}</div>
+              <div className="stat-label">Signals/mo routed</div>
+            </div>
+            <div className="stat-card">
+              <div className={`stat-num${signalStats.filtered > 0 ? ' filtered' : ''}`}>
+                {signalStats.filtered > 0 ? '~' : ''}{signalStats.filtered.toLocaleString()}
+              </div>
+              <div className="stat-label">Signals/mo filtered</div>
             </div>
           </div>
         </div>
