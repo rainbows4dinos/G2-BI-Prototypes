@@ -29,6 +29,9 @@
       --sh-dd:         0 8px 24px rgba(0,0,0,.12), 0 0 1px rgba(32,31,35,.14);
       --font:          'Figtree', system-ui, sans-serif;
       --surface:       #f5f4fb;
+      --error-bg:      #fdecec;
+      --error-text:    #8a1f1f;
+      --error-border:  #f3c1c1;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -191,9 +194,9 @@
 
     /* ── Error banner ─────────────────────────────────────────────────────── */
     .error-banner {
-      background: #fdecec;
-      color: #8a1f1f;
-      border: 1px solid #f3c1c1;
+      background: var(--error-bg);
+      color: var(--error-text);
+      border: 1px solid var(--error-border);
       border-radius: var(--r-sm);
       padding: 12px 16px;
       margin: 0 0 24px 0;
@@ -378,6 +381,7 @@
               secLink.className = 'secondary-link';
               secLink.href = p.secondaryLink.href;
               secLink.textContent = p.secondaryLink.label + ' \u2192';
+              secLink.setAttribute('aria-label', p.secondaryLink.label + ' for ' + p.title);
               wrapper.appendChild(secLink);
             }
 
