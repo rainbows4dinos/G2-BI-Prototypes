@@ -1,0 +1,30 @@
+[
+  {
+    "id": "audience-builder",
+    "title": "Audience Builder",
+    "description": "Interactive wizard for defining audience segments using criteria-based filters and ICP configuration. Build targeted buyer personas with multi-step guided workflows.",
+    "path": "./audience-builder/index.html",
+    "gradient": "linear-gradient(135deg, #5746b2 0%, #8b7fd1 100%)",
+    "icon": "groups",
+    "secondaryLink": {
+      "label": "View prompt",
+      "href": "./audience-builder/audience-builder-prototype-prompt.md"
+    }
+  },
+  {
+    "id": "filters-refactor-rd1",
+    "title": "Filters Refactor RD1",
+    "description": "Round 1 redesign of the BI filtering UI exploring new interaction patterns and improved discoverability. Tests simplified filter composition and real-time preview.",
+    "path": "./filters-refactor/RD1/index.html",
+    "gradient": "linear-gradient(135deg, #3d2f8f 0%, #5746b2 100%)",
+    "icon": "tune"
+  },
+  {
+    "id": "filters-refactor-rd2",
+    "title": "Filters Refactor RD2",
+    "description": "Round 2 iteration of the BI filter redesign with refined UX based on RD1 feedback. Enhanced performance and streamlined filter application workflow.",
+    "path": "./filters-refactor/RD2/index.html",
+    "gradient": "linear-gradient(135deg, #2d1f7a 0%, #4535a0 100%)",
+    "icon": "filter_list"
+  }
+]

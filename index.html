@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BI Prototypes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    /* ── Elevate Design Tokens ─────────────────────────────────────────────── */
+    :root {
+      --primary:       #5746b2;
+      --primary-hover: #4535a0;
+      --primary-20:    #ebe9f6;
+      --primary-10:    #f5f3fb;
+      --neutral-5:     #fafafa;
+      --card:          #fff;
+      --border-light:  #e5e3f0;
+      --border-med:    #b0afb6;
+      --border-brand:  #ddd8f8;
+      --text:          #1a1a2e;
+      --text-sec:      #49495a;
+      --text-ter:      #8b8fa8;
+      --text-pri:      #5746b2;
+      --r-sm:          8px;
+      --r-md:          12px;
+      --r-pill:        20px;
+      --sh-card:       0 0 1px rgba(32,31,35,.18), 0 2px 8px rgba(32,31,35,.06);
+      --sh-dd:         0 8px 24px rgba(0,0,0,.12), 0 0 1px rgba(32,31,35,.14);
+      --font:          'Figtree', system-ui, sans-serif;
+      --surface:       #f5f4fb;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: var(--font);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Page Layout ──────────────────────────────────────────────────────── */
+    .page-wrapper {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 40px 32px;
+    }
+
+    .page-header {
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border-light);
+      margin-bottom: 32px;
+    }
+
+    .page-header h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .page-header .subtitle {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-sec);
+    }
+
+    /* ── Grid ─────────────────────────────────────────────────────────────── */
+    .prototype-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .prototype-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .prototype-grid { grid-template-columns: 1fr; }
+      .page-wrapper { padding: 24px 16px; }
+      .page-header h1 { font-size: 26px; }
+    }
+
+    /* ── Card ─────────────────────────────────────────────────────────────── */
+    .prototype-card-wrapper {
+      position: relative;
+    }
+
+    a.prototype-card {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--r-md);
+      box-shadow: var(--sh-card);
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+    }
+
+    a.prototype-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--sh-dd);
+      border-color: var(--border-brand);
+    }
+
+    a.prototype-card:focus-visible {
+      transform: translateY(-4px);
+      box-shadow: var(--sh-dd);
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    .card-placeholder {
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-placeholder::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .card-placeholder .material-icons {
+      font-size: 56px;
+      color: rgba(255, 255, 255, 0.92);
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-body {
+      padding: 20px 20px 44px 20px;
+    }
+
+    h3.card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+
+    p.card-description {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-sec);
+      line-height: 1.5;
+    }
+
+    /* ── Secondary link (overlaid in wrapper) ─────────────────────────────── */
+    a.secondary-link {
+      position: absolute;
+      bottom: 16px;
+      right: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-pri);
+      text-decoration: none;
+      z-index: 1;
+      padding: 4px 8px;
+      border-radius: var(--r-sm);
+      transition: background 120ms ease, color 120ms ease;
+    }
+
+    a.secondary-link:hover {
+      background: var(--primary-10);
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
+
+    a.secondary-link:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* ── Error banner ─────────────────────────────────────────────────────── */
+    .error-banner {
+      background: #fdecec;
+      color: #8a1f1f;
+      border: 1px solid #f3c1c1;
+      border-radius: var(--r-sm);
+      padding: 12px 16px;
+      margin: 0 0 24px 0;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* ── Noscript fallback ────────────────────────────────────────────────── */
+    .noscript-fallback {
+      background: var(--card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--r-md);
+      padding: 24px;
+      box-shadow: var(--sh-card);
+    }
+
+    .noscript-fallback h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .noscript-fallback ul {
+      list-style: none;
+    }
+
+    .noscript-fallback li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .noscript-fallback li:last-child {
+      border-bottom: none;
+    }
+
+    .noscript-fallback a {
+      color: var(--text-pri);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .noscript-fallback a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <header class="page-header">
+      <h1>BI Prototypes</h1>
+      <p class="subtitle">Interactive design prototypes for BI features</p>
+    </header>
+    <main>
+      <div class="prototype-grid" id="prototype-grid"></div>
+      <noscript>
+        <div class="noscript-fallback">
+          <h2>Prototypes</h2>
+          <ul>
+            <li><a href="./audience-builder/index.html">Audience Builder</a></li>
+            <li><a href="./filters-refactor/RD1/index.html">Filters Refactor RD1</a></li>
+            <li><a href="./filters-refactor/RD2/index.html">Filters Refactor RD2</a></li>
+          </ul>
+        </div>
+      </noscript>
+    </main>
+  </div>
+
+  <script type="application/json" id="prototypes-manifest">
+[
+  {
+    "id": "audience-builder",
+    "title": "Audience Builder",
+    "description": "Interactive wizard for defining audience segments using criteria-based filters and ICP configuration. Build targeted buyer personas with multi-step guided workflows.",
+    "path": "./audience-builder/index.html",
+    "gradient": "linear-gradient(135deg, #5746b2 0%, #8b7fd1 100%)",
+    "icon": "groups",
+    "secondaryLink": {
+      "label": "View prompt",
+      "href": "./audience-builder/audience-builder-prototype-prompt.md"
+    }
+  },
+  {
+    "id": "filters-refactor-rd1",
+    "title": "Filters Refactor RD1",
+    "description": "Round 1 redesign of the BI filtering UI exploring new interaction patterns and improved discoverability. Tests simplified filter composition and real-time preview.",
+    "path": "./filters-refactor/RD1/index.html",
+    "gradient": "linear-gradient(135deg, #3d2f8f 0%, #5746b2 100%)",
+    "icon": "tune"
+  },
+  {
+    "id": "filters-refactor-rd2",
+    "title": "Filters Refactor RD2",
+    "description": "Round 2 iteration of the BI filter redesign with refined UX based on RD1 feedback. Enhanced performance and streamlined filter application workflow.",
+    "path": "./filters-refactor/RD2/index.html",
+    "gradient": "linear-gradient(135deg, #2d1f7a 0%, #4535a0 100%)",
+    "icon": "filter_list"
+  }
+]
+  </script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      function showError(msg) {
+        var existing = document.querySelector('[data-error]');
+        if (existing) return;
+        var banner = document.createElement('div');
+        banner.className = 'error-banner';
+        banner.setAttribute('data-error', '');
+        banner.setAttribute('role', 'alert');
+        banner.textContent = msg;
+        var wrapper = document.querySelector('.page-wrapper');
+        var main = document.querySelector('main');
+        if (wrapper && main) {
+          wrapper.insertBefore(banner, main);
+        } else {
+          document.body.insertBefore(banner, document.body.firstChild);
+        }
+      }
+
+      function renderCards(prototypes) {
+        var grid = document.getElementById('prototype-grid');
+        if (!grid) return;
+        if (!Array.isArray(prototypes) || prototypes.length === 0) {
+          showError('No prototypes available to display.');
+          return;
+        }
+
+        grid.innerHTML = '';
+
+        prototypes.forEach(function (p) {
+          try {
+            if (!p || !p.id || !p.title || !p.path) {
+              console.warn('Skipping invalid prototype entry:', p);
+              return;
+            }
+
+            var wrapper = document.createElement('div');
+            wrapper.className = 'prototype-card-wrapper';
+            wrapper.setAttribute('data-id', p.id);
+
+            var card = document.createElement('a');
+            card.className = 'prototype-card';
+            card.href = p.path;
+            card.setAttribute('aria-label', p.title);
+
+            var placeholder = document.createElement('div');
+            placeholder.className = 'card-placeholder';
+            if (p.gradient) {
+              placeholder.style.background = p.gradient;
+            }
+
+            if (p.icon) {
+              var icon = document.createElement('span');
+              icon.className = 'material-icons';
+              icon.setAttribute('aria-hidden', 'true');
+              icon.textContent = p.icon;
+              placeholder.appendChild(icon);
+            }
+
+            var body = document.createElement('div');
+            body.className = 'card-body';
+
+            var title = document.createElement('h3');
+            title.className = 'card-title';
+            title.textContent = p.title;
+
+            var desc = document.createElement('p');
+            desc.className = 'card-description';
+            desc.textContent = p.description || '';
+
+            body.appendChild(title);
+            body.appendChild(desc);
+            card.appendChild(placeholder);
+            card.appendChild(body);
+            wrapper.appendChild(card);
+
+            if (p.secondaryLink && p.secondaryLink.href && p.secondaryLink.label) {
+              var secLink = document.createElement('a');
+              secLink.className = 'secondary-link';
+              secLink.href = p.secondaryLink.href;
+              secLink.textContent = p.secondaryLink.label + ' \u2192';
+              wrapper.appendChild(secLink);
+            }
+
+            grid.appendChild(wrapper);
+          } catch (err) {
+            console.warn('Failed to render card for:', p && p.id, err);
+          }
+        });
+      }
+
+      function loadFromInline() {
+        var inlineEl = document.getElementById('prototypes-manifest');
+        if (!inlineEl) {
+          showError('Prototypes manifest not found.');
+          return;
+        }
+        try {
+          var data = JSON.parse(inlineEl.textContent);
+          renderCards(data);
+        } catch (e) {
+          console.warn('Failed to parse inline manifest:', e);
+          showError('Failed to load prototypes manifest. Please refresh or check the file.');
+        }
+      }
+
+      function init() {
+        if (location.protocol !== 'file:') {
+          fetch('./prototypes.json')
+            .then(function (r) {
+              if (!r.ok) {
+                return Promise.reject(new Error('HTTP ' + r.status));
+              }
+              return r.json();
+            })
+            .then(function (data) {
+              renderCards(data);
+            })
+            .catch(function (err) {
+              console.warn('External manifest unavailable, falling back to inline:', err);
+              loadFromInline();
+            });
+        } else {
+          loadFromInline();
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+</body>
+</html>
