@@ -124,10 +124,7 @@
      [data-theme="dark"] .nav-item.active {
        color: var(--primary-hover);
      }
-     [data-theme="dark"] .view-alex > h2,
-     [data-theme="dark"] .view-alex h2 {
-       color: var(--text-sec);
-     }
+
      [data-theme="dark"] .fit-badge--strong {
        background: var(--primary-hover);
        color: var(--surface);
@@ -231,111 +228,10 @@
     .fit-badge--weak { background: var(--neutral-5); color: var(--text-sec); border: 1px solid var(--border-light); }
     .fit-unknown { color: var(--text-ter); font-size: 13px; }
 
-    /* ── Score Badge ──────────────────────────────────────────────────────── */
-    .score-badge { display: inline-flex; align-items: center; justify-content: center;
-                   min-width: 36px; height: 28px; padding: 0 8px; border-radius: var(--r-sm);
-                   background: var(--primary-10); color: var(--primary); font-weight: 800; font-size: 15px; }
-
-     /* ── Empty State ──────────────────────────────────────────────────────── */
+      /* ── Empty State ──────────────────────────────────────────────────────── */
      .empty-state { padding: 48px 24px; text-align: center; color: var(--text-sec); font-size: 14px; }
 
-     /* ── View Visibility (CSS-driven) ─────────────────────────────────────── */
-     .view-francisco, .view-stacy, .view-iesha, .view-alex, .view-maya { display: none; }
-     [data-persona="francisco"] .view-francisco { display: block; }
-     [data-persona="stacy"]     .view-stacy     { display: block; }
-     [data-persona="maya"]      .view-maya      { display: block; }
 
-    /* ── Francisco View ───────────────────────────────────────────────────── */
-    .view-francisco { background: var(--surface); }
-    .fr-row { display: grid; grid-template-columns: 1fr 48px 120px 80px 2fr; align-items: center; gap: 12px;
-               padding: 12px 24px; border-bottom: 1px solid var(--border-light); background: var(--card);
-               cursor: pointer; transition: background .1s; }
-    .fr-row:hover { background: var(--primary-10); }
-    .fr-row:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
-    .fr-company { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-    .fr-company-name { font-weight: 700; color: var(--text); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-     .fr-company-domain { font-size: 11px; color: var(--text-sec); }
-    .fr-signal { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-sec); font-weight: 600; }
-    .fr-why { font-size: 12px; color: var(--text-sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    @media (max-width: 768px) {
-      .fr-row { grid-template-columns: 1fr auto; }
-      .fr-signal, .fr-why { display: none; }
-    }
-
-    /* ── Stacy View ───────────────────────────────────────────────────────── */
-    .view-stacy { padding: 24px; }
-    .st-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
-     .st-segment { background: var(--card); border-radius: var(--r-md); box-shadow: var(--sh-card);
-                   overflow: hidden; cursor: pointer; transition: box-shadow .15s; }
-     .st-segment:hover { box-shadow: var(--sh-dd); }
-     .st-segment:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-    .st-segment-header { padding: 16px; position: relative; }
-    .st-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-    .st-meta { display: flex; align-items: center; gap: 12px; }
-    .st-heat { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: var(--r-pill); }
-    .st-heat--hot  { background: rgba(87,70,178,.15); color: var(--primary); }
-    .st-heat--warm { background: rgba(87,70,178,.06); color: var(--text-sec); }
-    .st-heat--cool { background: var(--neutral-5); color: var(--text-ter); }
-    .st-count { font-size: 12px; color: var(--text-sec); }
-     .st-avg   { font-size: 12px; color: var(--text-sec); }
-    .st-companies { border-top: 1px solid var(--border-light); max-height: 300px; overflow-y: auto; }
-    .st-overlay--hot  { background: var(--st-overlay-hot); }
-    .st-overlay--warm { background: var(--st-overlay-warm); }
-
-    /* ── Iesha View ───────────────────────────────────────────────────────── */
-     [data-persona="iesha"] .view-iesha { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
-    .ie-section { background: var(--card); border-radius: var(--r-md); box-shadow: var(--sh-card); padding: 20px; }
-    .ie-section-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
-    .ie-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-    .ie-bar-label { font-size: 12px; color: var(--text-sec); width: 140px; flex-shrink: 0; }
-    .ie-bar-track { flex: 1; height: 8px; background: var(--border-light); border-radius: 4px; overflow: hidden; }
-    .ie-bar-fill { height: 100%; border-radius: 4px; }
-    .ie-bar-fill--intent { background: var(--primary); }
-    .ie-bar-fill--fit    { background: var(--primary-20); }
-    .ie-bar-value { font-size: 12px; font-weight: 700; color: var(--text); width: 36px; text-align: right; }
-    .ie-breakdown { border: 1px solid var(--border-light); border-radius: var(--r-sm); padding: 12px; margin-bottom: 10px; }
-    .ie-breakdown-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .ie-breakdown-name { font-size: 13px; font-weight: 700; color: var(--text); }
-     .ie-formula { font-size: 11px; color: var(--text-sec); font-family: monospace; margin: 8px 0 6px; }
-    .ie-dims { display: flex; gap: 8px; flex-wrap: wrap; }
-    .ie-dim { font-size: 11px; padding: 1px 6px; border-radius: 3px; }
-     .ie-dim--match   { background: var(--success-bg); color: var(--success-text); }
-     .ie-dim--nomatch { background: var(--error-bg); color: var(--error-text); }
-    .ie-dim--unknown { background: var(--neutral-5); color: var(--text-ter); }
-    .ie-math-card { font-size: 13px; line-height: 1.7; }
-    .ie-math-card code { background: var(--neutral-5); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
-     .ie-icp-list { margin-top: 8px; font-size: 12px; color: var(--text-sec); }
-     .ie-agg-note { font-size: 12px; color: var(--text-sec); margin-top: 8px; }
-     .ie-bar-row--breakdown { margin-bottom: 4px; }
-     .ie-bar-label--narrow { width: 120px; }
-     .ax-fit-spacing { margin-top: 4px; }
-
-     /* ── Alex View ────────────────────────────────────────────────────────── */
-     [data-persona="alex"] .view-alex { padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-    .view-alex h2 { font-size: 14px; font-weight: 700; color: var(--text-ter); text-transform: uppercase; letter-spacing: .8px; }
-    .ax-hero { background: var(--card); border-radius: var(--r-md); box-shadow: var(--sh-dd);
-               padding: 24px; width: 100%; max-width: 680px; transition: opacity .3s; }
-    .ax-hero.contacted { opacity: 0.45; }
-    .ax-hero-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
-    .ax-company { font-size: 22px; font-weight: 800; color: var(--text); }
-    .ax-score { font-size: 36px; font-weight: 800; color: var(--primary); line-height: 1; }
-    .ax-why { font-size: 14px; color: var(--text-sec); margin: 8px 0 16px; }
-    .ax-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .ax-btn { height: 32px; padding: 0 12px; border-radius: var(--r-sm); border: 1px solid var(--border-light);
-              background: var(--card); color: var(--text-sec); font-family: var(--font); font-size: 12px; font-weight: 600;
-              display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: all .12s; }
-    .ax-btn:hover { border-color: var(--primary); color: var(--text-pri); background: var(--primary-10); }
-    .ax-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-    .ax-placeholder { background: var(--surface); border: 1.5px dashed var(--border-med); border-radius: var(--r-md);
-                      padding: 24px; width: 100%; max-width: 680px; text-align: center; color: var(--text-ter); font-size: 13px; }
-
-    /* ── Maya View ────────────────────────────────────────────────────────── */
-    .view-maya { background: var(--surface); }
-    .my-section-header { padding: 12px 24px 8px; font-size: 11px; font-weight: 700; text-transform: uppercase;
-                         letter-spacing: .6px; color: var(--text-ter); background: var(--surface); }
-    .my-row { display: grid; grid-template-columns: 1fr 48px 120px 2fr 90px; align-items: center; gap: 12px;
-               padding: 10px 24px; border-bottom: 1px solid var(--border-light); background: var(--card); }
-     .my-recency { font-size: 11px; color: var(--text-sec); text-align: right; }
     .my-row[data-recent="true"] { background: var(--primary-10); }
 
     /* ── Toast ────────────────────────────────────────────────────────────── */
@@ -346,16 +242,16 @@
              animation: toast-in .2s ease; }
     @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-    /* ── Theme Transitions (respects reduced-motion) ──────────────────────── */
-    @media (prefers-reduced-motion: no-preference) {
-      body, .top-bar, .sidebar, .page-header, .filter-bar,
-      .fr-row, .my-row, .ax-hero, .st-segment, .ie-section, .ie-breakdown,
-      .chip, .fit-badge, .ax-btn, .toast, .score-badge,
-      .nav-item, .top-bar-icon, .theme-toggle, .ie-bar-fill, .ie-bar-track {
-        transition: background-color 200ms ease, color 200ms ease,
-                    border-color 200ms ease, box-shadow 200ms ease;
-      }
-    }
+     /* ── Theme Transitions (respects reduced-motion) ──────────────────────── */
+     @media (prefers-reduced-motion: no-preference) {
+       body, .top-bar, .sidebar, .page-header, .filter-bar,
+       .my-row, .ie-section, .ie-breakdown,
+       .chip, .fit-badge, .toast,
+       .nav-item, .top-bar-icon, .theme-toggle, .ie-bar-fill, .ie-bar-track {
+         transition: background-color 200ms ease, color 200ms ease,
+                     border-color 200ms ease, box-shadow 200ms ease;
+       }
+     }
 
     /* ── Reduced Motion Override (disable all transitions) ──────────────── */
     @media (prefers-reduced-motion: reduce) {
@@ -366,13 +262,11 @@
       }
     }
 
-    /* ── Responsive ───────────────────────────────────────────────────────── */
-    @media (max-width: 640px) {
-      .sidebar { display: none; }
-      .filter-bar { padding: 8px 16px; }
-      .st-grid { grid-template-columns: 1fr; }
-      .ax-hero { padding: 16px; }
-    }
+     /* ── Responsive ───────────────────────────────────────────────────────── */
+     @media (max-width: 640px) {
+       .sidebar { display: none; }
+       .filter-bar { padding: 8px 16px; }
+     }
 
     /* ── v2: Summary Stats ────────────────────────────────────────────────── */
     .summary-stats { display: flex; gap: 16px; padding: 16px 24px; background: var(--card); border-bottom: 0.5px solid var(--border-light); flex-shrink: 0; }
@@ -460,10 +354,7 @@
     .action-btn:hover { border-color: var(--primary); color: var(--text-pri); background: var(--primary-10); }
     .action-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
-    /* Recency badge (Maya) */
-    .recency-badge { font-size: 11px; color: var(--text-ter); padding: 2px 6px; }
-
-    /* Iesha expansion */
+     /* Iesha expansion */
     .ie-expanded-content { margin-top: 10px; margin-left: 38px; padding: 12px; background: var(--surface);
                             border-radius: var(--r-sm); border: 1px solid var(--border-light); }
     .ie-bar-row-v2 { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
@@ -688,7 +579,7 @@
                aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
                <span className="mi" aria-hidden="true">{theme === 'dark' ? 'light_mode' : 'dark_mode'}</span>
              </button>
-             <div className="top-bar-avatar" aria-label="User avatar">LR</div>
+              <div className="top-bar-avatar" aria-hidden="true">LR</div>
            </div>
          </header>
        );
@@ -744,12 +635,12 @@
         if (activePresets.includes('hot')) {
           presetOk = presetOk && c._comp.composite >= 80;
         }
-        if (activePresets.includes('pricing')) {
-          presetOk = presetOk && c.recent_signals.some(s => s.type === 'pricing' && new Date(s.last_seen) >= cutoff);
-        }
-        if (activePresets.includes('comparison')) {
-          presetOk = presetOk && c.recent_signals.some(s => (s.type === 'compare' || s.type === 'competitors') && new Date(s.last_seen) >= cutoff);
-        }
+         if (activePresets.includes('pricing')) {
+           presetOk = presetOk && (c.recent_signals || []).some(s => s.type === 'pricing' && new Date(s.last_seen) >= cutoff);
+         }
+         if (activePresets.includes('comparison')) {
+           presetOk = presetOk && (c.recent_signals || []).some(s => (s.type === 'compare' || s.type === 'competitors') && new Date(s.last_seen) >= cutoff);
+         }
         if (activePresets.includes('enterprise')) {
           presetOk = presetOk && c.company_employees != null && c.company_employees >= 5000;
         }
@@ -892,8 +783,8 @@
       const cutoff = new Date(NOW.getTime() - 7 * 24 * 60 * 60 * 1000);
       const total = enriched.length;
       const hot = enriched.filter(c => c._comp.composite >= 80).length;
-      const pricing = enriched.filter(c => c.recent_signals.some(s => s.type === 'pricing' && new Date(s.last_seen) >= cutoff)).length;
-      const comparison = enriched.filter(c => c.recent_signals.some(s => (s.type === 'compare' || s.type === 'competitors') && new Date(s.last_seen) >= cutoff)).length;
+       const pricing = enriched.filter(c => (c.recent_signals || []).some(s => s.type === 'pricing' && new Date(s.last_seen) >= cutoff)).length;
+       const comparison = enriched.filter(c => (c.recent_signals || []).some(s => (s.type === 'compare' || s.type === 'competitors') && new Date(s.last_seen) >= cutoff)).length;
       return (
         <div className="summary-stats" role="group" aria-label="Summary statistics">
           <div className="stat-card"><div className="stat-label">Companies</div><div className="stat-value">{total}</div></div>
