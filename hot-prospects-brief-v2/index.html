@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hot Prospects Brief v2</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script>
+    (function() {
+      try {
+        var stored = localStorage.getItem('hpb-v2-theme');
+        var theme;
+        if (stored === 'dark' || stored === 'light') {
+          theme = stored;
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          theme = 'dark';
+        } else {
+          theme = 'light';
+        }
+        if (theme === 'dark') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      } catch (e) {
+        // localStorage unavailable (incognito, sandboxed) — fall through to light mode
+      }
+    })();
+  </script>
+  <style>
+    /* ── Elevate Design Tokens ─────────────────────────────────────────────── */
+    :root {
+      color-scheme: light;
+      --primary:       #5746b2;
+      --primary-hover: #4535a0;
+      --primary-20:    #ebe9f6;
+      --primary-10:    #f5f3fb;
+      --neutral-5:     #fafafa;
+      --card:          #fff;
+      --border-light:  #e5e3f0;
+      --border-med:    #b0afb6;
+      --border-brand:  #ddd8f8;
+      --text:          #1a1a2e;
+      --text-sec:      #49495a;
+      --text-ter:      #8b8fa8;
+      --text-pri:      #5746b2;
+      --r-sm:          8px;
+      --r-md:          12px;
+      --r-pill:        20px;
+      --sh-card:       0 0 1px rgba(32,31,35,.18), 0 2px 8px rgba(32,31,35,.06);
+      --sh-dd:         0 8px 24px rgba(0,0,0,.12), 0 0 1px rgba(32,31,35,.14);
+      --font:          'Figtree', system-ui, sans-serif;
+      --surface:       #f5f4fb;
+       --error-bg:      #fdecec;
+       --error-text:    #8a1f1f;
+       --error-border:  #f3c1c1;
+       --success-bg:    #e8f5e9;
+       --success-text:  #2e7d32;
+       --toast-bg:         #1a1a2e;
+       --toast-text:       #fff;
+       --st-overlay-hot:   rgba(87,70,178,0.15);
+       --st-overlay-warm:  rgba(87,70,178,0.06);
+       /* Signal Pill Tokens — Light Mode */
+       --sig-profile-bg:     #f0f0f5;
+       --sig-profile-text:   #49495a;
+       --sig-pricing-bg:     #fde8e8;
+       --sig-pricing-text:   #8a1f1f;
+       --sig-compare-bg:     #e3edff;
+       --sig-compare-text:   #1a4480;
+       --sig-category-bg:    #ebe9f6;
+       --sig-category-text:  #5746b2;
+       --sig-competitors-bg: #fff0d9;
+       --sig-competitors-text:#7a4d00;
+     }
+
+    /* ── Dark Mode Theme ──────────────────────────────────────────────────── */
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --primary:       #8b7fd1;
+      --primary-hover: #a796e0;
+      --primary-10:    #1f1a3d;
+      --primary-20:    #2d2654;
+      --neutral-5:     #1a1632;
+      --card:          #1c1832;
+      --border-light:  #2a2640;
+      --border-med:    #3a3658;
+      --border-brand:  #4a3d8c;
+      --text:          #f0f0f5;
+      --text-sec:      #b0afc8;
+      --text-ter:      #7a7894;
+      --text-pri:      #8b7fd1;
+      --surface:       #100c2e;
+      --success-bg:    rgba(127,198,133,.18);
+      --success-text:  #7fc685;
+      --error-bg:      rgba(240,160,160,.18);
+      --error-text:    #f0a0a0;
+      --error-border:  #5a2424;
+      --sh-card:       0 0 1px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.3);
+      --sh-dd:         0 8px 24px rgba(0,0,0,.5), 0 0 1px rgba(0,0,0,.6);
+      --toast-bg:      #2a2640;
+      --toast-text:    #f0f0f5;
+      --st-overlay-hot:  rgba(139,127,209,0.18);
+      --st-overlay-warm: rgba(139,127,209,0.10);
+      /* Signal Pill Tokens — Dark Mode */
+      --sig-profile-bg:     rgba(176,175,200,0.15);
+      --sig-profile-text:   #b0afc8;
+      --sig-pricing-bg:     rgba(240,160,160,0.15);
+      --sig-pricing-text:   #f0a0a0;
+      --sig-compare-bg:     rgba(120,170,255,0.15);
+      --sig-compare-text:   #a0c4ff;
+      --sig-category-bg:    rgba(139,127,209,0.18);
+      --sig-category-text:  #a796e0;
+      --sig-competitors-bg: rgba(255,180,100,0.15);
+      --sig-competitors-text:#ffc880;
+    }
+
+    /* ── Dark Mode Contrast Overrides (a11y fixes) ──────────────────────── */
+     [data-theme="dark"] .chip[aria-pressed="true"] {
+       background: var(--primary-hover);
+       color: var(--surface);
+     }
+     [data-theme="dark"] .nav-item.active {
+       color: var(--primary-hover);
+     }
+     [data-theme="dark"] .view-alex > h2,
+     [data-theme="dark"] .view-alex h2 {
+       color: var(--text-sec);
+     }
+     [data-theme="dark"] .fit-badge--strong {
+       background: var(--primary-hover);
+       color: var(--surface);
+     }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: var(--surface); color: var(--text); font-size: 14px; }
+    button { font-family: var(--font); cursor: pointer; }
+    a { color: var(--text-pri); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .mi { font-family: 'Material Icons'; font-size: 18px; line-height: 1; vertical-align: middle;
+          display: inline-flex; align-items: center; justify-content: center; user-select: none; flex-shrink: 0; }
+
+    /* ── Shell ────────────────────────────────────────────────────────────── */
+    .shell      { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .shell-body { display: flex; flex: 1; min-height: 0; }
+    .main-area  { flex: 1; overflow-y: auto; min-height: 0; background: var(--surface); }
+    .main-area::-webkit-scrollbar { width: 4px; }
+    .main-area::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+    /* ── Top Bar ──────────────────────────────────────────────────────────── */
+    .top-bar { background: var(--primary); height: 48px; display: flex; align-items: center;
+               padding: 0 20px; gap: 12px; flex-shrink: 0; }
+    .top-bar-logo { color: #fff; font-weight: 800; font-size: 15px; letter-spacing: -.2px; }
+    .top-bar-search { flex: 1; max-width: 300px; margin: 0 auto; height: 30px;
+                      display: flex; align-items: center; gap: 6px;
+                      background: rgba(255,255,255,.12); border-radius: var(--r-sm);
+                      padding: 0 10px; border: 1px solid rgba(255,255,255,.1); }
+    .top-bar-search-text { font-size: 12px; color: rgba(255,255,255,.5); flex: 1; }
+    .top-bar-actions { margin-left: auto; display: flex; align-items: center; gap: 2px; }
+     .top-bar-icon { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+                     border-radius: var(--r-sm); color: rgba(255,255,255,.65); background: none; border: none; transition: background .12s; }
+     .top-bar-icon:hover { background: rgba(255,255,255,.14); }
+     .top-bar-icon:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
+     .theme-toggle {
+       width: 30px; height: 30px;
+       display: flex; align-items: center; justify-content: center;
+       border-radius: var(--r-sm);
+       color: rgba(255,255,255,.65);
+       background: none; border: none;
+       transition: background .12s;
+     }
+    .theme-toggle:hover { background: rgba(255,255,255,.14); }
+    .theme-toggle:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
+    .top-bar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,.2);
+                      display: flex; align-items: center; justify-content: center;
+                      font-size: 11px; font-weight: 700; color: #fff; margin-left: 4px; }
+
+    /* ── Sidebar ──────────────────────────────────────────────────────────── */
+    .sidebar { width: 140px; background: var(--card); border-right: 0.5px solid var(--border-light);
+               display: flex; flex-direction: column; flex-shrink: 0; }
+    .sidebar-logo { padding: 10px 12px; border-bottom: 0.5px solid var(--border-light);
+                    display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+    .sidebar-logomark { width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0;
+                        background: linear-gradient(135deg,#ff6b35,#f7931e);
+                        display: flex; align-items: center; justify-content: center;
+                        font-size: 9px; font-weight: 800; color: #fff; }
+    .sidebar-orgname { font-size: 12px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sidebar-nav { flex: 1; overflow-y: auto; padding: 4px 0; }
+    .nav-item { display: block; width: 100%; text-align: left; padding: 6px 12px; font-size: 12px;
+                font-weight: 500; color: var(--text-sec); background: none; border: none;
+                white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+                transition: background .1s, color .1s; font-family: var(--font); cursor: pointer; }
+     .nav-item:hover { background: var(--primary-10); color: var(--text-pri); }
+     .nav-item:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; background: var(--primary-10); }
+     .nav-item.parent { font-weight: 700; color: var(--text); }
+     .nav-item.active { background: var(--primary-20); color: var(--text-pri); font-weight: 700; }
+    .nav-sub { border-left: 0.5px solid var(--border-light); margin-left: 12px; }
+
+    /* ── Page Header ──────────────────────────────────────────────────────── */
+    .page-header { background: var(--card); border-bottom: 0.5px solid var(--border-light);
+                   padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-shrink: 0; }
+    .page-header-left { display: flex; flex-direction: column; gap: 2px; }
+    .page-header h1 { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -.3px; }
+    .page-header .subtitle { font-size: 12px; color: var(--text-sec); }
+
+    /* ── Persona Switcher ─────────────────────────────────────────────────── */
+    .persona-switcher { height: 32px; padding: 0 10px; border: 1px solid var(--border-light);
+                        border-radius: var(--r-sm); font-family: var(--font); font-size: 12px;
+                        font-weight: 600; color: var(--text); background: var(--card);
+                        cursor: pointer; max-width: 220px; }
+     .persona-switcher:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+    /* ── Filter Bar ───────────────────────────────────────────────────────── */
+    .filter-bar { background: var(--card); border-bottom: 0.5px solid var(--border-light);
+                  padding: 10px 24px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+     .filter-label { font-size: 11px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: .5px; margin-right: 4px; }
+    .filter-sep { width: 1px; height: 20px; background: var(--border-light); margin: 0 4px; }
+    .chip { height: 28px; padding: 0 12px; border-radius: var(--r-pill); border: 1px solid var(--border-light);
+            background: var(--card); color: var(--text-sec); font-family: var(--font); font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: all .12s; display: inline-flex; align-items: center; gap: 4px; }
+    .chip:hover { border-color: var(--primary); color: var(--text-pri); }
+    .chip[aria-pressed="true"] { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .chip:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+    /* ── Fit Badges ───────────────────────────────────────────────────────── */
+    .fit-badge { display: inline-flex; align-items: center; height: 20px; padding: 0 8px;
+                 border-radius: var(--r-pill); font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .fit-badge--strong { background: var(--primary); color: #fff; }
+    .fit-badge--partial { background: var(--primary-20); color: var(--text-pri); }
+    .fit-badge--weak { background: var(--neutral-5); color: var(--text-sec); border: 1px solid var(--border-light); }
+    .fit-unknown { color: var(--text-ter); font-size: 13px; }
+
+    /* ── Score Badge ──────────────────────────────────────────────────────── */
+    .score-badge { display: inline-flex; align-items: center; justify-content: center;
+                   min-width: 36px; height: 28px; padding: 0 8px; border-radius: var(--r-sm);
+                   background: var(--primary-10); color: var(--primary); font-weight: 800; font-size: 15px; }
+
+     /* ── Empty State ──────────────────────────────────────────────────────── */
+     .empty-state { padding: 48px 24px; text-align: center; color: var(--text-sec); font-size: 14px; }
+
+     /* ── View Visibility (CSS-driven) ─────────────────────────────────────── */
+     .view-francisco, .view-stacy, .view-iesha, .view-alex, .view-maya { display: none; }
+     [data-persona="francisco"] .view-francisco { display: block; }
+     [data-persona="stacy"]     .view-stacy     { display: block; }
+     [data-persona="maya"]      .view-maya      { display: block; }
+
+    /* ── Francisco View ───────────────────────────────────────────────────── */
+    .view-francisco { background: var(--surface); }
+    .fr-row { display: grid; grid-template-columns: 1fr 48px 120px 80px 2fr; align-items: center; gap: 12px;
+               padding: 12px 24px; border-bottom: 1px solid var(--border-light); background: var(--card);
+               cursor: pointer; transition: background .1s; }
+    .fr-row:hover { background: var(--primary-10); }
+    .fr-row:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+    .fr-company { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .fr-company-name { font-weight: 700; color: var(--text); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+     .fr-company-domain { font-size: 11px; color: var(--text-sec); }
+    .fr-signal { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-sec); font-weight: 600; }
+    .fr-why { font-size: 12px; color: var(--text-sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    @media (max-width: 768px) {
+      .fr-row { grid-template-columns: 1fr auto; }
+      .fr-signal, .fr-why { display: none; }
+    }
+
+    /* ── Stacy View ───────────────────────────────────────────────────────── */
+    .view-stacy { padding: 24px; }
+    .st-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+     .st-segment { background: var(--card); border-radius: var(--r-md); box-shadow: var(--sh-card);
+                   overflow: hidden; cursor: pointer; transition: box-shadow .15s; }
+     .st-segment:hover { box-shadow: var(--sh-dd); }
+     .st-segment:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .st-segment-header { padding: 16px; position: relative; }
+    .st-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .st-meta { display: flex; align-items: center; gap: 12px; }
+    .st-heat { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: var(--r-pill); }
+    .st-heat--hot  { background: rgba(87,70,178,.15); color: var(--primary); }
+    .st-heat--warm { background: rgba(87,70,178,.06); color: var(--text-sec); }
+    .st-heat--cool { background: var(--neutral-5); color: var(--text-ter); }
+    .st-count { font-size: 12px; color: var(--text-sec); }
+     .st-avg   { font-size: 12px; color: var(--text-sec); }
+    .st-companies { border-top: 1px solid var(--border-light); max-height: 300px; overflow-y: auto; }
+    .st-overlay--hot  { background: var(--st-overlay-hot); }
+    .st-overlay--warm { background: var(--st-overlay-warm); }
+
+    /* ── Iesha View ───────────────────────────────────────────────────────── */
+     [data-persona="iesha"] .view-iesha { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+    .ie-section { background: var(--card); border-radius: var(--r-md); box-shadow: var(--sh-card); padding: 20px; }
+    .ie-section-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+    .ie-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .ie-bar-label { font-size: 12px; color: var(--text-sec); width: 140px; flex-shrink: 0; }
+    .ie-bar-track { flex: 1; height: 8px; background: var(--border-light); border-radius: 4px; overflow: hidden; }
+    .ie-bar-fill { height: 100%; border-radius: 4px; }
+    .ie-bar-fill--intent { background: var(--primary); }
+    .ie-bar-fill--fit    { background: var(--primary-20); }
+    .ie-bar-value { font-size: 12px; font-weight: 700; color: var(--text); width: 36px; text-align: right; }
+    .ie-breakdown { border: 1px solid var(--border-light); border-radius: var(--r-sm); padding: 12px; margin-bottom: 10px; }
+    .ie-breakdown-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .ie-breakdown-name { font-size: 13px; font-weight: 700; color: var(--text); }
+     .ie-formula { font-size: 11px; color: var(--text-sec); font-family: monospace; margin: 8px 0 6px; }
+    .ie-dims { display: flex; gap: 8px; flex-wrap: wrap; }
+    .ie-dim { font-size: 11px; padding: 1px 6px; border-radius: 3px; }
+     .ie-dim--match   { background: var(--success-bg); color: var(--success-text); }
+     .ie-dim--nomatch { background: var(--error-bg); color: var(--error-text); }
+    .ie-dim--unknown { background: var(--neutral-5); color: var(--text-ter); }
+    .ie-math-card { font-size: 13px; line-height: 1.7; }
+    .ie-math-card code { background: var(--neutral-5); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+     .ie-icp-list { margin-top: 8px; font-size: 12px; color: var(--text-sec); }
+     .ie-agg-note { font-size: 12px; color: var(--text-sec); margin-top: 8px; }
+     .ie-bar-row--breakdown { margin-bottom: 4px; }
+     .ie-bar-label--narrow { width: 120px; }
+     .ax-fit-spacing { margin-top: 4px; }
+
+     /* ── Alex View ────────────────────────────────────────────────────────── */
+     [data-persona="alex"] .view-alex { padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    .view-alex h2 { font-size: 14px; font-weight: 700; color: var(--text-ter); text-transform: uppercase; letter-spacing: .8px; }
+    .ax-hero { background: var(--card); border-radius: var(--r-md); box-shadow: var(--sh-dd);
+               padding: 24px; width: 100%; max-width: 680px; transition: opacity .3s; }
+    .ax-hero.contacted { opacity: 0.45; }
+    .ax-hero-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
+    .ax-company { font-size: 22px; font-weight: 800; color: var(--text); }
+    .ax-score { font-size: 36px; font-weight: 800; color: var(--primary); line-height: 1; }
+    .ax-why { font-size: 14px; color: var(--text-sec); margin: 8px 0 16px; }
+    .ax-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .ax-btn { height: 32px; padding: 0 12px; border-radius: var(--r-sm); border: 1px solid var(--border-light);
+              background: var(--card); color: var(--text-sec); font-family: var(--font); font-size: 12px; font-weight: 600;
+              display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: all .12s; }
+    .ax-btn:hover { border-color: var(--primary); color: var(--text-pri); background: var(--primary-10); }
+    .ax-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .ax-placeholder { background: var(--surface); border: 1.5px dashed var(--border-med); border-radius: var(--r-md);
+                      padding: 24px; width: 100%; max-width: 680px; text-align: center; color: var(--text-ter); font-size: 13px; }
+
+    /* ── Maya View ────────────────────────────────────────────────────────── */
+    .view-maya { background: var(--surface); }
+    .my-section-header { padding: 12px 24px 8px; font-size: 11px; font-weight: 700; text-transform: uppercase;
+                         letter-spacing: .6px; color: var(--text-ter); background: var(--surface); }
+    .my-row { display: grid; grid-template-columns: 1fr 48px 120px 2fr 90px; align-items: center; gap: 12px;
+               padding: 10px 24px; border-bottom: 1px solid var(--border-light); background: var(--card); }
+     .my-recency { font-size: 11px; color: var(--text-sec); text-align: right; }
+    .my-row[data-recent="true"] { background: var(--primary-10); }
+
+    /* ── Toast ────────────────────────────────────────────────────────────── */
+    .toast { position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+             background: var(--toast-bg); color: var(--toast-text); padding: 10px 16px;
+             border-radius: var(--r-sm); font-size: 13px; font-weight: 600;
+             box-shadow: var(--sh-dd); pointer-events: none;
+             animation: toast-in .2s ease; }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* ── Theme Transitions (respects reduced-motion) ──────────────────────── */
+    @media (prefers-reduced-motion: no-preference) {
+      body, .top-bar, .sidebar, .page-header, .filter-bar,
+      .fr-row, .my-row, .ax-hero, .st-segment, .ie-section, .ie-breakdown,
+      .chip, .fit-badge, .ax-btn, .toast, .score-badge,
+      .nav-item, .top-bar-icon, .theme-toggle, .ie-bar-fill, .ie-bar-track {
+        transition: background-color 200ms ease, color 200ms ease,
+                    border-color 200ms ease, box-shadow 200ms ease;
+      }
+    }
+
+    /* ── Reduced Motion Override (disable all transitions) ──────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+
+    /* ── Responsive ───────────────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .sidebar { display: none; }
+      .filter-bar { padding: 8px 16px; }
+      .st-grid { grid-template-columns: 1fr; }
+      .ax-hero { padding: 16px; }
+    }
+
+    /* ── v2: Summary Stats ────────────────────────────────────────────────── */
+    .summary-stats { display: flex; gap: 16px; padding: 16px 24px; background: var(--card); border-bottom: 0.5px solid var(--border-light); flex-shrink: 0; }
+    .stat-card { background: var(--surface); border-radius: var(--r-sm); padding: 12px 16px; min-width: 80px; }
+    .stat-label { font-size: 11px; font-weight: 600; color: var(--text-ter); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
+    .stat-value { font-size: 24px; font-weight: 800; color: var(--text); }
+    .stat-value--hot { color: var(--primary); }
+
+    /* ── v2: Preset Chips ─────────────────────────────────────────────────── */
+    .preset-chips-bar { background: var(--card); border-bottom: 0.5px solid var(--border-light); padding: 10px 24px; flex-shrink: 0; }
+    .preset-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .preset-chip { height: 28px; padding: 0 12px; border-radius: var(--r-pill); border: 1px solid var(--border-light);
+                   background: var(--card); color: var(--text-sec); font-family: var(--font); font-size: 12px; font-weight: 600;
+                   cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .12s; }
+    .preset-chip:hover { border-color: var(--primary); color: var(--text-pri); }
+    .preset-chip[aria-pressed="true"] { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .preset-chip:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+    /* ── v2: Unified Card ─────────────────────────────────────────────────── */
+    .cards-container { padding: 16px 24px; display: flex; flex-direction: column; gap: 0; }
+    ol.cards-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+
+    .card { background: var(--card); border: 1px solid var(--border-light); border-radius: var(--r-md); box-shadow: var(--sh-card);
+            overflow: hidden; position: relative; transition: box-shadow 150ms ease; }
+    .card:hover { box-shadow: var(--sh-dd); }
+
+    /* Hot accent bar — 4px purple bar on left edge */
+    .card--hot::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+                         background: var(--primary); border-radius: 12px 0 0 12px; }
+
+    /* Alex variant — slightly more padding */
+    .card--alex .card-body { padding: 20px 24px; }
+
+    .card-body { padding: 14px 20px; }
+
+    /* Card header: rank + name block + score area */
+    .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .card-header-left { display: flex; align-items: flex-start; gap: 10px; flex: 1; min-width: 0; }
+    .card-rank { font-size: 13px; font-weight: 800; color: var(--text-ter); width: 28px; flex-shrink: 0; padding-top: 2px; }
+    .card-name-block { min-width: 0; }
+    .card-name { font-size: 17px; font-weight: 800; color: var(--text); margin: 0 0 2px; letter-spacing: -.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-domain { font-size: 12px; color: var(--text-ter); text-decoration: none; }
+    .card-domain:hover { text-decoration: underline; color: var(--text-sec); }
+
+    /* Score area — right side */
+    .score-area { text-align: right; flex-shrink: 0; }
+    .score-badge-v2 { font-size: 30px; font-weight: 800; color: var(--primary); line-height: 1; display: block; }
+    .card--alex .score-badge-v2 { font-size: 36px; }
+    .score-label { font-size: 11px; font-weight: 600; color: var(--text-ter); letter-spacing: .3px; display: block; margin-top: 1px; }
+    .score-underline { display: block; height: 2px; width: 100%; border-radius: 1px; margin-top: 4px; }
+    .score-underline--hot  { background: var(--primary); }
+    .score-underline--warm { background: var(--primary-20); }
+    .score-underline--cool { background: var(--text-ter); }
+
+    /* ie-expand-toggle — Iesha: score-area becomes a button */
+    .ie-expand-toggle { background: none; border: none; cursor: pointer; padding: 0; text-align: right; font-family: var(--font); }
+    .ie-expand-toggle:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 4px; }
+
+    /* Card middle: fit badge + signal pills + why call */
+    .card-middle { padding-left: 38px; }
+    .card-fit { margin-bottom: 6px; }
+    .signal-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+    .pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: var(--r-pill);
+            font-size: 11px; font-weight: 600; }
+    .pill .mi { font-size: 13px; }
+    .pill--profile     { background: var(--sig-profile-bg);     color: var(--sig-profile-text); }
+    .pill--pricing     { background: var(--sig-pricing-bg);     color: var(--sig-pricing-text); }
+    .pill--compare     { background: var(--sig-compare-bg);     color: var(--sig-compare-text); }
+    .pill--category    { background: var(--sig-category-bg);    color: var(--sig-category-text); }
+    .pill--competitors { background: var(--sig-competitors-bg); color: var(--sig-competitors-text); }
+
+    .why-call { font-size: 13px; color: var(--text-sec); margin-bottom: 10px; line-height: 1.5; }
+    .why-call strong { color: var(--text); font-weight: 700; }
+
+    /* Card footer: segment badge + actions */
+    .card-footer { display: flex; align-items: center; justify-content: space-between; padding-left: 38px; flex-wrap: wrap; gap: 8px; }
+    .segment-badge { display: inline-flex; align-items: center; height: 20px; padding: 0 8px;
+                     border-radius: var(--r-pill); background: var(--neutral-5); color: var(--text-sec);
+                     font-size: 11px; font-weight: 600; border: 1px solid var(--border-light); }
+    .actions-row { display: flex; gap: 6px; }
+    .action-btn { height: 28px; padding: 0 10px; border-radius: var(--r-sm); border: 1px solid var(--border-light);
+                  background: var(--card); color: var(--text-sec); font-family: var(--font); font-size: 12px; font-weight: 600;
+                  display: inline-flex; align-items: center; gap: 5px; cursor: pointer; transition: all .12s; }
+    .action-btn .mi { font-size: 14px; }
+    .action-btn:hover { border-color: var(--primary); color: var(--text-pri); background: var(--primary-10); }
+    .action-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+    /* Recency badge (Maya) */
+    .recency-badge { font-size: 11px; color: var(--text-ter); padding: 2px 6px; }
+
+    /* Iesha expansion */
+    .ie-expanded-content { margin-top: 10px; margin-left: 38px; padding: 12px; background: var(--surface);
+                            border-radius: var(--r-sm); border: 1px solid var(--border-light); }
+    .ie-bar-row-v2 { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .ie-bar-row-v2 .ie-bar-label { font-size: 11px; color: var(--text-sec); width: 100px; flex-shrink: 0; }
+    .ie-bar-row-v2 .ie-bar-track { flex: 1; height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden; }
+    .ie-bar-row-v2 .ie-bar-fill { height: 100%; border-radius: 3px; }
+    .ie-fill-intent { background: var(--primary); }
+    .ie-fill-fit    { background: var(--primary-20); border: 1px solid var(--primary); }
+    .ie-bar-row-v2 .ie-bar-value { font-size: 12px; font-weight: 700; color: var(--text); width: 28px; text-align: right; }
+    .ie-formula-v2 { font-size: 11px; color: var(--text-ter); font-family: monospace; margin: 6px 0; }
+    .ie-expanded-content .ie-dims { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ie-dim-chip { font-size: 11px; padding: 1px 6px; border-radius: 3px; }
+    .ie-dim-chip--match   { background: var(--success-bg); color: var(--success-text); }
+    .ie-dim-chip--nomatch { background: var(--error-bg); color: var(--error-text); }
+    .ie-dim-chip--unknown { background: var(--neutral-5); color: var(--text-ter); }
+
+    /* Iesha math reference card */
+    .ie-math-card-v2 { background: var(--card); border: 1px solid var(--border-light); border-radius: var(--r-md);
+                    padding: 16px 20px; margin-bottom: 12px; box-shadow: var(--sh-card); }
+    .ie-math-card-v2 h2 { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .ie-math-card-v2 p { font-size: 12px; color: var(--text-sec); margin-bottom: 4px; line-height: 1.5; }
+    .ie-math-card-v2 code { background: var(--neutral-5); padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+
+    /* Stacy industry divider */
+    .stacy-divider { padding-top: 16px; border-top: 1px solid var(--border-light); margin-top: 6px; }
+
+    /* Placeholder card (Alex < 3) */
+    .card-placeholder { background: var(--surface); border: 1.5px dashed var(--border-med); border-radius: var(--r-md);
+                        padding: 20px; text-align: center; color: var(--text-ter); font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="text/babel">
+    // ── Constants ─────────────────────────────────────────────────────────
+    const MOCK_NOW = '2026-05-04T12:00:00Z';
+
+    const DEFAULT_ICP = {
+      size: { min: 200, max: 4999 },
+      industries: ["Software & Technology", "Financial Services", "Retail & E-Commerce"],
+      geo: ["AMER", "EMEA"],
+      personas: ["VP Marketing", "Demand Gen Manager", "Marketing Director", "Head of Marketing", "CMO"],
+      signalPriorities: { pricing: 1.0, compare: 0.9, competitors: 0.7, category: 0.5, profile: 0.3 }
+    };
+
+    // ── Mock Data ──────────────────────────────────────────────────────────
+    const MOCK_DATA = [{"company_name":"Fixture-StrongFit-4of4","company_domain":"fixture-strong.test","company_intent_score":80,"company_employees":500,"company_industry":"Software & Technology","signal_type":"pricing","total_activity":25,"visitor_count":8,"recent_signals":[{"type":"pricing","count":5,"last_seen":"2026-05-03T10:00:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing"]},{"company_name":"Fixture-PartialFit-2of4","company_domain":"fixture-partial.test","company_intent_score":60,"company_employees":500,"company_industry":"Software & Technology","signal_type":"compare","total_activity":12,"visitor_count":4,"recent_signals":[{"type":"compare","count":3,"last_seen":"2026-04-20T08:00:00Z"}],"geo_region":"APAC","personas_detected":["CTO"]},{"company_name":"Fixture-UnknownFit-nulls","company_domain":"fixture-unknown.test","company_intent_score":72,"company_employees":null,"company_industry":null,"signal_type":"profile","total_activity":8,"visitor_count":3,"recent_signals":[{"type":"profile","count":2,"last_seen":"2026-05-01T14:00:00Z"}],"geo_region":null,"personas_detected":null},{"company_name":"Fixture-WeakFit-0of4","company_domain":"fixture-weak.test","company_intent_score":45,"company_employees":50000,"company_industry":"Manufacturing","signal_type":"category","total_activity":5,"visitor_count":2,"recent_signals":[{"type":"category","count":1,"last_seen":"2026-04-10T09:00:00Z"}],"geo_region":"APAC","personas_detected":["CTO","VP Engineering"]},{"company_name":"Adobe","company_domain":"adobe.com","company_intent_score":95,"company_employees":25000,"company_industry":"Software & Technology","signal_type":"profile","total_activity":42,"visitor_count":15,"recent_signals":[{"type":"profile","count":8,"last_seen":"2026-05-02T09:30:00Z"},{"type":"compare","count":3,"last_seen":"2026-04-28T14:15:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing","CMO","Demand Gen Manager"]},{"company_name":"Atlassian","company_domain":"atlassian.com","company_intent_score":92,"company_employees":11000,"company_industry":"Software & Technology","signal_type":"compare","total_activity":38,"visitor_count":12,"recent_signals":[{"type":"compare","count":6,"last_seen":"2026-05-03T11:00:00Z"},{"type":"profile","count":4,"last_seen":"2026-04-29T16:45:00Z"}],"geo_region":"APAC","personas_detected":["VP Marketing","Marketing Director"]},{"company_name":"Salesforce","company_domain":"salesforce.com","company_intent_score":98,"company_employees":79000,"company_industry":"Software & Technology","signal_type":"profile","total_activity":55,"visitor_count":18,"recent_signals":[{"type":"profile","count":10,"last_seen":"2026-05-04T08:00:00Z"},{"type":"compare","count":5,"last_seen":"2026-04-27T13:20:00Z"}],"geo_region":"AMER","personas_detected":["CMO","VP Marketing","Head of Marketing"]},{"company_name":"HubSpot","company_domain":"hubspot.com","company_intent_score":91,"company_employees":7400,"company_industry":"Software & Technology","signal_type":"pricing","total_activity":35,"visitor_count":11,"recent_signals":[{"type":"pricing","count":7,"last_seen":"2026-05-01T10:30:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing","Demand Gen Manager"]},{"company_name":"SAP","company_domain":"sap.com","company_intent_score":90,"company_employees":105000,"company_industry":"Software & Technology","signal_type":"category","total_activity":28,"visitor_count":9,"recent_signals":[{"type":"category","count":4,"last_seen":"2026-04-25T15:00:00Z"}],"geo_region":"EMEA","personas_detected":["CMO","Head of Marketing"]},{"company_name":"Revolut","company_domain":"revolut.com","company_intent_score":78,"company_employees":8000,"company_industry":"Financial Services","signal_type":"profile","total_activity":22,"visitor_count":7,"recent_signals":[{"type":"profile","count":3,"last_seen":"2026-04-30T12:00:00Z"}],"geo_region":"EMEA","personas_detected":["VP Marketing","Marketing Director"]},{"company_name":"Shopify","company_domain":"shopify.com","company_intent_score":85,"company_employees":11600,"company_industry":"Retail & E-Commerce","signal_type":"compare","total_activity":31,"visitor_count":10,"recent_signals":[{"type":"compare","count":5,"last_seen":"2026-05-02T14:30:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing","CMO"]},{"company_name":"Stripe","company_domain":"stripe.com","company_intent_score":82,"company_employees":8000,"company_industry":"Financial Services","signal_type":"pricing","total_activity":26,"visitor_count":8,"recent_signals":[{"type":"pricing","count":4,"last_seen":"2026-04-28T09:15:00Z"}],"geo_region":"AMER","personas_detected":["Demand Gen Manager","Marketing Director"]},{"company_name":"Zendesk","company_domain":"zendesk.com","company_intent_score":79,"company_employees":6000,"company_industry":"Software & Technology","signal_type":"compare","total_activity":20,"visitor_count":6,"recent_signals":[{"type":"compare","count":3,"last_seen":"2026-04-26T11:45:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing"]},{"company_name":"Workday","company_domain":"workday.com","company_intent_score":81,"company_employees":18800,"company_industry":"Software & Technology","signal_type":"profile","total_activity":24,"visitor_count":7,"recent_signals":[{"type":"profile","count":4,"last_seen":"2026-04-23T13:00:00Z"}],"geo_region":"AMER","personas_detected":["CMO","Head of Marketing"]},{"company_name":"Datadog","company_domain":"datadog.com","company_intent_score":77,"company_employees":5200,"company_industry":"Software & Technology","signal_type":"profile","total_activity":19,"visitor_count":6,"recent_signals":[{"type":"profile","count":3,"last_seen":"2026-04-21T10:30:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing","Demand Gen Manager"]},{"company_name":"McKinsey & Company","company_domain":"mckinsey.com","company_intent_score":75,"company_employees":45000,"company_industry":"Financial Services","signal_type":"compare","total_activity":17,"visitor_count":5,"recent_signals":[{"type":"compare","count":2,"last_seen":"2026-04-19T15:20:00Z"}],"geo_region":"AMER","personas_detected":["CMO"]},{"company_name":"Zoom","company_domain":"zoom.com","company_intent_score":73,"company_employees":7400,"company_industry":"Software & Technology","signal_type":"profile","total_activity":15,"visitor_count":5,"recent_signals":[{"type":"profile","count":2,"last_seen":"2026-04-17T09:00:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing"]},{"company_name":"Canva","company_domain":"canva.com","company_intent_score":76,"company_employees":4500,"company_industry":"Software & Technology","signal_type":"compare","total_activity":18,"visitor_count":6,"recent_signals":[{"type":"compare","count":3,"last_seen":"2026-04-24T12:30:00Z"}],"geo_region":"APAC","personas_detected":["Marketing Director"]},{"company_name":"Klarna","company_domain":"klarna.com","company_intent_score":74,"company_employees":5000,"company_industry":"Financial Services","signal_type":"profile","total_activity":14,"visitor_count":4,"recent_signals":[{"type":"profile","count":2,"last_seen":"2026-04-22T14:15:00Z"}],"geo_region":"EMEA","personas_detected":["VP Marketing"]},{"company_name":"Grab","company_domain":"grab.com","company_intent_score":68,"company_employees":9000,"company_industry":"Retail & E-Commerce","signal_type":"category","total_activity":12,"visitor_count":4,"recent_signals":[{"type":"category","count":2,"last_seen":"2026-04-18T11:00:00Z"}],"geo_region":"APAC","personas_detected":["Demand Gen Manager"]},{"company_name":"Infosys","company_domain":"infosys.com","company_intent_score":65,"company_employees":343000,"company_industry":"Software & Technology","signal_type":"profile","total_activity":11,"visitor_count":3,"recent_signals":[{"type":"profile","count":2,"last_seen":"2026-04-16T10:00:00Z"}],"geo_region":"APAC","personas_detected":null},{"company_name":"Kajabi","company_domain":"kajabi.com","company_intent_score":62,"company_employees":400,"company_industry":"Software & Technology","signal_type":"profile","total_activity":9,"visitor_count":3,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-14T08:30:00Z"}],"geo_region":"AMER","personas_detected":["Marketing Director"]},{"company_name":"LPL Financial","company_domain":"lpl.com","company_intent_score":58,"company_employees":5200,"company_industry":"Financial Services","signal_type":"category","total_activity":8,"visitor_count":2,"recent_signals":[{"type":"category","count":1,"last_seen":"2026-04-12T13:00:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Alexandria Capital","company_domain":"alexandriacapital.com","company_intent_score":55,"company_employees":120,"company_industry":"Financial Services","signal_type":"compare","total_activity":7,"visitor_count":2,"recent_signals":[{"type":"compare","count":1,"last_seen":"2026-04-10T09:45:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing"]},{"company_name":"Echo Global Logistics","company_domain":"echo.com","company_intent_score":52,"company_employees":2800,"company_industry":"Manufacturing","signal_type":"profile","total_activity":6,"visitor_count":2,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-08T11:20:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"VFW Post 7686","company_domain":"vfwpost7686.org","company_intent_score":48,"company_employees":50,"company_industry":"Education","signal_type":"profile","total_activity":5,"visitor_count":1,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-06T14:00:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Sentris Network","company_domain":"sentrisnetwork.com","company_intent_score":51,"company_employees":85,"company_industry":"Software & Technology","signal_type":"compare","total_activity":6,"visitor_count":2,"recent_signals":[{"type":"compare","count":1,"last_seen":"2026-04-05T10:15:00Z"}],"geo_region":"AMER","personas_detected":["Demand Gen Manager"]},{"company_name":"BNP Paribas","company_domain":"bnpparibas.com","company_intent_score":54,"company_employees":190000,"company_industry":"Financial Services","signal_type":"category","total_activity":7,"visitor_count":2,"recent_signals":[{"type":"category","count":1,"last_seen":"2026-04-03T15:30:00Z"}],"geo_region":"EMEA","personas_detected":null},{"company_name":"Stripe Japan","company_domain":"stripe.co.jp","company_intent_score":57,"company_employees":200,"company_industry":"Financial Services","signal_type":"profile","total_activity":8,"visitor_count":2,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-01T12:00:00Z"}],"geo_region":"APAC","personas_detected":["Marketing Director"]},{"company_name":"Toyota","company_domain":"toyota.com","company_intent_score":50,"company_employees":375000,"company_industry":"Manufacturing","signal_type":"category","total_activity":5,"visitor_count":1,"recent_signals":[{"type":"category","count":1,"last_seen":"2026-03-30T09:00:00Z"}],"geo_region":"APAC","personas_detected":null},{"company_name":"University of Michigan","company_domain":"umich.edu","company_intent_score":49,"company_employees":48000,"company_industry":"Education","signal_type":"profile","total_activity":5,"visitor_count":1,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-03-28T10:30:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Acme Tech Solutions","company_domain":"acmetech.com","company_intent_score":67,"company_employees":350,"company_industry":"Software & Technology","signal_type":"profile","total_activity":13,"visitor_count":4,"recent_signals":[{"type":"profile","count":2,"last_seen":"2026-04-29T11:00:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing","Marketing Director"]},{"company_name":"Global Finance Corp","company_domain":"globalfinance.com","company_intent_score":64,"company_employees":2200,"company_industry":"Financial Services","signal_type":"compare","total_activity":10,"visitor_count":3,"recent_signals":[{"type":"compare","count":2,"last_seen":"2026-04-27T14:20:00Z"}],"geo_region":"EMEA","personas_detected":["CMO"]},{"company_name":"Retail Innovations Ltd","company_domain":"retailinnovations.com","company_intent_score":61,"company_employees":1500,"company_industry":"Retail & E-Commerce","signal_type":"pricing","total_activity":9,"visitor_count":3,"recent_signals":[{"type":"pricing","count":2,"last_seen":"2026-04-25T09:30:00Z"}],"geo_region":"AMER","personas_detected":["Demand Gen Manager"]},{"company_name":"Healthcare Dynamics","company_domain":"healthdynamics.com","company_intent_score":59,"company_employees":800,"company_industry":"Healthcare","signal_type":"profile","total_activity":8,"visitor_count":2,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-23T16:00:00Z"}],"geo_region":"AMER","personas_detected":["Marketing Director"]},{"company_name":"Manufacturing Pro","company_domain":"manufacturingpro.com","company_intent_score":56,"company_employees":3500,"company_industry":"Manufacturing","signal_type":"category","total_activity":7,"visitor_count":2,"recent_signals":[{"type":"category","count":1,"last_seen":"2026-04-20T13:45:00Z"}],"geo_region":"EMEA","personas_detected":null},{"company_name":"EdTech Ventures","company_domain":"edtechventures.com","company_intent_score":53,"company_employees":250,"company_industry":"Education","signal_type":"profile","total_activity":6,"visitor_count":2,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-18T10:00:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing"]},{"company_name":"Digital Marketing Hub","company_domain":"digitalhub.com","company_intent_score":47,"company_employees":180,"company_industry":"Software & Technology","signal_type":"compare","total_activity":5,"visitor_count":1,"recent_signals":[{"type":"compare","count":1,"last_seen":"2026-04-15T11:30:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Cloud Infrastructure Inc","company_domain":"cloudinfra.com","company_intent_score":46,"company_employees":600,"company_industry":"Software & Technology","signal_type":"pricing","total_activity":5,"visitor_count":1,"recent_signals":[{"type":"pricing","count":1,"last_seen":"2026-04-13T14:00:00Z"}],"geo_region":"EMEA","personas_detected":["Demand Gen Manager"]},{"company_name":"Analytics Powerhouse","company_domain":"analyticspowerhouse.com","company_intent_score":44,"company_employees":420,"company_industry":"Software & Technology","signal_type":"profile","total_activity":4,"visitor_count":1,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-11T09:15:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Financial Tech Startup","company_domain":"fintechstartup.com","company_intent_score":42,"company_employees":95,"company_industry":"Financial Services","signal_type":"compare","total_activity":4,"visitor_count":1,"recent_signals":[{"type":"compare","count":1,"last_seen":"2026-04-09T12:30:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing"]},{"company_name":"E-Commerce Accelerator","company_domain":"ecommerceaccel.com","company_intent_score":40,"company_employees":280,"company_industry":"Retail & E-Commerce","signal_type":"category","total_activity":3,"visitor_count":1,"recent_signals":[{"type":"category","count":1,"last_seen":"2026-04-07T15:00:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Smart Manufacturing Co","company_domain":"smartmfg.com","company_intent_score":38,"company_employees":1200,"company_industry":"Manufacturing","signal_type":"profile","total_activity":3,"visitor_count":1,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-04T10:45:00Z"}],"geo_region":"EMEA","personas_detected":null},{"company_name":"Healthcare Innovation Lab","company_domain":"healthinnovlab.com","company_intent_score":36,"company_employees":350,"company_industry":"Healthcare","signal_type":"compare","total_activity":3,"visitor_count":1,"recent_signals":[{"type":"compare","count":1,"last_seen":"2026-04-02T13:20:00Z"}],"geo_region":"AMER","personas_detected":["Marketing Director"]},{"company_name":"Learning Platform Global","company_domain":"learningplatform.com","company_intent_score":34,"company_employees":500,"company_industry":"Education","signal_type":"profile","total_activity":2,"visitor_count":1,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-03-31T11:00:00Z"}],"geo_region":"APAC","personas_detected":null},{"company_name":"Startup Incubator Network","company_domain":"startupincubator.com","company_intent_score":32,"company_employees":75,"company_industry":"Software & Technology","signal_type":"pricing","total_activity":2,"visitor_count":1,"recent_signals":[{"type":"pricing","count":1,"last_seen":"2026-03-29T14:30:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Legacy Banking Solutions","company_domain":"legacybanking.com","company_intent_score":30,"company_employees":8500,"company_industry":"Financial Services","signal_type":"category","total_activity":2,"visitor_count":1,"recent_signals":[{"type":"category","count":1,"last_seen":"2026-03-27T09:00:00Z"}],"geo_region":"EMEA","personas_detected":null},{"company_name":"Niche Retail Brand","company_domain":"nicheretail.com","company_intent_score":28,"company_employees":45,"company_industry":"Retail & E-Commerce","signal_type":"profile","total_activity":2,"visitor_count":1,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-03-25T12:15:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Industrial Equipment Supplier","company_domain":"industrialequip.com","company_intent_score":26,"company_employees":2100,"company_industry":"Manufacturing","signal_type":"compare","total_activity":2,"visitor_count":1,"recent_signals":[{"type":"compare","count":1,"last_seen":"2026-03-23T15:45:00Z"}],"geo_region":"EMEA","personas_detected":null},{"company_name":"Community College Network","company_domain":"communitycollege.edu","company_intent_score":24,"company_employees":3200,"company_industry":"Education","signal_type":"profile","total_activity":1,"visitor_count":1,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-03-21T10:00:00Z"}],"geo_region":"AMER","personas_detected":null}];
+
+    // ── Scoring Functions ──────────────────────────────────────────────────
+    function dimensionMatch(value, rule) {
+      if (value === null || value === undefined) return 'unknown';
+      if (rule && typeof rule === 'object' && !Array.isArray(rule)) {
+        const { min, max } = rule;
+        const n = Number(value);
+        if (isNaN(n)) return 'unknown';
+        return (min == null || n >= min) && (max == null || n <= max) ? 'match' : 'no-match';
+      }
+      if (Array.isArray(rule)) {
+        if (Array.isArray(value)) {
+          const lv = value.map(v => String(v).toLowerCase());
+          const lr = rule.map(r => String(r).toLowerCase());
+          return lv.some(v => lr.includes(v)) ? 'match' : 'no-match';
+        }
+        return rule.map(r => String(r).toLowerCase()).includes(String(value).toLowerCase()) ? 'match' : 'no-match';
+      }
+      return 'unknown';
+    }
+
+    function computeFit(company, icp) {
+      const dims = [
+        { name: 'size',     value: company.company_employees,  rule: icp.size },
+        { name: 'industry', value: company.company_industry,   rule: icp.industries },
+        { name: 'geo',      value: company.geo_region,         rule: icp.geo },
+        { name: 'persona',  value: company.personas_detected,  rule: icp.personas },
+      ];
+      const results = {};
+      let matchCount = 0, unknownCount = 0;
+      const matches = [], missingDims = [];
+      for (const d of dims) {
+        const r = dimensionMatch(d.value, d.rule);
+        results[d.name] = r;
+        if (r === 'match') { matchCount++; matches.push(d.name); }
+        else if (r === 'unknown') { unknownCount++; missingDims.push(d.name); }
+      }
+      let tier;
+      if ((results.size === 'unknown' && results.industry === 'unknown') || unknownCount === 4) tier = 'Unknown';
+      else if (matchCount >= 3 && (results.size !== 'unknown' || results.industry !== 'unknown')) tier = 'Strong';
+      else if (matchCount >= 1) tier = 'Partial';
+      else if (matchCount === 0 && unknownCount === 0) tier = 'Weak';
+      else tier = 'Unknown';
+      const score = tier === 'Strong' ? 100 : tier === 'Partial' ? 25 + matchCount * 25 : tier === 'Weak' ? 25 : null;
+      return { tier, score, matches, missingDims };
+    }
+
+    function computeComposite(company, icp) {
+      const intent = company.company_intent_score;
+      const fit = computeFit(company, icp);
+      let composite, formula;
+      if (fit.score === null) {
+        composite = intent;
+        formula = 'intent only (fit unknown): ' + intent;
+      } else {
+        composite = Math.round(intent * 0.6 + fit.score * 0.4);
+        formula = intent + '×0.6 + ' + fit.score + '×0.4 = ' + composite;
+      }
+      return { composite, intent, fit, formula };
+    }
+
+    // ── computeWhyCallV2 — Rich why-call format ─────────────────────────
+    // Format: "{N,NNN} employees · {verb} ({count}x in last 7 days)"
+    // Falls back to just the verb if employees is null
+    // Falls back to "Active on G2 recently" if no recent signals
+    const SIGNAL_PRIORITY_V2 = {
+      pricing: 1.0,
+      compare: 0.9,
+      competitors: 0.7,
+      category: 0.5,
+      profile: 0.3
+    };
+
+    const SIGNAL_VERB = {
+      pricing: 'researching pricing',
+      compare: 'running comparisons',
+      competitors: 'researching competitors',
+      profile: 'viewing profile'
+    };
+
+    function computeWhyCallV2(company, mockNow) {
+      const now = mockNow instanceof Date ? mockNow : new Date(mockNow);
+      const cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const signals = company.recent_signals || [];
+
+      const recent = signals.filter(s => new Date(s.last_seen) >= cutoff);
+
+      if (recent.length === 0) {
+        return 'Active on G2 recently';
+      }
+
+      const dominant = recent.reduce(function(best, s) {
+        if (!best) return s;
+        const bestPri = SIGNAL_PRIORITY_V2[best.type] || 0;
+        const sPri = SIGNAL_PRIORITY_V2[s.type] || 0;
+        if (sPri > bestPri) return s;
+        if (sPri === bestPri && s.count > best.count) return s;
+        return best;
+      }, null);
+
+      var verb;
+      if (dominant.type === 'category') {
+        var industry = (company.company_industry || 'category') + ' page';
+        verb = 'browsing ' + industry;
+      } else {
+        verb = SIGNAL_VERB[dominant.type] || dominant.type;
+      }
+
+      var tail = verb + ' (' + dominant.count + 'x in last 7 days)';
+      tail = tail.charAt(0).toUpperCase() + tail.slice(1);
+
+      if (company.company_employees != null) {
+        var empStr = company.company_employees.toLocaleString('en-US');
+        return empStr + ' employees · ' + tail.charAt(0).toLowerCase() + tail.slice(1);
+      }
+
+      return tail;
+    }
+
+    // Expose for Playwright QA
+    window.__test = { computeFit, computeComposite, computeWhyCallV2, dimensionMatch, DEFAULT_ICP, MOCK_DATA, MOCK_NOW };
+
+    // ── Helper: signal icon/label ─────────────────────────────────────────
+    const SIGNAL_META = {
+      profile:     { icon: 'visibility', label: 'Profile' },
+      pricing:     { icon: 'payments',   label: 'Pricing' },
+      compare:     { icon: 'compare_arrows', label: 'Compare' },
+      category:    { icon: 'category',   label: 'Category' },
+      competitors: { icon: 'flag',       label: 'Competitors' },
+    };
+
+     function recencyLabel(lastSeen, refDate) {
+       const diff = new Date(refDate) - new Date(lastSeen);
+       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+       if (days === 0) return 'today';
+       if (days === 1) return '1 day ago';
+       if (days < 7) return days + ' days ago';
+       const weeks = Math.floor(days / 7);
+       return weeks + (weeks === 1 ? ' week ago' : ' weeks ago');
+     }
+
+     function latestSignal(c) {
+       return (c.recent_signals || []).reduce((best, s) => {
+         return !best || new Date(s.last_seen) > new Date(best.last_seen) ? s : best;
+       }, null);
+     }
+
+     function weekSignalCount(c, cutoff) {
+       return (c.recent_signals || []).filter(s => new Date(s.last_seen) >= cutoff).length;
+     }
+
+     // ── FitBadge ──────────────────────────────────────────────────────────
+    function FitBadge({ tier }) {
+      if (!tier || tier === 'Unknown') return <span className="fit-unknown">—</span>;
+      const cls = { Strong: 'fit-badge--strong', Partial: 'fit-badge--partial', Weak: 'fit-badge--weak' }[tier];
+      const lbl = { Strong: 'Strong fit', Partial: 'Partial fit', Weak: 'Weak fit' }[tier];
+      return <span className={`fit-badge ${cls}`}>{lbl}</span>;
+    }
+
+     // ── TopBar ────────────────────────────────────────────────────────────
+     function TopBar({ theme, onToggleTheme }) {
+       return (
+         <header className="top-bar" role="banner">
+           <span className="top-bar-logo">G2</span>
+           <div className="top-bar-search">
+             <span className="mi" aria-hidden="true">search</span>
+             <span className="top-bar-search-text">Search G2…</span>
+           </div>
+           <div className="top-bar-actions">
+             <button className="top-bar-icon" aria-label="Notifications"><span className="mi" aria-hidden="true">notifications</span></button>
+             <button className="top-bar-icon" aria-label="Help"><span className="mi" aria-hidden="true">help_outline</span></button>
+             <button className="theme-toggle"
+               onClick={onToggleTheme}
+               aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
+               <span className="mi" aria-hidden="true">{theme === 'dark' ? 'light_mode' : 'dark_mode'}</span>
+             </button>
+             <div className="top-bar-avatar" aria-label="User avatar">LR</div>
+           </div>
+         </header>
+       );
+     }
+
+    // ── Sidebar ───────────────────────────────────────────────────────────
+    function Sidebar() {
+      return (
+        <aside className="sidebar">
+          <div className="sidebar-logo">
+            <div className="sidebar-logomark" aria-hidden="true">G2</div>
+            <span className="sidebar-orgname">G2.com</span>
+          </div>
+           <nav className="sidebar-nav" aria-label="Main navigation">
+             <button className="nav-item parent">Buyer Intent</button>
+             <div className="nav-sub">
+               <button className="nav-item active" aria-current="page">Hot Prospects</button>
+               <button className="nav-item">All Companies</button>
+               <button className="nav-item">Signals</button>
+             </div>
+            <button className="nav-item parent">Audience Builder</button>
+            <button className="nav-item parent">Reports</button>
+            <button className="nav-item parent">Settings</button>
+          </nav>
+        </aside>
+      );
+    }
+
+    // ── Helper: size bucket ──────────────────────────────────────────────
+    function sizeBucket(employees) {
+      if (employees == null) return 0;
+      if (employees < 200) return 0;
+      if (employees < 5000) return 1;
+      return 2;
+    }
+
+    function withinLast7Days(lastSeen, refDate) {
+      const cutoff = new Date(new Date(refDate).getTime() - 7 * 24 * 60 * 60 * 1000);
+      return new Date(lastSeen) >= cutoff;
+    }
+
+    // ── applyFilters ─────────────────────────────────────────────────────
+    function applyFilters(enriched, activePresets, activeSignals, activeFits) {
+      const NOW = new Date(MOCK_NOW);
+      const cutoff = new Date(NOW.getTime() - 7 * 24 * 60 * 60 * 1000);
+      return enriched.filter(c => {
+        const signalOk = activeSignals.includes(c.signal_type);
+
+        const tier = c._fit.tier;
+        const fitOk = activeFits.includes(tier) || (activeFits.includes('Weak') && tier === 'Unknown');
+
+        let presetOk = true;
+        if (activePresets.includes('hot')) {
+          presetOk = presetOk && c._comp.composite >= 80;
+        }
+        if (activePresets.includes('pricing')) {
+          presetOk = presetOk && c.recent_signals.some(s => s.type === 'pricing' && new Date(s.last_seen) >= cutoff);
+        }
+        if (activePresets.includes('comparison')) {
+          presetOk = presetOk && c.recent_signals.some(s => (s.type === 'compare' || s.type === 'competitors') && new Date(s.last_seen) >= cutoff);
+        }
+        if (activePresets.includes('enterprise')) {
+          presetOk = presetOk && c.company_employees != null && c.company_employees >= 5000;
+        }
+        if (activePresets.includes('midmarket')) {
+          presetOk = presetOk && c.company_employees != null && c.company_employees >= 200 && c.company_employees < 5000;
+        }
+        if (activePresets.includes('smb')) {
+          presetOk = presetOk && (c.company_employees == null || c.company_employees < 200);
+        }
+        return signalOk && fitOk && presetOk;
+      });
+    }
+
+    function getPersonaCompanies(persona, filtered) {
+      const sortedByComposite = [...filtered].sort((a, b) =>
+        b._comp.composite - a._comp.composite || b.company_intent_score - a.company_intent_score
+      );
+
+      if (persona === 'francisco' || persona === 'iesha') {
+        return sortedByComposite;
+      }
+      if (persona === 'stacy') {
+        return [...filtered].sort((a, b) => {
+          const indCmp = (a.company_industry || 'Unknown').localeCompare(b.company_industry || 'Unknown');
+          if (indCmp !== 0) return indCmp;
+          const sizeCmp = sizeBucket(a.company_employees) - sizeBucket(b.company_employees);
+          if (sizeCmp !== 0) return sizeCmp;
+          return b._comp.composite - a._comp.composite;
+        });
+      }
+      if (persona === 'alex') {
+        return sortedByComposite.slice(0, 3);
+      }
+      if (persona === 'maya') {
+        return [...filtered].filter(c => c.company_employees == null || c.company_employees < 200)
+          .sort((a, b) => {
+            const al = (latestSignal(a) || {}).last_seen || '0';
+            const bl = (latestSignal(b) || {}).last_seen || '0';
+            const cmp = String(bl).localeCompare(String(al));
+            if (cmp !== 0) return cmp;
+            return b._comp.composite - a._comp.composite;
+          });
+      }
+      return sortedByComposite;
+    }
+
+    // ── PresetChips ──────────────────────────────────────────────────────
+    function PresetChips({ activePresets, setActivePresets, setActiveSignals, setActiveFits }) {
+      const presets = [
+        { key: 'all',        label: 'All' },
+        { key: 'hot',        label: '🔥 Hot only (80+)' },
+        { key: 'pricing',    label: 'Pricing signal' },
+        { key: 'comparison', label: 'Comparison signal' },
+        { key: 'enterprise', label: 'Enterprise' },
+        { key: 'midmarket',  label: 'Mid-market' },
+        { key: 'smb',        label: 'SMB' },
+      ];
+
+      function handlePreset(key) {
+        if (key === 'all') {
+          setActivePresets([]);
+          setActiveSignals(['profile','pricing','compare','category','competitors']);
+          setActiveFits(['Strong','Partial','Weak']);
+        } else {
+          setActivePresets(prev =>
+            prev.includes(key) ? prev.filter(p => p !== key) : [...prev, key]
+          );
+        }
+      }
+
+      return (
+        <div className="preset-chips" role="group" aria-label="Quick filter presets">
+          {presets.map(p => {
+            const isActive = p.key === 'all' ? activePresets.length === 0 : activePresets.includes(p.key);
+            return (
+              <button key={p.key} className="preset-chip"
+                aria-pressed={isActive ? 'true' : 'false'}
+                onClick={() => handlePreset(p.key)}>
+                {p.label}
+              </button>
+            );
+          })}
+        </div>
+      );
+    }
+
+    // ── FilterBar (v2) ───────────────────────────────────────────────────
+    function FilterBar({ activePresets, setActivePresets, activeSignals, setActiveSignals, activeFits, setActiveFits }) {
+      const signals = ['profile','pricing','compare','category','competitors'];
+      const fits = [
+        { key: 'Strong',  label: 'Strong fit' },
+        { key: 'Partial', label: 'Partial fit' },
+        { key: 'Weak',    label: 'Weak / Unknown' },
+      ];
+
+      function toggleSignal(s) {
+        setActiveSignals(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
+      }
+      function toggleFit(f) {
+        setActiveFits(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f]);
+      }
+
+      return (
+        <React.Fragment>
+          <div className="preset-chips-bar">
+            <PresetChips
+              activePresets={activePresets}
+              setActivePresets={setActivePresets}
+              setActiveSignals={setActiveSignals}
+              setActiveFits={setActiveFits}
+            />
+          </div>
+          <div className="filter-bar" role="group" aria-label="Filters">
+            <span className="filter-label">Signal</span>
+            {signals.map(s => (
+              <button key={s} className="chip signal-chip" data-signal={s}
+                aria-pressed={activeSignals.includes(s).toString()}
+                onClick={() => toggleSignal(s)}>
+                <span className="mi" aria-hidden="true">{SIGNAL_META[s].icon}</span>
+                {SIGNAL_META[s].label}
+              </button>
+            ))}
+            <div className="filter-sep" aria-hidden="true" />
+            <span className="filter-label">Fit</span>
+            {fits.map(f => (
+              <button key={f.key} className="chip fit-chip" data-fit={f.key}
+                aria-pressed={activeFits.includes(f.key).toString()}
+                onClick={() => toggleFit(f.key)}>
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </React.Fragment>
+      );
+    }
+
+    // ── SummaryStats ─────────────────────────────────────────────────────
+    function SummaryStats({ enriched }) {
+      const NOW = new Date(MOCK_NOW);
+      const cutoff = new Date(NOW.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const total = enriched.length;
+      const hot = enriched.filter(c => c._comp.composite >= 80).length;
+      const pricing = enriched.filter(c => c.recent_signals.some(s => s.type === 'pricing' && new Date(s.last_seen) >= cutoff)).length;
+      const comparison = enriched.filter(c => c.recent_signals.some(s => (s.type === 'compare' || s.type === 'competitors') && new Date(s.last_seen) >= cutoff)).length;
+      return (
+        <div className="summary-stats" role="group" aria-label="Summary statistics">
+          <div className="stat-card"><div className="stat-label">Companies</div><div className="stat-value">{total}</div></div>
+          <div className="stat-card"><div className="stat-label">Hot (80+)</div><div className="stat-value stat-value--hot">{hot}</div></div>
+          <div className="stat-card"><div className="stat-label">Pricing signal</div><div className="stat-value">{pricing}</div></div>
+          <div className="stat-card"><div className="stat-label">Comparison signal</div><div className="stat-value">{comparison}</div></div>
+        </div>
+      );
+    }
+
+    // ── IeshaMathCard ────────────────────────────────────────────────────
+    function IeshaMathCard() {
+      return (
+        <div className="cards-container">
+          <div className="ie-math-card-v2">
+            <h2>Scoring Formula</h2>
+            <p>When fit known: <code>composite = intent × 0.6 + fit × 0.4</code></p>
+            <p>When fit unknown: <code>composite = intent</code> (no penalty for missing data)</p>
+            <p>Fit tiers: Strong = 100 · Partial(2) = 75 · Partial(1) = 50 · Weak = 25 · Unknown = intent only</p>
+            <p>Current ICP: Mid-Market (200–4,999 employees) · Software & Technology, Financial Services, Retail &amp; E-Commerce · AMER, EMEA</p>
+          </div>
+        </div>
+      );
+    }
+
+    // ── Card ─────────────────────────────────────────────────────────────
+    function Card({ company, rank, persona, isExpanded, onExpand, onAction, extraClass }) {
+      const isHot = company._comp.composite >= 80;
+      const heatBand = company._comp.composite >= 80 ? 'hot' : company._comp.composite >= 40 ? 'warm' : 'cool';
+      const segCode = sizeBucket(company.company_employees);
+      const seg = segCode === 0 ? 'SMB' : segCode === 1 ? 'Mid-market' : 'Enterprise';
+      const NOW = new Date(MOCK_NOW);
+      const cutoff = new Date(NOW.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const recentPillTypes = Array.from(new Set(
+        (company.recent_signals || [])
+          .filter(s => new Date(s.last_seen) >= cutoff)
+          .map(s => s.type)
+      ));
+
+      const cardCls = 'card' +
+        (isHot ? ' card--hot' : '') +
+        (persona === 'alex' ? ' card--alex' : '') +
+        (extraClass ? ' ' + extraClass : '');
+
+      const detailId = 'ie-detail-' + rank;
+
+      const ScoreArea = () => (
+        <span className="score-area">
+          <span className="score-badge-v2">{company._comp.composite}</span>
+          <span className="score-label">intent</span>
+          <span className={`score-underline score-underline--${heatBand}`} aria-hidden="true" />
+        </span>
+      );
+
+      return (
+        <li className={cardCls} aria-label={`Rank ${rank}: ${company.company_name}, score ${company._comp.composite}`}>
+          <div className="card-body">
+            <div className="card-header">
+              <div className="card-header-left">
+                <span className="card-rank">#{rank}</span>
+                <div className="card-name-block">
+                  <h3 className="card-name">{company.company_name}</h3>
+                  <a className="card-domain" href={`https://${company.company_domain}`}>{company.company_domain}</a>
+                </div>
+              </div>
+              {persona === 'iesha' ? (
+                <button className="ie-expand-toggle"
+                  aria-expanded={String(isExpanded)}
+                  aria-controls={detailId}
+                  onClick={() => onExpand(company.company_name)}>
+                  <ScoreArea />
+                </button>
+              ) : <ScoreArea />}
+            </div>
+
+            <div className="card-middle">
+              <div className="card-fit"><FitBadge tier={company._fit.tier} /></div>
+              <div className="signal-pills">
+                {recentPillTypes.length > 0 ? recentPillTypes.map(type => (
+                  <span key={type} className={`pill pill--${type}`}>
+                    <span className="mi" aria-hidden="true">{(SIGNAL_META[type] || {}).icon || 'circle'}</span>
+                    {type}
+                  </span>
+                )) : (
+                  <span className="pill pill--profile">
+                    <span className="mi" aria-hidden="true">visibility</span>
+                    profile
+                  </span>
+                )}
+              </div>
+              <p className="why-call"><strong>Why call:</strong> {company._whyV2}</p>
+            </div>
+
+            <div className="card-footer">
+              <span className="segment-badge">{seg}</span>
+              <div className="actions-row">
+                <button className="action-btn" onClick={() => onAction('Added to CRM ✓')}>
+                  <span className="mi" aria-hidden="true">person_add</span> Add to CRM
+                </button>
+                <button className="action-btn" onClick={() => onAction('Draft email opened')}>
+                  <span className="mi" aria-hidden="true">email</span> Email
+                </button>
+              </div>
+            </div>
+
+            {persona === 'iesha' && isExpanded && (
+              <div className="ie-expanded-content" id={detailId}>
+                <div className="ie-bar-row-v2">
+                  <span className="ie-bar-label">Intent ({company.company_intent_score})</span>
+                  <div className="ie-bar-track"><div className="ie-bar-fill ie-fill-intent" style={{width: `${company.company_intent_score * 0.6}%`}} /></div>
+                  <span className="ie-bar-value">{Math.round(company.company_intent_score * 0.6)}</span>
+                </div>
+                {company._fit.score !== null && (
+                  <div className="ie-bar-row-v2">
+                    <span className="ie-bar-label">Fit ({company._fit.score})</span>
+                    <div className="ie-bar-track"><div className="ie-bar-fill ie-fill-fit" style={{width: `${company._fit.score * 0.4}%`}} /></div>
+                    <span className="ie-bar-value">{Math.round(company._fit.score * 0.4)}</span>
+                  </div>
+                )}
+                <p className="ie-formula-v2">{company._comp.formula}</p>
+                <div className="ie-dims">
+                  {['size','industry','geo','persona'].map(dim => {
+                    const isMatch = company._fit.matches.includes(dim);
+                    const isMissing = company._fit.missingDims.includes(dim);
+                    const cls = isMatch ? 'ie-dim-chip--match' : isMissing ? 'ie-dim-chip--unknown' : 'ie-dim-chip--nomatch';
+                    const sym = isMatch ? '✓' : isMissing ? '?' : '✗';
+                    return <span key={dim} className={`ie-dim-chip ${cls}`}>{sym} {dim}</span>;
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </li>
+      );
+    }
+
+    // ── App ───────────────────────────────────────────────────────────────
+    function App() {
+      const [persona, setPersona] = React.useState('francisco');
+      const [activePresets, setActivePresets] = React.useState([]);
+      const [activeSignals, setActiveSignals] = React.useState(['profile','pricing','compare','category','competitors']);
+      const [activeFits, setActiveFits] = React.useState(['Strong','Partial','Weak']);
+      const [expandedCards, setExpandedCards] = React.useState({});
+      const [toast, setToast] = React.useState(null);
+
+      const [theme, setTheme] = React.useState(function() {
+        return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      });
+
+      function toggleTheme() {
+        setTheme(function(prev) {
+          var next = prev === 'dark' ? 'light' : 'dark';
+          try { localStorage.setItem('hpb-v2-theme', next); }
+          catch (e) { /* ignore */ }
+          return next;
+        });
+      }
+
+      React.useEffect(function() {
+        if (theme === 'dark') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          document.documentElement.removeAttribute('data-theme');
+        }
+      }, [theme]);
+
+      React.useEffect(function() {
+        var mql = window.matchMedia('(prefers-color-scheme: dark)');
+        function handler(e) {
+          try {
+            if (!localStorage.getItem('hpb-v2-theme')) {
+              setTheme(e.matches ? 'dark' : 'light');
+            }
+          } catch (e2) { /* ignore */ }
+        }
+        mql.addEventListener('change', handler);
+        return function() { mql.removeEventListener('change', handler); };
+      }, []);
+
+      function showToast(msg) {
+        setToast(msg);
+        setTimeout(() => setToast(null), 2500);
+      }
+
+      function onPersonaChange(newPersona) {
+        setPersona(newPersona);
+        setActiveSignals(['profile','pricing','compare','category','competitors']);
+        setActiveFits(['Strong','Partial','Weak']);
+        if (newPersona === 'maya') {
+          setActivePresets(['smb']);
+        } else {
+          setActivePresets([]);
+        }
+        setExpandedCards({});
+      }
+
+      // Enrich all companies (full dataset, used for SummaryStats)
+      const enriched = MOCK_DATA.map(c => ({
+        ...c,
+        _fit: computeFit(c, DEFAULT_ICP),
+        _comp: computeComposite(c, DEFAULT_ICP),
+        _whyV2: computeWhyCallV2(c, new Date(MOCK_NOW)),
+      }));
+
+      const filtered = applyFilters(enriched, activePresets, activeSignals, activeFits);
+      const companies = getPersonaCompanies(persona, filtered);
+
+      function isNewIndustry(idx) {
+        if (persona !== 'stacy' || idx === 0) return false;
+        return companies[idx].company_industry !== companies[idx - 1].company_industry;
+      }
+
+      const emptyMsg = persona === 'maya'
+        ? 'No SMB companies in current data.'
+        : persona === 'alex'
+          ? 'No more prospects match your filters.'
+          : 'No companies match current filters. Try adjusting the filters above.';
+
+      return (
+        <div className="shell">
+          <TopBar theme={theme} onToggleTheme={toggleTheme} />
+          <div className="shell-body">
+            <Sidebar />
+            <div className="main-area">
+              <header className="page-header">
+                <div className="page-header-left">
+                  <h1>Hot Prospects Brief v2</h1>
+                  <span className="subtitle">Ranked by composite intent + ICP fit score · {filtered.length} companies</span>
+                </div>
+                <select className="persona-switcher" value={persona}
+                  onChange={e => onPersonaChange(e.target.value)}
+                  aria-label="Switch persona view">
+                  <option value="francisco">Francisco (SDR)</option>
+                  <option value="stacy">Stacy (Demand Gen / ABM)</option>
+                  <option value="iesha">Iesha (RevOps / SalesOps)</option>
+                  <option value="alex">Alex (Founder / Player-Coach)</option>
+                  <option value="maya">Maya (SMB Growth)</option>
+                </select>
+              </header>
+              <SummaryStats enriched={enriched} />
+              <FilterBar
+                activePresets={activePresets} setActivePresets={setActivePresets}
+                activeSignals={activeSignals} setActiveSignals={setActiveSignals}
+                activeFits={activeFits} setActiveFits={setActiveFits}
+              />
+              <main data-persona={persona}>
+                {persona === 'iesha' && <IeshaMathCard />}
+                {companies.length === 0 ? (
+                  <div className="empty-state">{emptyMsg}</div>
+                ) : (
+                  <div className="cards-container">
+                    <ol className="cards-list">
+                      {companies.map((c, idx) => (
+                        <Card key={c.company_name}
+                          company={c}
+                          rank={idx + 1}
+                          persona={persona}
+                          isExpanded={!!expandedCards[c.company_name]}
+                          onExpand={name => setExpandedCards(prev => ({...prev, [name]: !prev[name]}))}
+                          onAction={showToast}
+                          extraClass={isNewIndustry(idx) ? 'stacy-divider' : ''}
+                        />
+                      ))}
+                      {persona === 'alex' && companies.length > 0 && companies.length < 3 && (
+                        <li className="card-placeholder">No more prospects match your filters.</li>
+                      )}
+                    </ol>
+                  </div>
+                )}
+              </main>
+              {toast && <div className="toast" role="status" aria-live="polite">{toast}</div>}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+  </script>
+</body>
+</html>
