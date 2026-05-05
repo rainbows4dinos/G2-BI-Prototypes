@@ -377,7 +377,7 @@
     /* ── v2: Summary Stats ────────────────────────────────────────────────── */
     .summary-stats { display: flex; gap: 16px; padding: 16px 24px; background: var(--card); border-bottom: 0.5px solid var(--border-light); flex-shrink: 0; }
     .stat-card { background: var(--surface); border-radius: var(--r-sm); padding: 12px 16px; min-width: 80px; }
-    .stat-label { font-size: 11px; font-weight: 600; color: var(--text-ter); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
+    .stat-label { font-size: 11px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
     .stat-value { font-size: 24px; font-weight: 800; color: var(--text); }
     .stat-value--hot { color: var(--primary); }
 
@@ -907,14 +907,12 @@
     // ── IeshaMathCard ────────────────────────────────────────────────────
     function IeshaMathCard() {
       return (
-        <div className="cards-container">
-          <div className="ie-math-card-v2">
-            <h2>Scoring Formula</h2>
-            <p>When fit known: <code>composite = intent × 0.6 + fit × 0.4</code></p>
-            <p>When fit unknown: <code>composite = intent</code> (no penalty for missing data)</p>
-            <p>Fit tiers: Strong = 100 · Partial(2) = 75 · Partial(1) = 50 · Weak = 25 · Unknown = intent only</p>
-            <p>Current ICP: Mid-Market (200–4,999 employees) · Software & Technology, Financial Services, Retail &amp; E-Commerce · AMER, EMEA</p>
-          </div>
+        <div className="ie-math-card-v2">
+          <h2>Scoring Formula</h2>
+          <p>When fit known: <code>composite = intent × 0.6 + fit × 0.4</code></p>
+          <p>When fit unknown: <code>composite = intent</code> (no penalty for missing data)</p>
+          <p>Fit tiers: Strong = 100 · Partial(2) = 75 · Partial(1) = 50 · Weak = 25 · Unknown = intent only</p>
+          <p>Current ICP: Mid-Market (200–4,999 employees) · Software & Technology, Financial Services, Retail &amp; E-Commerce · AMER, EMEA</p>
         </div>
       );
     }
@@ -1140,7 +1138,11 @@
                 activeFits={activeFits} setActiveFits={setActiveFits}
               />
               <main data-persona={persona}>
-                {persona === 'iesha' && <IeshaMathCard />}
+                {persona === 'iesha' && (
+                  <div className="cards-container">
+                    <IeshaMathCard />
+                  </div>
+                )}
                 {companies.length === 0 ? (
                   <div className="empty-state">{emptyMsg}</div>
                 ) : (
