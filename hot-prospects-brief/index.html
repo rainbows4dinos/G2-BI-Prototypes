@@ -128,16 +128,14 @@
                    min-width: 36px; height: 28px; padding: 0 8px; border-radius: var(--r-sm);
                    background: var(--primary-10); color: var(--primary); font-weight: 800; font-size: 15px; }
 
-    /* ── Empty State ──────────────────────────────────────────────────────── */
-    .empty-state { padding: 48px 24px; text-align: center; color: var(--text-ter); font-size: 14px; }
+     /* ── Empty State ──────────────────────────────────────────────────────── */
+     .empty-state { padding: 48px 24px; text-align: center; color: var(--text-sec); font-size: 14px; }
 
-    /* ── View Visibility (CSS-driven) ─────────────────────────────────────── */
-    .view-francisco, .view-stacy, .view-iesha, .view-alex, .view-maya { display: none; }
-    [data-persona="francisco"] .view-francisco { display: block; }
-    [data-persona="stacy"]     .view-stacy     { display: block; }
-    [data-persona="iesha"]     .view-iesha     { display: block; }
-    [data-persona="alex"]      .view-alex      { display: block; }
-    [data-persona="maya"]      .view-maya      { display: block; }
+     /* ── View Visibility (CSS-driven) ─────────────────────────────────────── */
+     .view-francisco, .view-stacy, .view-iesha, .view-alex, .view-maya { display: none; }
+     [data-persona="francisco"] .view-francisco { display: block; }
+     [data-persona="stacy"]     .view-stacy     { display: block; }
+     [data-persona="maya"]      .view-maya      { display: block; }
 
     /* ── Francisco View ───────────────────────────────────────────────────── */
     .view-francisco { background: var(--surface); }
@@ -148,7 +146,7 @@
     .fr-row:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
     .fr-company { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     .fr-company-name { font-weight: 700; color: var(--text); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .fr-company-domain { font-size: 11px; color: var(--text-ter); }
+     .fr-company-domain { font-size: 11px; color: var(--text-sec); }
     .fr-signal { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-sec); font-weight: 600; }
     .fr-why { font-size: 12px; color: var(--text-sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     @media (max-width: 768px) {
@@ -170,11 +168,11 @@
     .st-heat--warm { background: rgba(87,70,178,.06); color: var(--text-sec); }
     .st-heat--cool { background: var(--neutral-5); color: var(--text-ter); }
     .st-count { font-size: 12px; color: var(--text-sec); }
-    .st-avg   { font-size: 12px; color: var(--text-ter); }
+     .st-avg   { font-size: 12px; color: var(--text-sec); }
     .st-companies { border-top: 1px solid var(--border-light); max-height: 300px; overflow-y: auto; }
 
     /* ── Iesha View ───────────────────────────────────────────────────────── */
-    .view-iesha { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+     [data-persona="iesha"] .view-iesha { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
     .ie-section { background: var(--card); border-radius: var(--r-md); box-shadow: var(--sh-card); padding: 20px; }
     .ie-section-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
     .ie-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
@@ -198,7 +196,7 @@
     .ie-icp-list { margin-top: 8px; font-size: 12px; color: var(--text-sec); }
 
     /* ── Alex View ────────────────────────────────────────────────────────── */
-    .view-alex { padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+     [data-persona="alex"] .view-alex { padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
     .view-alex h2 { font-size: 14px; font-weight: 700; color: var(--text-ter); text-transform: uppercase; letter-spacing: .8px; }
     .ax-hero { background: var(--card); border-radius: var(--r-md); box-shadow: var(--sh-dd);
                padding: 24px; width: 100%; max-width: 680px; transition: opacity .3s; }
@@ -222,7 +220,7 @@
                          letter-spacing: .6px; color: var(--text-ter); background: var(--surface); }
     .my-row { display: grid; grid-template-columns: 1fr 48px 120px 2fr 90px; align-items: center; gap: 12px;
                padding: 10px 24px; border-bottom: 1px solid var(--border-light); background: var(--card); }
-    .my-recency { font-size: 11px; color: var(--text-ter); text-align: right; }
+     .my-recency { font-size: 11px; color: var(--text-sec); text-align: right; }
     .my-row[data-recent="true"] { background: var(--primary-10); }
 
     /* ── Toast ────────────────────────────────────────────────────────────── */
