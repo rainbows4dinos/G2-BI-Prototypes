@@ -9,9 +9,30 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script>
+    (function() {
+      try {
+        var stored = localStorage.getItem('hpb-theme');
+        var theme;
+        if (stored === 'dark' || stored === 'light') {
+          theme = stored;
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          theme = 'dark';
+        } else {
+          theme = 'light';
+        }
+        if (theme === 'dark') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      } catch (e) {
+        // localStorage unavailable (incognito, sandboxed) — fall through to light mode
+      }
+    })();
+  </script>
   <style>
     /* ── Elevate Design Tokens ─────────────────────────────────────────────── */
     :root {
+      color-scheme: light;
       --primary:       #5746b2;
       --primary-hover: #4535a0;
       --primary-20:    #ebe9f6;
@@ -37,7 +58,41 @@
        --error-border:  #f3c1c1;
        --success-bg:    #e8f5e9;
        --success-text:  #2e7d32;
+       --toast-bg:         #1a1a2e;
+       --toast-text:       #fff;
+       --st-overlay-hot:   rgba(87,70,178,0.15);
+       --st-overlay-warm:  rgba(87,70,178,0.06);
      }
+
+    /* ── Dark Mode Theme ──────────────────────────────────────────────────── */
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --primary:       #8b7fd1;
+      --primary-hover: #a796e0;
+      --primary-10:    #1f1a3d;
+      --primary-20:    #2d2654;
+      --neutral-5:     #1a1632;
+      --card:          #1c1832;
+      --border-light:  #2a2640;
+      --border-med:    #3a3658;
+      --border-brand:  #4a3d8c;
+      --text:          #f0f0f5;
+      --text-sec:      #b0afc8;
+      --text-ter:      #7a7894;
+      --text-pri:      #8b7fd1;
+      --surface:       #100c2e;
+      --success-bg:    rgba(127,198,133,.18);
+      --success-text:  #7fc685;
+      --error-bg:      rgba(240,160,160,.18);
+      --error-text:    #f0a0a0;
+      --error-border:  #5a2424;
+      --sh-card:       0 0 1px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.3);
+      --sh-dd:         0 8px 24px rgba(0,0,0,.5), 0 0 1px rgba(0,0,0,.6);
+      --toast-bg:      #2a2640;
+      --toast-text:    #f0f0f5;
+      --st-overlay-hot:  rgba(139,127,209,0.18);
+      --st-overlay-warm: rgba(139,127,209,0.10);
+    }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font); background: var(--surface); color: var(--text); font-size: 14px; }
@@ -68,12 +123,24 @@
                      border-radius: var(--r-sm); color: rgba(255,255,255,.65); background: none; border: none; transition: background .12s; }
      .top-bar-icon:hover { background: rgba(255,255,255,.14); }
      .top-bar-icon:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
+    .theme-toggle {
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--r-sm);
+      color: rgba(255,255,255,.65);
+      background: none; border: none;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: background .12s;
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,.14); }
+    .theme-toggle:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
     .top-bar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,.2);
                       display: flex; align-items: center; justify-content: center;
                       font-size: 11px; font-weight: 700; color: #fff; margin-left: 4px; }
 
     /* ── Sidebar ──────────────────────────────────────────────────────────── */
-    .sidebar { width: 140px; background: #fff; border-right: 0.5px solid var(--border-light);
+    .sidebar { width: 140px; background: var(--card); border-right: 0.5px solid var(--border-light);
                display: flex; flex-direction: column; flex-shrink: 0; }
     .sidebar-logo { padding: 10px 12px; border-bottom: 0.5px solid var(--border-light);
                     display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
@@ -175,6 +242,8 @@
     .st-count { font-size: 12px; color: var(--text-sec); }
      .st-avg   { font-size: 12px; color: var(--text-sec); }
     .st-companies { border-top: 1px solid var(--border-light); max-height: 300px; overflow-y: auto; }
+    .st-overlay--hot  { background: var(--st-overlay-hot); }
+    .st-overlay--warm { background: var(--st-overlay-warm); }
 
     /* ── Iesha View ───────────────────────────────────────────────────────── */
      [data-persona="iesha"] .view-iesha { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
@@ -234,11 +303,22 @@
 
     /* ── Toast ────────────────────────────────────────────────────────────── */
     .toast { position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-             background: var(--text); color: #fff; padding: 10px 16px;
+             background: var(--toast-bg); color: var(--toast-text); padding: 10px 16px;
              border-radius: var(--r-sm); font-size: 13px; font-weight: 600;
              box-shadow: var(--sh-dd); pointer-events: none;
              animation: toast-in .2s ease; }
     @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* ── Theme Transitions (respects reduced-motion) ──────────────────────── */
+    @media (prefers-reduced-motion: no-preference) {
+      body, .top-bar, .sidebar, .page-header, .filter-bar,
+      .fr-row, .my-row, .ax-hero, .st-segment, .ie-section, .ie-breakdown,
+      .chip, .fit-badge, .ax-btn, .toast, .score-badge,
+      .nav-item, .top-bar-icon, .theme-toggle, .ie-bar-fill, .ie-bar-track {
+        transition: background-color 200ms ease, color 200ms ease,
+                    border-color 200ms ease, box-shadow 200ms ease;
+      }
+    }
 
     /* ── Responsive ───────────────────────────────────────────────────────── */
     @media (max-width: 640px) {
@@ -385,7 +465,7 @@
     }
 
      // ── TopBar ────────────────────────────────────────────────────────────
-     function TopBar() {
+     function TopBar({ theme, onToggleTheme }) {
        return (
          <header className="top-bar" role="banner">
            <span className="top-bar-logo">G2</span>
@@ -396,6 +476,11 @@
            <div className="top-bar-actions">
              <button className="top-bar-icon" aria-label="Notifications"><span className="mi" aria-hidden="true">notifications</span></button>
              <button className="top-bar-icon" aria-label="Help"><span className="mi" aria-hidden="true">help_outline</span></button>
+             <button className="theme-toggle"
+               onClick={onToggleTheme}
+               aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
+               <span className="mi" aria-hidden="true">{theme === 'dark' ? 'light_mode' : 'dark_mode'}</span>
+             </button>
              <div className="top-bar-avatar" aria-label="User avatar">LR</div>
            </div>
          </header>
@@ -535,7 +620,7 @@
               const isOpen = openSegments[seg.label];
               const heat = seg.avgComposite >= 70 ? 'hot' : seg.avgComposite >= 40 ? 'warm' : 'cool';
               const heatLabel = seg.avgComposite >= 70 ? '🔥 Hot' : seg.avgComposite >= 40 ? 'Warm' : 'Cool';
-              const overlay = seg.avgComposite >= 70 ? 'rgba(87,70,178,0.15)' : seg.avgComposite >= 40 ? 'rgba(87,70,178,0.06)' : 'transparent';
+              const overlayClass = seg.avgComposite >= 70 ? 'st-overlay--hot' : seg.avgComposite >= 40 ? 'st-overlay--warm' : '';
               return (
                  <div key={seg.label} className="st-segment"
                    onClick={() => setOpenSegments(p => ({...p, [seg.label]: !p[seg.label]}))}
@@ -546,7 +631,7 @@
                        setOpenSegments(p => ({...p, [seg.label]: !p[seg.label]}));
                      }
                    }}>
-                  <div className="st-segment-header" style={{ background: overlay }}>
+                  <div className={`st-segment-header${overlayClass ? ' ' + overlayClass : ''}`}>
                     <div className="st-label">{seg.label}</div>
                     <div className="st-meta">
                       <span className={`st-heat st-heat--${heat}`}>{heatLabel}</span>
@@ -793,6 +878,40 @@
       const [activeSignals, setActiveSignals] = React.useState(['profile','pricing','compare','category','competitors']);
       const [activeFits, setActiveFits] = React.useState(['Strong','Partial','Weak']);
 
+      const [theme, setTheme] = React.useState(function() {
+        return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      });
+
+      function toggleTheme() {
+        setTheme(function(prev) {
+          var next = prev === 'dark' ? 'light' : 'dark';
+          try { localStorage.setItem('hpb-theme', next); }
+          catch (e) { console.warn('localStorage write failed:', e); }
+          return next;
+        });
+      }
+
+      React.useEffect(function() {
+        if (theme === 'dark') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          document.documentElement.removeAttribute('data-theme');
+        }
+      }, [theme]);
+
+      React.useEffect(function() {
+        var mql = window.matchMedia('(prefers-color-scheme: dark)');
+        function handler(e) {
+          try {
+            if (!localStorage.getItem('hpb-theme')) {
+              setTheme(e.matches ? 'dark' : 'light');
+            }
+          } catch (e2) { /* ignore */ }
+        }
+        mql.addEventListener('change', handler);
+        return function() { mql.removeEventListener('change', handler); };
+      }, []);
+
       // Enrich all companies
       const enriched = MOCK_DATA.map(c => ({
         ...c,
@@ -816,7 +935,7 @@
 
       return (
         <div className="shell">
-          <TopBar />
+          <TopBar theme={theme} onToggleTheme={toggleTheme} />
           <div className="shell-body">
             <Sidebar />
              <div className="main-area">
