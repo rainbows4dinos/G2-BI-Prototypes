@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hot Prospects Brief</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    /* ── Elevate Design Tokens ─────────────────────────────────────────────── */
+    :root {
+      --primary:       #5746b2;
+      --primary-hover: #4535a0;
+      --primary-20:    #ebe9f6;
+      --primary-10:    #f5f3fb;
+      --neutral-5:     #fafafa;
+      --card:          #fff;
+      --border-light:  #e5e3f0;
+      --border-med:    #b0afb6;
+      --border-brand:  #ddd8f8;
+      --text:          #1a1a2e;
+      --text-sec:      #49495a;
+      --text-ter:      #8b8fa8;
+      --text-pri:      #5746b2;
+      --r-sm:          8px;
+      --r-md:          12px;
+      --r-pill:        20px;
+      --sh-card:       0 0 1px rgba(32,31,35,.18), 0 2px 8px rgba(32,31,35,.06);
+      --sh-dd:         0 8px 24px rgba(0,0,0,.12), 0 0 1px rgba(32,31,35,.14);
+      --font:          'Figtree', system-ui, sans-serif;
+      --surface:       #f5f4fb;
+      --error-bg:      #fdecec;
+      --error-text:    #8a1f1f;
+      --error-border:  #f3c1c1;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: var(--surface); color: var(--text); font-size: 14px; }
+    button { font-family: var(--font); cursor: pointer; }
+    a { color: var(--text-pri); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .mi { font-family: 'Material Icons'; font-size: 18px; line-height: 1; vertical-align: middle;
+          display: inline-flex; align-items: center; justify-content: center; user-select: none; flex-shrink: 0; }
+
+    /* ── Shell ────────────────────────────────────────────────────────────── */
+    .shell      { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .shell-body { display: flex; flex: 1; min-height: 0; }
+    .main-area  { flex: 1; overflow-y: auto; min-height: 0; background: var(--surface); }
+    .main-area::-webkit-scrollbar { width: 4px; }
+    .main-area::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+    /* ── Top Bar ──────────────────────────────────────────────────────────── */
+    .top-bar { background: var(--primary); height: 48px; display: flex; align-items: center;
+               padding: 0 20px; gap: 12px; flex-shrink: 0; }
+    .top-bar-logo { color: #fff; font-weight: 800; font-size: 15px; letter-spacing: -.2px; }
+    .top-bar-search { flex: 1; max-width: 300px; margin: 0 auto; height: 30px;
+                      display: flex; align-items: center; gap: 6px;
+                      background: rgba(255,255,255,.12); border-radius: var(--r-sm);
+                      padding: 0 10px; border: 1px solid rgba(255,255,255,.1); }
+    .top-bar-search-text { font-size: 12px; color: rgba(255,255,255,.5); flex: 1; }
+    .top-bar-actions { margin-left: auto; display: flex; align-items: center; gap: 2px; }
+    .top-bar-icon { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+                    border-radius: var(--r-sm); color: rgba(255,255,255,.65); background: none; border: none; transition: background .12s; }
+    .top-bar-icon:hover { background: rgba(255,255,255,.14); }
+    .top-bar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,.2);
+                      display: flex; align-items: center; justify-content: center;
+                      font-size: 11px; font-weight: 700; color: #fff; margin-left: 4px; }
+
+    /* ── Sidebar ──────────────────────────────────────────────────────────── */
+    .sidebar { width: 140px; background: #fff; border-right: 0.5px solid var(--border-light);
+               display: flex; flex-direction: column; flex-shrink: 0; }
+    .sidebar-logo { padding: 10px 12px; border-bottom: 0.5px solid var(--border-light);
+                    display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+    .sidebar-logomark { width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0;
+                        background: linear-gradient(135deg,#ff6b35,#f7931e);
+                        display: flex; align-items: center; justify-content: center;
+                        font-size: 9px; font-weight: 800; color: #fff; }
+    .sidebar-orgname { font-size: 12px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sidebar-nav { flex: 1; overflow-y: auto; padding: 4px 0; }
+    .nav-item { display: block; width: 100%; text-align: left; padding: 6px 12px; font-size: 12px;
+                font-weight: 500; color: var(--text-sec); background: none; border: none;
+                white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+                transition: background .1s, color .1s; font-family: var(--font); cursor: pointer; }
+    .nav-item:hover { background: var(--primary-10); color: var(--text-pri); }
+    .nav-item.parent { font-weight: 700; color: var(--text); }
+    .nav-item.active { background: var(--primary-20); color: var(--text-pri); font-weight: 700; }
+    .nav-sub { border-left: 0.5px solid var(--border-light); margin-left: 12px; }
+
+    /* ── Page Header ──────────────────────────────────────────────────────── */
+    .page-header { background: var(--card); border-bottom: 0.5px solid var(--border-light);
+                   padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-shrink: 0; }
+    .page-header-left { display: flex; flex-direction: column; gap: 2px; }
+    .page-header h1 { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -.3px; }
+    .page-header .subtitle { font-size: 12px; color: var(--text-sec); }
+
+    /* ── Persona Switcher ─────────────────────────────────────────────────── */
+    .persona-switcher { height: 32px; padding: 0 10px; border: 1px solid var(--border-light);
+                        border-radius: var(--r-sm); font-family: var(--font); font-size: 12px;
+                        font-weight: 600; color: var(--text); background: var(--card);
+                        cursor: pointer; max-width: 220px; }
+    .persona-switcher:focus { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+    /* ── Filter Bar ───────────────────────────────────────────────────────── */
+    .filter-bar { background: var(--card); border-bottom: 0.5px solid var(--border-light);
+                  padding: 10px 24px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+    .filter-label { font-size: 11px; font-weight: 600; color: var(--text-ter); text-transform: uppercase; letter-spacing: .5px; margin-right: 4px; }
+    .filter-sep { width: 1px; height: 20px; background: var(--border-light); margin: 0 4px; }
+    .chip { height: 28px; padding: 0 12px; border-radius: var(--r-pill); border: 1px solid var(--border-light);
+            background: var(--card); color: var(--text-sec); font-family: var(--font); font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: all .12s; display: inline-flex; align-items: center; gap: 4px; }
+    .chip:hover { border-color: var(--primary); color: var(--text-pri); }
+    .chip[aria-pressed="true"] { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .chip:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+    /* ── Fit Badges ───────────────────────────────────────────────────────── */
+    .fit-badge { display: inline-flex; align-items: center; height: 20px; padding: 0 8px;
+                 border-radius: var(--r-pill); font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .fit-badge--strong { background: var(--primary); color: #fff; }
+    .fit-badge--partial { background: var(--primary-20); color: var(--text-pri); }
+    .fit-badge--weak { background: var(--neutral-5); color: var(--text-sec); border: 1px solid var(--border-light); }
+    .fit-unknown { color: var(--text-ter); font-size: 13px; }
+
+    /* ── Score Badge ──────────────────────────────────────────────────────── */
+    .score-badge { display: inline-flex; align-items: center; justify-content: center;
+                   min-width: 36px; height: 28px; padding: 0 8px; border-radius: var(--r-sm);
+                   background: var(--primary-10); color: var(--primary); font-weight: 800; font-size: 15px; }
+
+    /* ── Empty State ──────────────────────────────────────────────────────── */
+    .empty-state { padding: 48px 24px; text-align: center; color: var(--text-ter); font-size: 14px; }
+
+    /* ── View Visibility (CSS-driven) ─────────────────────────────────────── */
+    .view-francisco, .view-stacy, .view-iesha, .view-alex, .view-maya { display: none; }
+    [data-persona="francisco"] .view-francisco { display: block; }
+    [data-persona="stacy"]     .view-stacy     { display: block; }
+    [data-persona="iesha"]     .view-iesha     { display: block; }
+    [data-persona="alex"]      .view-alex      { display: block; }
+    [data-persona="maya"]      .view-maya      { display: block; }
+
+    /* ── Francisco View ───────────────────────────────────────────────────── */
+    .view-francisco { background: var(--surface); }
+    .fr-row { display: grid; grid-template-columns: 1fr 48px 120px 80px 2fr; align-items: center; gap: 12px;
+               padding: 12px 24px; border-bottom: 1px solid var(--border-light); background: var(--card);
+               cursor: pointer; transition: background .1s; }
+    .fr-row:hover { background: var(--primary-10); }
+    .fr-row:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+    .fr-company { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .fr-company-name { font-weight: 700; color: var(--text); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fr-company-domain { font-size: 11px; color: var(--text-ter); }
+    .fr-signal { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-sec); font-weight: 600; }
+    .fr-why { font-size: 12px; color: var(--text-sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    @media (max-width: 768px) {
+      .fr-row { grid-template-columns: 1fr auto; }
+      .fr-signal, .fr-why { display: none; }
+    }
+
+    /* ── Stacy View ───────────────────────────────────────────────────────── */
+    .view-stacy { padding: 24px; }
+    .st-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .st-segment { background: var(--card); border-radius: var(--r-md); box-shadow: var(--sh-card);
+                  overflow: hidden; cursor: pointer; transition: box-shadow .15s; }
+    .st-segment:hover { box-shadow: var(--sh-dd); }
+    .st-segment-header { padding: 16px; position: relative; }
+    .st-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .st-meta { display: flex; align-items: center; gap: 12px; }
+    .st-heat { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: var(--r-pill); }
+    .st-heat--hot  { background: rgba(87,70,178,.15); color: var(--primary); }
+    .st-heat--warm { background: rgba(87,70,178,.06); color: var(--text-sec); }
+    .st-heat--cool { background: var(--neutral-5); color: var(--text-ter); }
+    .st-count { font-size: 12px; color: var(--text-sec); }
+    .st-avg   { font-size: 12px; color: var(--text-ter); }
+    .st-companies { border-top: 1px solid var(--border-light); max-height: 300px; overflow-y: auto; }
+
+    /* ── Iesha View ───────────────────────────────────────────────────────── */
+    .view-iesha { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+    .ie-section { background: var(--card); border-radius: var(--r-md); box-shadow: var(--sh-card); padding: 20px; }
+    .ie-section-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+    .ie-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .ie-bar-label { font-size: 12px; color: var(--text-sec); width: 140px; flex-shrink: 0; }
+    .ie-bar-track { flex: 1; height: 8px; background: var(--border-light); border-radius: 4px; overflow: hidden; }
+    .ie-bar-fill { height: 100%; border-radius: 4px; }
+    .ie-bar-fill--intent { background: var(--primary); }
+    .ie-bar-fill--fit    { background: var(--primary-20); }
+    .ie-bar-value { font-size: 12px; font-weight: 700; color: var(--text); width: 36px; text-align: right; }
+    .ie-breakdown { border: 1px solid var(--border-light); border-radius: var(--r-sm); padding: 12px; margin-bottom: 10px; }
+    .ie-breakdown-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .ie-breakdown-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .ie-formula { font-size: 11px; color: var(--text-ter); font-family: monospace; margin: 8px 0 6px; }
+    .ie-dims { display: flex; gap: 8px; flex-wrap: wrap; }
+    .ie-dim { font-size: 11px; padding: 1px 6px; border-radius: 3px; }
+    .ie-dim--match   { background: #e8f5e9; color: #2e7d32; }
+    .ie-dim--nomatch { background: #fce4ec; color: #c62828; }
+    .ie-dim--unknown { background: var(--neutral-5); color: var(--text-ter); }
+    .ie-math-card { font-size: 13px; line-height: 1.7; }
+    .ie-math-card code { background: var(--neutral-5); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+    .ie-icp-list { margin-top: 8px; font-size: 12px; color: var(--text-sec); }
+
+    /* ── Alex View ────────────────────────────────────────────────────────── */
+    .view-alex { padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    .view-alex h2 { font-size: 14px; font-weight: 700; color: var(--text-ter); text-transform: uppercase; letter-spacing: .8px; }
+    .ax-hero { background: var(--card); border-radius: var(--r-md); box-shadow: var(--sh-dd);
+               padding: 24px; width: 100%; max-width: 680px; transition: opacity .3s; }
+    .ax-hero.contacted { opacity: 0.45; }
+    .ax-hero-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
+    .ax-company { font-size: 22px; font-weight: 800; color: var(--text); }
+    .ax-score { font-size: 36px; font-weight: 800; color: var(--primary); line-height: 1; }
+    .ax-why { font-size: 14px; color: var(--text-sec); margin: 8px 0 16px; }
+    .ax-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .ax-btn { height: 32px; padding: 0 12px; border-radius: var(--r-sm); border: 1px solid var(--border-light);
+              background: var(--card); color: var(--text-sec); font-family: var(--font); font-size: 12px; font-weight: 600;
+              display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: all .12s; }
+    .ax-btn:hover { border-color: var(--primary); color: var(--text-pri); background: var(--primary-10); }
+    .ax-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .ax-placeholder { background: var(--surface); border: 1.5px dashed var(--border-med); border-radius: var(--r-md);
+                      padding: 24px; width: 100%; max-width: 680px; text-align: center; color: var(--text-ter); font-size: 13px; }
+
+    /* ── Maya View ────────────────────────────────────────────────────────── */
+    .view-maya { background: var(--surface); }
+    .my-section-header { padding: 12px 24px 8px; font-size: 11px; font-weight: 700; text-transform: uppercase;
+                         letter-spacing: .6px; color: var(--text-ter); background: var(--surface); }
+    .my-row { display: grid; grid-template-columns: 1fr 48px 120px 2fr 90px; align-items: center; gap: 12px;
+               padding: 10px 24px; border-bottom: 1px solid var(--border-light); background: var(--card); }
+    .my-recency { font-size: 11px; color: var(--text-ter); text-align: right; }
+    .my-row[data-recent="true"] { background: var(--primary-10); }
+
+    /* ── Toast ────────────────────────────────────────────────────────────── */
+    .toast { position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+             background: var(--text); color: #fff; padding: 10px 16px;
+             border-radius: var(--r-sm); font-size: 13px; font-weight: 600;
+             box-shadow: var(--sh-dd); pointer-events: none;
+             animation: toast-in .2s ease; }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* ── Responsive ───────────────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .sidebar { display: none; }
+      .filter-bar { padding: 8px 16px; }
+      .st-grid { grid-template-columns: 1fr; }
+      .ax-hero { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="text/babel">
+    // ── Constants ─────────────────────────────────────────────────────────
+    const MOCK_NOW = '2026-05-04T12:00:00Z';
+
+    const DEFAULT_ICP = {
+      size: { min: 200, max: 4999 },
+      industries: ["Software & Technology", "Financial Services", "Retail & E-Commerce"],
+      geo: ["AMER", "EMEA"],
+      personas: ["VP Marketing", "Demand Gen Manager", "Marketing Director", "Head of Marketing", "CMO"],
+      signalPriorities: { pricing: 1.0, compare: 0.9, competitors: 0.7, category: 0.5, profile: 0.3 }
+    };
+
+    // ── Mock Data ──────────────────────────────────────────────────────────
+    const MOCK_DATA = [{"company_name":"Fixture-StrongFit-4of4","company_domain":"fixture-strong.test","company_intent_score":80,"company_employees":500,"company_industry":"Software & Technology","signal_type":"pricing","total_activity":25,"visitor_count":8,"recent_signals":[{"type":"pricing","count":5,"last_seen":"2026-05-03T10:00:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing"]},{"company_name":"Fixture-PartialFit-2of4","company_domain":"fixture-partial.test","company_intent_score":60,"company_employees":500,"company_industry":"Software & Technology","signal_type":"compare","total_activity":12,"visitor_count":4,"recent_signals":[{"type":"compare","count":3,"last_seen":"2026-04-20T08:00:00Z"}],"geo_region":"APAC","personas_detected":["CTO"]},{"company_name":"Fixture-UnknownFit-nulls","company_domain":"fixture-unknown.test","company_intent_score":72,"company_employees":null,"company_industry":null,"signal_type":"profile","total_activity":8,"visitor_count":3,"recent_signals":[{"type":"profile","count":2,"last_seen":"2026-05-01T14:00:00Z"}],"geo_region":null,"personas_detected":null},{"company_name":"Fixture-WeakFit-0of4","company_domain":"fixture-weak.test","company_intent_score":45,"company_employees":50000,"company_industry":"Manufacturing","signal_type":"category","total_activity":5,"visitor_count":2,"recent_signals":[{"type":"category","count":1,"last_seen":"2026-04-10T09:00:00Z"}],"geo_region":"APAC","personas_detected":["CTO","VP Engineering"]},{"company_name":"Adobe","company_domain":"adobe.com","company_intent_score":95,"company_employees":25000,"company_industry":"Software & Technology","signal_type":"profile","total_activity":42,"visitor_count":15,"recent_signals":[{"type":"profile","count":8,"last_seen":"2026-05-02T09:30:00Z"},{"type":"compare","count":3,"last_seen":"2026-04-28T14:15:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing","CMO","Demand Gen Manager"]},{"company_name":"Atlassian","company_domain":"atlassian.com","company_intent_score":92,"company_employees":11000,"company_industry":"Software & Technology","signal_type":"compare","total_activity":38,"visitor_count":12,"recent_signals":[{"type":"compare","count":6,"last_seen":"2026-05-03T11:00:00Z"},{"type":"profile","count":4,"last_seen":"2026-04-29T16:45:00Z"}],"geo_region":"APAC","personas_detected":["VP Marketing","Marketing Director"]},{"company_name":"Salesforce","company_domain":"salesforce.com","company_intent_score":98,"company_employees":79000,"company_industry":"Software & Technology","signal_type":"profile","total_activity":55,"visitor_count":18,"recent_signals":[{"type":"profile","count":10,"last_seen":"2026-05-04T08:00:00Z"},{"type":"compare","count":5,"last_seen":"2026-04-27T13:20:00Z"}],"geo_region":"AMER","personas_detected":["CMO","VP Marketing","Head of Marketing"]},{"company_name":"HubSpot","company_domain":"hubspot.com","company_intent_score":91,"company_employees":7400,"company_industry":"Software & Technology","signal_type":"pricing","total_activity":35,"visitor_count":11,"recent_signals":[{"type":"pricing","count":7,"last_seen":"2026-05-01T10:30:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing","Demand Gen Manager"]},{"company_name":"SAP","company_domain":"sap.com","company_intent_score":90,"company_employees":105000,"company_industry":"Software & Technology","signal_type":"category","total_activity":28,"visitor_count":9,"recent_signals":[{"type":"category","count":4,"last_seen":"2026-04-25T15:00:00Z"}],"geo_region":"EMEA","personas_detected":["CMO","Head of Marketing"]},{"company_name":"Revolut","company_domain":"revolut.com","company_intent_score":78,"company_employees":8000,"company_industry":"Financial Services","signal_type":"profile","total_activity":22,"visitor_count":7,"recent_signals":[{"type":"profile","count":3,"last_seen":"2026-04-30T12:00:00Z"}],"geo_region":"EMEA","personas_detected":["VP Marketing","Marketing Director"]},{"company_name":"Shopify","company_domain":"shopify.com","company_intent_score":85,"company_employees":11600,"company_industry":"Retail & E-Commerce","signal_type":"compare","total_activity":31,"visitor_count":10,"recent_signals":[{"type":"compare","count":5,"last_seen":"2026-05-02T14:30:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing","CMO"]},{"company_name":"Stripe","company_domain":"stripe.com","company_intent_score":82,"company_employees":8000,"company_industry":"Financial Services","signal_type":"pricing","total_activity":26,"visitor_count":8,"recent_signals":[{"type":"pricing","count":4,"last_seen":"2026-04-28T09:15:00Z"}],"geo_region":"AMER","personas_detected":["Demand Gen Manager","Marketing Director"]},{"company_name":"Zendesk","company_domain":"zendesk.com","company_intent_score":79,"company_employees":6000,"company_industry":"Software & Technology","signal_type":"compare","total_activity":20,"visitor_count":6,"recent_signals":[{"type":"compare","count":3,"last_seen":"2026-04-26T11:45:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing"]},{"company_name":"Workday","company_domain":"workday.com","company_intent_score":81,"company_employees":18800,"company_industry":"Software & Technology","signal_type":"profile","total_activity":24,"visitor_count":7,"recent_signals":[{"type":"profile","count":4,"last_seen":"2026-04-23T13:00:00Z"}],"geo_region":"AMER","personas_detected":["CMO","Head of Marketing"]},{"company_name":"Datadog","company_domain":"datadog.com","company_intent_score":77,"company_employees":5200,"company_industry":"Software & Technology","signal_type":"profile","total_activity":19,"visitor_count":6,"recent_signals":[{"type":"profile","count":3,"last_seen":"2026-04-21T10:30:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing","Demand Gen Manager"]},{"company_name":"McKinsey & Company","company_domain":"mckinsey.com","company_intent_score":75,"company_employees":45000,"company_industry":"Financial Services","signal_type":"compare","total_activity":17,"visitor_count":5,"recent_signals":[{"type":"compare","count":2,"last_seen":"2026-04-19T15:20:00Z"}],"geo_region":"AMER","personas_detected":["CMO"]},{"company_name":"Zoom","company_domain":"zoom.com","company_intent_score":73,"company_employees":7400,"company_industry":"Software & Technology","signal_type":"profile","total_activity":15,"visitor_count":5,"recent_signals":[{"type":"profile","count":2,"last_seen":"2026-04-17T09:00:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing"]},{"company_name":"Canva","company_domain":"canva.com","company_intent_score":76,"company_employees":4500,"company_industry":"Software & Technology","signal_type":"compare","total_activity":18,"visitor_count":6,"recent_signals":[{"type":"compare","count":3,"last_seen":"2026-04-24T12:30:00Z"}],"geo_region":"APAC","personas_detected":["Marketing Director"]},{"company_name":"Klarna","company_domain":"klarna.com","company_intent_score":74,"company_employees":5000,"company_industry":"Financial Services","signal_type":"profile","total_activity":14,"visitor_count":4,"recent_signals":[{"type":"profile","count":2,"last_seen":"2026-04-22T14:15:00Z"}],"geo_region":"EMEA","personas_detected":["VP Marketing"]},{"company_name":"Grab","company_domain":"grab.com","company_intent_score":68,"company_employees":9000,"company_industry":"Retail & E-Commerce","signal_type":"category","total_activity":12,"visitor_count":4,"recent_signals":[{"type":"category","count":2,"last_seen":"2026-04-18T11:00:00Z"}],"geo_region":"APAC","personas_detected":["Demand Gen Manager"]},{"company_name":"Infosys","company_domain":"infosys.com","company_intent_score":65,"company_employees":343000,"company_industry":"Software & Technology","signal_type":"profile","total_activity":11,"visitor_count":3,"recent_signals":[{"type":"profile","count":2,"last_seen":"2026-04-16T10:00:00Z"}],"geo_region":"APAC","personas_detected":null},{"company_name":"Kajabi","company_domain":"kajabi.com","company_intent_score":62,"company_employees":400,"company_industry":"Software & Technology","signal_type":"profile","total_activity":9,"visitor_count":3,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-14T08:30:00Z"}],"geo_region":"AMER","personas_detected":["Marketing Director"]},{"company_name":"LPL Financial","company_domain":"lpl.com","company_intent_score":58,"company_employees":5200,"company_industry":"Financial Services","signal_type":"category","total_activity":8,"visitor_count":2,"recent_signals":[{"type":"category","count":1,"last_seen":"2026-04-12T13:00:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Alexandria Capital","company_domain":"alexandriacapital.com","company_intent_score":55,"company_employees":120,"company_industry":"Financial Services","signal_type":"compare","total_activity":7,"visitor_count":2,"recent_signals":[{"type":"compare","count":1,"last_seen":"2026-04-10T09:45:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing"]},{"company_name":"Echo Global Logistics","company_domain":"echo.com","company_intent_score":52,"company_employees":2800,"company_industry":"Manufacturing","signal_type":"profile","total_activity":6,"visitor_count":2,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-08T11:20:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"VFW Post 7686","company_domain":"vfwpost7686.org","company_intent_score":48,"company_employees":50,"company_industry":"Education","signal_type":"profile","total_activity":5,"visitor_count":1,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-06T14:00:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Sentris Network","company_domain":"sentrisnetwork.com","company_intent_score":51,"company_employees":85,"company_industry":"Software & Technology","signal_type":"compare","total_activity":6,"visitor_count":2,"recent_signals":[{"type":"compare","count":1,"last_seen":"2026-04-05T10:15:00Z"}],"geo_region":"AMER","personas_detected":["Demand Gen Manager"]},{"company_name":"BNP Paribas","company_domain":"bnpparibas.com","company_intent_score":54,"company_employees":190000,"company_industry":"Financial Services","signal_type":"category","total_activity":7,"visitor_count":2,"recent_signals":[{"type":"category","count":1,"last_seen":"2026-04-03T15:30:00Z"}],"geo_region":"EMEA","personas_detected":null},{"company_name":"Stripe Japan","company_domain":"stripe.co.jp","company_intent_score":57,"company_employees":200,"company_industry":"Financial Services","signal_type":"profile","total_activity":8,"visitor_count":2,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-01T12:00:00Z"}],"geo_region":"APAC","personas_detected":["Marketing Director"]},{"company_name":"Toyota","company_domain":"toyota.com","company_intent_score":50,"company_employees":375000,"company_industry":"Manufacturing","signal_type":"category","total_activity":5,"visitor_count":1,"recent_signals":[{"type":"category","count":1,"last_seen":"2026-03-30T09:00:00Z"}],"geo_region":"APAC","personas_detected":null},{"company_name":"University of Michigan","company_domain":"umich.edu","company_intent_score":49,"company_employees":48000,"company_industry":"Education","signal_type":"profile","total_activity":5,"visitor_count":1,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-03-28T10:30:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Acme Tech Solutions","company_domain":"acmetech.com","company_intent_score":67,"company_employees":350,"company_industry":"Software & Technology","signal_type":"profile","total_activity":13,"visitor_count":4,"recent_signals":[{"type":"profile","count":2,"last_seen":"2026-04-29T11:00:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing","Marketing Director"]},{"company_name":"Global Finance Corp","company_domain":"globalfinance.com","company_intent_score":64,"company_employees":2200,"company_industry":"Financial Services","signal_type":"compare","total_activity":10,"visitor_count":3,"recent_signals":[{"type":"compare","count":2,"last_seen":"2026-04-27T14:20:00Z"}],"geo_region":"EMEA","personas_detected":["CMO"]},{"company_name":"Retail Innovations Ltd","company_domain":"retailinnovations.com","company_intent_score":61,"company_employees":1500,"company_industry":"Retail & E-Commerce","signal_type":"pricing","total_activity":9,"visitor_count":3,"recent_signals":[{"type":"pricing","count":2,"last_seen":"2026-04-25T09:30:00Z"}],"geo_region":"AMER","personas_detected":["Demand Gen Manager"]},{"company_name":"Healthcare Dynamics","company_domain":"healthdynamics.com","company_intent_score":59,"company_employees":800,"company_industry":"Healthcare","signal_type":"profile","total_activity":8,"visitor_count":2,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-23T16:00:00Z"}],"geo_region":"AMER","personas_detected":["Marketing Director"]},{"company_name":"Manufacturing Pro","company_domain":"manufacturingpro.com","company_intent_score":56,"company_employees":3500,"company_industry":"Manufacturing","signal_type":"category","total_activity":7,"visitor_count":2,"recent_signals":[{"type":"category","count":1,"last_seen":"2026-04-20T13:45:00Z"}],"geo_region":"EMEA","personas_detected":null},{"company_name":"EdTech Ventures","company_domain":"edtechventures.com","company_intent_score":53,"company_employees":250,"company_industry":"Education","signal_type":"profile","total_activity":6,"visitor_count":2,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-18T10:00:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing"]},{"company_name":"Digital Marketing Hub","company_domain":"digitalhub.com","company_intent_score":47,"company_employees":180,"company_industry":"Software & Technology","signal_type":"compare","total_activity":5,"visitor_count":1,"recent_signals":[{"type":"compare","count":1,"last_seen":"2026-04-15T11:30:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Cloud Infrastructure Inc","company_domain":"cloudinfra.com","company_intent_score":46,"company_employees":600,"company_industry":"Software & Technology","signal_type":"pricing","total_activity":5,"visitor_count":1,"recent_signals":[{"type":"pricing","count":1,"last_seen":"2026-04-13T14:00:00Z"}],"geo_region":"EMEA","personas_detected":["Demand Gen Manager"]},{"company_name":"Analytics Powerhouse","company_domain":"analyticspowerhouse.com","company_intent_score":44,"company_employees":420,"company_industry":"Software & Technology","signal_type":"profile","total_activity":4,"visitor_count":1,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-11T09:15:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Financial Tech Startup","company_domain":"fintechstartup.com","company_intent_score":42,"company_employees":95,"company_industry":"Financial Services","signal_type":"compare","total_activity":4,"visitor_count":1,"recent_signals":[{"type":"compare","count":1,"last_seen":"2026-04-09T12:30:00Z"}],"geo_region":"AMER","personas_detected":["VP Marketing"]},{"company_name":"E-Commerce Accelerator","company_domain":"ecommerceaccel.com","company_intent_score":40,"company_employees":280,"company_industry":"Retail & E-Commerce","signal_type":"category","total_activity":3,"visitor_count":1,"recent_signals":[{"type":"category","count":1,"last_seen":"2026-04-07T15:00:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Smart Manufacturing Co","company_domain":"smartmfg.com","company_intent_score":38,"company_employees":1200,"company_industry":"Manufacturing","signal_type":"profile","total_activity":3,"visitor_count":1,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-04-04T10:45:00Z"}],"geo_region":"EMEA","personas_detected":null},{"company_name":"Healthcare Innovation Lab","company_domain":"healthinnovlab.com","company_intent_score":36,"company_employees":350,"company_industry":"Healthcare","signal_type":"compare","total_activity":3,"visitor_count":1,"recent_signals":[{"type":"compare","count":1,"last_seen":"2026-04-02T13:20:00Z"}],"geo_region":"AMER","personas_detected":["Marketing Director"]},{"company_name":"Learning Platform Global","company_domain":"learningplatform.com","company_intent_score":34,"company_employees":500,"company_industry":"Education","signal_type":"profile","total_activity":2,"visitor_count":1,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-03-31T11:00:00Z"}],"geo_region":"APAC","personas_detected":null},{"company_name":"Startup Incubator Network","company_domain":"startupincubator.com","company_intent_score":32,"company_employees":75,"company_industry":"Software & Technology","signal_type":"pricing","total_activity":2,"visitor_count":1,"recent_signals":[{"type":"pricing","count":1,"last_seen":"2026-03-29T14:30:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Legacy Banking Solutions","company_domain":"legacybanking.com","company_intent_score":30,"company_employees":8500,"company_industry":"Financial Services","signal_type":"category","total_activity":2,"visitor_count":1,"recent_signals":[{"type":"category","count":1,"last_seen":"2026-03-27T09:00:00Z"}],"geo_region":"EMEA","personas_detected":null},{"company_name":"Niche Retail Brand","company_domain":"nicheretail.com","company_intent_score":28,"company_employees":45,"company_industry":"Retail & E-Commerce","signal_type":"profile","total_activity":2,"visitor_count":1,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-03-25T12:15:00Z"}],"geo_region":"AMER","personas_detected":null},{"company_name":"Industrial Equipment Supplier","company_domain":"industrialequip.com","company_intent_score":26,"company_employees":2100,"company_industry":"Manufacturing","signal_type":"compare","total_activity":2,"visitor_count":1,"recent_signals":[{"type":"compare","count":1,"last_seen":"2026-03-23T15:45:00Z"}],"geo_region":"EMEA","personas_detected":null},{"company_name":"Community College Network","company_domain":"communitycollege.edu","company_intent_score":24,"company_employees":3200,"company_industry":"Education","signal_type":"profile","total_activity":1,"visitor_count":1,"recent_signals":[{"type":"profile","count":1,"last_seen":"2026-03-21T10:00:00Z"}],"geo_region":"AMER","personas_detected":null}];
+
+    // ── Scoring Functions ──────────────────────────────────────────────────
+    function dimensionMatch(value, rule) {
+      if (value === null || value === undefined) return 'unknown';
+      if (rule && typeof rule === 'object' && !Array.isArray(rule)) {
+        const { min, max } = rule;
+        const n = Number(value);
+        if (isNaN(n)) return 'unknown';
+        return (min == null || n >= min) && (max == null || n <= max) ? 'match' : 'no-match';
+      }
+      if (Array.isArray(rule)) {
+        if (Array.isArray(value)) {
+          const lv = value.map(v => String(v).toLowerCase());
+          const lr = rule.map(r => String(r).toLowerCase());
+          return lv.some(v => lr.includes(v)) ? 'match' : 'no-match';
+        }
+        return rule.map(r => String(r).toLowerCase()).includes(String(value).toLowerCase()) ? 'match' : 'no-match';
+      }
+      return 'unknown';
+    }
+
+    function computeFit(company, icp) {
+      const dims = [
+        { name: 'size',     value: company.company_employees,  rule: icp.size },
+        { name: 'industry', value: company.company_industry,   rule: icp.industries },
+        { name: 'geo',      value: company.geo_region,         rule: icp.geo },
+        { name: 'persona',  value: company.personas_detected,  rule: icp.personas },
+      ];
+      const results = {};
+      let matchCount = 0, unknownCount = 0;
+      const matches = [], missingDims = [];
+      for (const d of dims) {
+        const r = dimensionMatch(d.value, d.rule);
+        results[d.name] = r;
+        if (r === 'match') { matchCount++; matches.push(d.name); }
+        else if (r === 'unknown') { unknownCount++; missingDims.push(d.name); }
+      }
+      let tier;
+      if ((results.size === 'unknown' && results.industry === 'unknown') || unknownCount === 4) tier = 'Unknown';
+      else if (matchCount >= 3 && (results.size !== 'unknown' || results.industry !== 'unknown')) tier = 'Strong';
+      else if (matchCount >= 1) tier = 'Partial';
+      else if (matchCount === 0 && unknownCount === 0) tier = 'Weak';
+      else tier = 'Unknown';
+      const score = tier === 'Strong' ? 100 : tier === 'Partial' ? 25 + matchCount * 25 : tier === 'Weak' ? 25 : null;
+      return { tier, score, matches, missingDims };
+    }
+
+    function computeComposite(company, icp) {
+      const intent = company.company_intent_score;
+      const fit = computeFit(company, icp);
+      let composite, formula;
+      if (fit.score === null) {
+        composite = intent;
+        formula = 'intent only (fit unknown): ' + intent;
+      } else {
+        composite = Math.round(intent * 0.6 + fit.score * 0.4);
+        formula = intent + '×0.6 + ' + fit.score + '×0.4 = ' + composite;
+      }
+      return { composite, intent, fit, formula };
+    }
+
+    function computeWhyCall(company, mockNow) {
+      const now = mockNow instanceof Date ? mockNow : new Date(mockNow);
+      const cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const signals = company.recent_signals || [];
+      for (const type of ['pricing','compare','competitors','category','profile']) {
+        const m = signals.filter(s => s.type === type && new Date(s.last_seen) >= cutoff);
+        if (m.length) {
+          if (type === 'pricing') return 'Researched pricing ' + m[0].count + '× in last 7 days';
+          if (type === 'compare') return 'Compared you to a competitor recently';
+          if (type === 'competitors') return 'Researching competitor alternatives';
+          if (type === 'category') return 'Browsing ' + (company.company_industry || 'category') + ' page';
+          if (type === 'profile') return 'Repeat profile visits (' + m[0].count + ' this week)';
+        }
+      }
+      return 'Active on G2 recently';
+    }
+
+    // Expose for Playwright QA (T8)
+    window.__test = { computeFit, computeComposite, computeWhyCall, dimensionMatch, DEFAULT_ICP, MOCK_DATA, MOCK_NOW };
+
+    // ── Helper: signal icon/label ─────────────────────────────────────────
+    const SIGNAL_META = {
+      profile:     { icon: 'visibility', label: 'Profile' },
+      pricing:     { icon: 'payments',   label: 'Pricing' },
+      compare:     { icon: 'compare_arrows', label: 'Compare' },
+      category:    { icon: 'category',   label: 'Category' },
+      competitors: { icon: 'flag',       label: 'Competitors' },
+    };
+
+    function recencyLabel(lastSeen, refDate) {
+      const diff = new Date(refDate) - new Date(lastSeen);
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      if (days === 0) return 'today';
+      if (days === 1) return '1 day ago';
+      if (days < 7) return days + ' days ago';
+      const weeks = Math.floor(days / 7);
+      return weeks + (weeks === 1 ? ' week ago' : ' weeks ago');
+    }
+
+    // ── FitBadge ──────────────────────────────────────────────────────────
+    function FitBadge({ tier }) {
+      if (!tier || tier === 'Unknown') return <span className="fit-unknown">—</span>;
+      const cls = { Strong: 'fit-badge--strong', Partial: 'fit-badge--partial', Weak: 'fit-badge--weak' }[tier];
+      const lbl = { Strong: 'Strong fit', Partial: 'Partial fit', Weak: 'Weak fit' }[tier];
+      return <span className={`fit-badge ${cls}`}>{lbl}</span>;
+    }
+
+    // ── TopBar ────────────────────────────────────────────────────────────
+    function TopBar() {
+      return (
+        <div className="top-bar">
+          <span className="top-bar-logo">G2</span>
+          <div className="top-bar-search">
+            <span className="mi" aria-hidden="true">search</span>
+            <span className="top-bar-search-text">Search G2…</span>
+          </div>
+          <div className="top-bar-actions">
+            <button className="top-bar-icon" aria-label="Notifications"><span className="mi" aria-hidden="true">notifications</span></button>
+            <button className="top-bar-icon" aria-label="Help"><span className="mi" aria-hidden="true">help_outline</span></button>
+            <div className="top-bar-avatar" aria-label="User avatar">LR</div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── Sidebar ───────────────────────────────────────────────────────────
+    function Sidebar() {
+      return (
+        <aside className="sidebar">
+          <div className="sidebar-logo">
+            <div className="sidebar-logomark" aria-hidden="true">G2</div>
+            <span className="sidebar-orgname">G2.com</span>
+          </div>
+          <nav className="sidebar-nav" aria-label="Main navigation">
+            <button className="nav-item parent">Buyer Intent</button>
+            <div className="nav-sub">
+              <button className="nav-item active">Hot Prospects</button>
+              <button className="nav-item">All Companies</button>
+              <button className="nav-item">Signals</button>
+            </div>
+            <button className="nav-item parent">Audience Builder</button>
+            <button className="nav-item parent">Reports</button>
+            <button className="nav-item parent">Settings</button>
+          </nav>
+        </aside>
+      );
+    }
+
+    // ── FilterBar ─────────────────────────────────────────────────────────
+    function FilterBar({ activeSignals, setActiveSignals, activeFits, setActiveFits }) {
+      const signals = ['profile','pricing','compare','category','competitors'];
+      const fits = [
+        { key: 'Strong',  label: 'Strong fit' },
+        { key: 'Partial', label: 'Partial fit' },
+        { key: 'Weak',    label: 'Weak / Unknown' },
+      ];
+
+      function toggleSignal(s) {
+        setActiveSignals(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
+      }
+      function toggleFit(f) {
+        setActiveFits(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f]);
+      }
+
+      return (
+        <div className="filter-bar" role="group" aria-label="Filters">
+          <span className="filter-label">Signal</span>
+          {signals.map(s => (
+            <button key={s} className="chip signal-chip" data-signal={s}
+              aria-pressed={activeSignals.includes(s).toString()}
+              onClick={() => toggleSignal(s)}>
+              <span className="mi" aria-hidden="true">{SIGNAL_META[s].icon}</span>
+              {SIGNAL_META[s].label}
+            </button>
+          ))}
+          <div className="filter-sep" aria-hidden="true" />
+          <span className="filter-label">Fit</span>
+          {fits.map(f => (
+            <button key={f.key} className="chip fit-chip" data-fit={f.key}
+              aria-pressed={activeFits.includes(f.key).toString()}
+              onClick={() => toggleFit(f.key)}>
+              {f.label}
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+    // ── FranciscoView ─────────────────────────────────────────────────────
+    function FranciscoView({ companies }) {
+      if (companies.length === 0) {
+        return (
+          <div className="view-francisco">
+            <div className="empty-state">No companies match current filters. Try adjusting the filters above.</div>
+          </div>
+        );
+      }
+      return (
+        <div className="view-francisco">
+          {companies.map(c => {
+            const sm = SIGNAL_META[c.signal_type] || { icon: 'circle', label: c.signal_type };
+            return (
+              <a key={c.company_name} className="fr-row" href={'https://' + c.company_domain}
+                aria-label={c.company_name + ', composite score ' + c._comp.composite}
+                tabIndex={0}>
+                <div className="fr-company">
+                  <span className="fr-company-name">{c.company_name}</span>
+                  <span className="fr-company-domain">{c.company_domain}</span>
+                </div>
+                <div className="score-badge">{c._comp.composite}</div>
+                <FitBadge tier={c._fit.tier} />
+                <div className="fr-signal">
+                  <span className="mi" aria-hidden="true">{sm.icon}</span>
+                  {sm.label}
+                </div>
+                <div className="fr-why">{c._why}</div>
+              </a>
+            );
+          })}
+        </div>
+      );
+    }
+
+    // ── StacyView ─────────────────────────────────────────────────────────
+    function StacyView({ companies }) {
+      const [openSegments, setOpenSegments] = React.useState({});
+
+      function sizeBucket(e) {
+        if (e === null) return 'Unknown';
+        if (e < 200) return 'SMB';
+        if (e < 5000) return 'Mid-Market';
+        return 'Enterprise';
+      }
+
+      const segMap = {};
+      companies.forEach(c => {
+        const key = (c.company_industry || 'Unknown') + ' · ' + sizeBucket(c.company_employees);
+        if (!segMap[key]) segMap[key] = [];
+        segMap[key].push(c);
+      });
+
+      const segments = Object.entries(segMap).map(([label, cos]) => ({
+        label,
+        companies: cos,
+        avgComposite: Math.round(cos.reduce((s, c) => s + c._comp.composite, 0) / cos.length),
+      })).sort((a, b) => b.avgComposite - a.avgComposite);
+
+      if (segments.length === 0) {
+        return <div className="view-stacy"><div className="empty-state">No segment data matches current filters.</div></div>;
+      }
+
+      return (
+        <div className="view-stacy">
+          <div className="st-grid">
+            {segments.map(seg => {
+              const isOpen = openSegments[seg.label];
+              const heat = seg.avgComposite >= 70 ? 'hot' : seg.avgComposite >= 40 ? 'warm' : 'cool';
+              const heatLabel = seg.avgComposite >= 70 ? '🔥 Hot' : seg.avgComposite >= 40 ? 'Warm' : 'Cool';
+              const overlay = seg.avgComposite >= 70 ? 'rgba(87,70,178,0.15)' : seg.avgComposite >= 40 ? 'rgba(87,70,178,0.06)' : 'transparent';
+              return (
+                <div key={seg.label} className="st-segment"
+                  onClick={() => setOpenSegments(p => ({...p, [seg.label]: !p[seg.label]}))}
+                  role="button" tabIndex={0} aria-expanded={isOpen}
+                  onKeyDown={e => e.key === 'Enter' && setOpenSegments(p => ({...p, [seg.label]: !p[seg.label]}))}>
+                  <div className="st-segment-header" style={{ background: overlay }}>
+                    <div className="st-label">{seg.label}</div>
+                    <div className="st-meta">
+                      <span className={`st-heat st-heat--${heat}`}>{heatLabel}</span>
+                      <span className="st-count">{seg.companies.length} co.</span>
+                      <span className="st-avg">avg {seg.avgComposite}</span>
+                    </div>
+                  </div>
+                  {isOpen && (
+                    <div className="st-companies">
+                      {seg.companies.map(c => (
+                        <a key={c.company_name} className="fr-row" href={'https://' + c.company_domain}
+                          aria-label={c.company_name} onClick={e => e.stopPropagation()}>
+                          <div className="fr-company">
+                            <span className="fr-company-name">{c.company_name}</span>
+                          </div>
+                          <div className="score-badge">{c._comp.composite}</div>
+                          <FitBadge tier={c._fit.tier} />
+                          <span />
+                          <div className="fr-why">{c._why}</div>
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // ── IeshaView ─────────────────────────────────────────────────────────
+    function IeshaView({ companies }) {
+      const known = companies.filter(c => c._fit.score !== null);
+      const avgIntent = known.length ? Math.round(known.reduce((s,c) => s + c.company_intent_score, 0) / known.length) : 0;
+      const avgFitScore = known.length ? Math.round(known.reduce((s,c) => s + c._fit.score, 0) / known.length) : 0;
+      const avgIntentContrib = Math.round(avgIntent * 0.6);
+      const avgFitContrib = Math.round(avgFitScore * 0.4);
+
+      const dimNames = ['size','industry','geo','persona'];
+
+      return (
+        <div className="view-iesha">
+          {/* Section 1: Aggregate */}
+          <div className="ie-section ie-aggregate">
+            <div className="ie-section-title">Scoring Overview — All {companies.length} Companies</div>
+            <div className="ie-bar-row">
+              <span className="ie-bar-label">Intent (×0.6) contribution</span>
+              <div className="ie-bar-track">
+                <div className="ie-bar-fill ie-bar-fill--intent" style={{ width: avgIntentContrib + '%' }} />
+              </div>
+              <span className="ie-bar-value">{avgIntentContrib}</span>
+            </div>
+            <div className="ie-bar-row">
+              <span className="ie-bar-label">ICP fit (×0.4) contribution</span>
+              <div className="ie-bar-track">
+                <div className="ie-bar-fill ie-bar-fill--fit" style={{ width: avgFitContrib + '%' }} />
+              </div>
+              <span className="ie-bar-value">{avgFitContrib}</span>
+            </div>
+            <p style={{ fontSize: 12, color: 'var(--text-ter)', marginTop: 8 }}>
+              Avg composite: {Math.round(avgIntentContrib + avgFitContrib)} · {known.length} with known fit, {companies.length - known.length} intent-only
+            </p>
+          </div>
+
+          {/* Section 2: Per-company */}
+          <div className="ie-section">
+            <div className="ie-section-title">Per-Company Score Breakdown</div>
+            {companies.map(c => {
+              const ic = Math.round(c.company_intent_score * 0.6);
+              const fc = c._fit.score !== null ? Math.round(c._fit.score * 0.4) : 0;
+              return (
+                <div key={c.company_name} className="ie-breakdown">
+                  <div className="ie-breakdown-header">
+                    <span className="ie-breakdown-name">{c.company_name}</span>
+                    <span className="score-badge">{c._comp.composite}</span>
+                  </div>
+                  <div className="ie-bar-row" style={{ marginBottom: 4 }}>
+                    <span className="ie-bar-label" style={{ width: 120 }}>Intent ({c.company_intent_score})</span>
+                    <div className="ie-bar-track">
+                      <div className="ie-bar-fill ie-bar-fill--intent" style={{ width: c.company_intent_score + '%' }} />
+                    </div>
+                    <span className="ie-bar-value">{ic}</span>
+                  </div>
+                  {c._fit.score !== null && (
+                    <div className="ie-bar-row" style={{ marginBottom: 4 }}>
+                      <span className="ie-bar-label" style={{ width: 120 }}>Fit ({c._fit.score})</span>
+                      <div className="ie-bar-track">
+                        <div className="ie-bar-fill ie-bar-fill--fit" style={{ width: c._fit.score + '%' }} />
+                      </div>
+                      <span className="ie-bar-value">{fc}</span>
+                    </div>
+                  )}
+                  <div className="ie-formula">{c._comp.formula}</div>
+                  <div className="ie-dims">
+                    {dimNames.map(d => {
+                      const isMatch = c._fit.matches.includes(d);
+                      const isMissing = c._fit.missingDims.includes(d);
+                      return (
+                        <span key={d} className={`ie-dim ${isMatch ? 'ie-dim--match' : isMissing ? 'ie-dim--unknown' : 'ie-dim--nomatch'}`}>
+                          {isMatch ? '✓' : isMissing ? '?' : '✗'} {d}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+            {companies.length === 0 && <div className="empty-state">No companies match current filters.</div>}
+          </div>
+
+          {/* Section 3: Math card */}
+          <div className="ie-section ie-math-card">
+            <div className="ie-section-title">Scoring Formula</div>
+            <p>When fit is known: <code>composite = intent × 0.6 + fit_score × 0.4</code></p>
+            <p>When fit is unknown: <code>composite = intent</code> (no penalty for missing data)</p>
+            <p>Fit tiers: <code>Strong = 100</code> · <code>Partial(2) = 75</code> · <code>Partial(1) = 50</code> · <code>Weak = 25</code> · <code>Unknown = intent only</code></p>
+            <div className="ie-icp-list">
+              <strong>Current ICP:</strong> Mid-Market (200–4,999 employees) ·
+              Software & Technology, Financial Services, Retail &amp; E-Commerce ·
+              AMER + EMEA · VP Marketing, Demand Gen Manager, Marketing Director, Head of Marketing, CMO
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── AlexView ──────────────────────────────────────────────────────────
+    function AlexView({ companies }) {
+      const [toast, setToast] = React.useState(null);
+      const [contacted, setContacted] = React.useState({});
+      const top3 = companies.slice(0, 3);
+
+      function showToast(msg) {
+        setToast(msg);
+        setTimeout(() => setToast(null), 2500);
+      }
+
+      const actions = [
+        { label: 'Add to CRM',    icon: 'person_add',    msg: 'Added to CRM ✓' },
+        { label: 'Email',         icon: 'email',         msg: 'Draft email opened' },
+        { label: 'Slack',         icon: 'chat',          msg: 'Shared to Slack' },
+        { label: 'Mark contacted',icon: 'check_circle',  msg: 'Marked contacted ✓', effect: 'contact' },
+        { label: 'Skip',          icon: 'skip_next',     msg: 'Skipped — moved to bottom' },
+      ];
+
+      return (
+        <div className="view-alex">
+          <h2>Top Prospects</h2>
+          {top3.map((c, i) => (
+            <div key={c.company_name} className={`ax-hero${contacted[c.company_name] ? ' contacted' : ''}`}>
+              <div className="ax-hero-top">
+                <div>
+                  <div className="ax-company" style={{ textDecoration: contacted[c.company_name] ? 'line-through' : 'none' }}>
+                    {c.company_name}
+                  </div>
+                  <div style={{ marginTop: 4 }}><FitBadge tier={c._fit.tier} /></div>
+                </div>
+                <div className="ax-score" aria-label={'Composite score ' + c._comp.composite}>{c._comp.composite}</div>
+              </div>
+              <div className="ax-why">{c._why}</div>
+              <div className="ax-actions">
+                {actions.map(a => (
+                  <button key={a.label} className="ax-btn"
+                    onClick={() => {
+                      showToast(a.msg);
+                      if (a.effect === 'contact') setContacted(p => ({...p, [c.company_name]: true}));
+                    }}>
+                    <span className="mi" aria-hidden="true">{a.icon}</span>
+                    {a.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+          {top3.length < 3 && (
+            <div className="ax-placeholder">No more prospects match your filters.</div>
+          )}
+          {toast && (
+            <div className="toast" role="status" aria-live="polite">{toast}</div>
+          )}
+        </div>
+      );
+    }
+
+    // ── MayaView ──────────────────────────────────────────────────────────
+    function MayaView({ companies }) {
+      const NOW = new Date(MOCK_NOW);
+      const CUTOFF = new Date(NOW.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      const smbs = companies.filter(c => c.company_employees === null || c.company_employees < 200);
+
+      function hasRecentSignal(c) {
+        return (c.recent_signals || []).some(s => new Date(s.last_seen) >= CUTOFF);
+      }
+      function latestSignal(c) {
+        return (c.recent_signals || []).reduce((best, s) => {
+          return !best || new Date(s.last_seen) > new Date(best.last_seen) ? s : best;
+        }, null);
+      }
+      function weekSignalCount(c) {
+        return (c.recent_signals || []).filter(s => new Date(s.last_seen) >= CUTOFF).length;
+      }
+
+      const thisWeek = smbs.filter(hasRecentSignal).sort((a,b) => b._comp.composite - a._comp.composite).slice(0, 5);
+      const others = smbs.filter(c => !thisWeek.includes(c)).sort((a,b) => b._comp.composite - a._comp.composite);
+
+      if (smbs.length === 0) {
+        return <div className="view-maya"><div className="empty-state">No SMB companies in current data.</div></div>;
+      }
+
+      function MayaRow({ c, recent }) {
+        const latest = latestSignal(c);
+        const recency = latest ? recencyLabel(latest.last_seen, MOCK_NOW) : '—';
+        const wCount = weekSignalCount(c);
+        return (
+          <a className="my-row" data-recent={recent ? 'true' : 'false'}
+            href={'https://' + c.company_domain} aria-label={c.company_name + ', composite ' + c._comp.composite}>
+            <div className="fr-company">
+              <span className="fr-company-name">{c.company_name}</span>
+              <span className="fr-company-domain">{c.company_domain}</span>
+            </div>
+            <div className="score-badge">{c._comp.composite}</div>
+            <FitBadge tier={c._fit.tier} />
+            <div className="fr-why">{c._why}{recent && wCount > 0 ? ` · ${wCount} signal${wCount>1?'s':''} this week` : ''}</div>
+            <div className="my-recency">{recency}</div>
+          </a>
+        );
+      }
+
+      return (
+        <div className="view-maya">
+          {thisWeek.length > 0 ? (
+            <>
+              <div className="my-section-header">🔥 This Week's Hot SMBs ({thisWeek.length})</div>
+              {thisWeek.map(c => <MayaRow key={c.company_name} c={c} recent={true} />)}
+            </>
+          ) : (
+            <div className="empty-state">No SMB activity in the last 7 days. Check back tomorrow.</div>
+          )}
+          {others.length > 0 && (
+            <>
+              <div className="my-section-header">Other SMB Activity ({others.length})</div>
+              {others.map(c => <MayaRow key={c.company_name} c={c} recent={false} />)}
+            </>
+          )}
+        </div>
+      );
+    }
+
+    // ── App ───────────────────────────────────────────────────────────────
+    function App() {
+      const [persona, setPersona] = React.useState('francisco');
+      const [activeSignals, setActiveSignals] = React.useState(['profile','pricing','compare','category','competitors']);
+      const [activeFits, setActiveFits] = React.useState(['Strong','Partial','Weak']);
+
+      // Enrich all companies
+      const enriched = MOCK_DATA.map(c => ({
+        ...c,
+        _fit: computeFit(c, DEFAULT_ICP),
+        _comp: computeComposite(c, DEFAULT_ICP),
+        _why: computeWhyCall(c, new Date(MOCK_NOW)),
+      }));
+
+      // Apply chip filters
+      const filtered = enriched.filter(c => {
+        const signalOk = activeSignals.includes(c.signal_type);
+        const tier = c._fit.tier;
+        // "Weak" chip covers both Weak and Unknown
+        const fitOk = activeFits.includes(tier) || (activeFits.includes('Weak') && tier === 'Unknown');
+        return signalOk && fitOk;
+      });
+
+      const sorted = [...filtered].sort((a, b) =>
+        b._comp.composite - a._comp.composite || b.company_intent_score - a.company_intent_score
+      );
+
+      return (
+        <div className="shell">
+          <TopBar />
+          <div className="shell-body">
+            <Sidebar />
+            <div className="main-area">
+              <div className="page-header">
+                <div className="page-header-left">
+                  <h1>Hot Prospects Brief</h1>
+                  <span className="subtitle">Ranked by composite intent + ICP fit score · {filtered.length} companies</span>
+                </div>
+                <select className="persona-switcher" value={persona}
+                  onChange={e => setPersona(e.target.value)}
+                  aria-label="Switch persona view">
+                  <option value="francisco">Francisco (SDR)</option>
+                  <option value="stacy">Stacy (Demand Gen / ABM)</option>
+                  <option value="iesha">Iesha (RevOps / SalesOps)</option>
+                  <option value="alex">Alex (Founder / Player-Coach)</option>
+                  <option value="maya">Maya (SMB Growth)</option>
+                </select>
+              </div>
+              <FilterBar
+                activeSignals={activeSignals} setActiveSignals={setActiveSignals}
+                activeFits={activeFits} setActiveFits={setActiveFits}
+              />
+              <main data-persona={persona}>
+                <FranciscoView companies={sorted} />
+                <StacyView companies={sorted} />
+                <IeshaView companies={sorted} />
+                <AlexView companies={sorted} />
+                <MayaView companies={filtered} />
+              </main>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+  </script>
+</body>
+</html>
