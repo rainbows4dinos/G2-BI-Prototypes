@@ -34,5 +34,13 @@
     "path": "./hot-prospects-brief/index.html",
     "gradient": "linear-gradient(135deg, #5746b2 0%, #ff8c42 100%)",
     "icon": "local_fire_department"
+  },
+  {
+    "id": "hot-prospects-brief-v2",
+    "title": "Hot Prospects Brief v2",
+    "description": "Unified card design with rich 'why call' rationale. 5 personas, summary stats, quick filter presets.",
+    "path": "./hot-prospects-brief-v2/index.html",
+    "gradient": "linear-gradient(135deg, #4535a0 0%, #ff8c42 100%)",
+    "icon": "auto_awesome"
   }
 ]
