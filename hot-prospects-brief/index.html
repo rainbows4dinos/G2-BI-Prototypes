@@ -32,10 +32,12 @@
       --sh-dd:         0 8px 24px rgba(0,0,0,.12), 0 0 1px rgba(32,31,35,.14);
       --font:          'Figtree', system-ui, sans-serif;
       --surface:       #f5f4fb;
-      --error-bg:      #fdecec;
-      --error-text:    #8a1f1f;
-      --error-border:  #f3c1c1;
-    }
+       --error-bg:      #fdecec;
+       --error-text:    #8a1f1f;
+       --error-border:  #f3c1c1;
+       --success-bg:    #e8f5e9;
+       --success-text:  #2e7d32;
+     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font); background: var(--surface); color: var(--text); font-size: 14px; }
@@ -62,9 +64,10 @@
                       padding: 0 10px; border: 1px solid rgba(255,255,255,.1); }
     .top-bar-search-text { font-size: 12px; color: rgba(255,255,255,.5); flex: 1; }
     .top-bar-actions { margin-left: auto; display: flex; align-items: center; gap: 2px; }
-    .top-bar-icon { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-                    border-radius: var(--r-sm); color: rgba(255,255,255,.65); background: none; border: none; transition: background .12s; }
-    .top-bar-icon:hover { background: rgba(255,255,255,.14); }
+     .top-bar-icon { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+                     border-radius: var(--r-sm); color: rgba(255,255,255,.65); background: none; border: none; transition: background .12s; }
+     .top-bar-icon:hover { background: rgba(255,255,255,.14); }
+     .top-bar-icon:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
     .top-bar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,.2);
                       display: flex; align-items: center; justify-content: center;
                       font-size: 11px; font-weight: 700; color: #fff; margin-left: 4px; }
@@ -84,9 +87,10 @@
                 font-weight: 500; color: var(--text-sec); background: none; border: none;
                 white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
                 transition: background .1s, color .1s; font-family: var(--font); cursor: pointer; }
-    .nav-item:hover { background: var(--primary-10); color: var(--text-pri); }
-    .nav-item.parent { font-weight: 700; color: var(--text); }
-    .nav-item.active { background: var(--primary-20); color: var(--text-pri); font-weight: 700; }
+     .nav-item:hover { background: var(--primary-10); color: var(--text-pri); }
+     .nav-item:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; background: var(--primary-10); }
+     .nav-item.parent { font-weight: 700; color: var(--text); }
+     .nav-item.active { background: var(--primary-20); color: var(--text-pri); font-weight: 700; }
     .nav-sub { border-left: 0.5px solid var(--border-light); margin-left: 12px; }
 
     /* ── Page Header ──────────────────────────────────────────────────────── */
@@ -101,12 +105,12 @@
                         border-radius: var(--r-sm); font-family: var(--font); font-size: 12px;
                         font-weight: 600; color: var(--text); background: var(--card);
                         cursor: pointer; max-width: 220px; }
-    .persona-switcher:focus { outline: 2px solid var(--primary); outline-offset: 2px; }
+     .persona-switcher:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
     /* ── Filter Bar ───────────────────────────────────────────────────────── */
     .filter-bar { background: var(--card); border-bottom: 0.5px solid var(--border-light);
                   padding: 10px 24px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
-    .filter-label { font-size: 11px; font-weight: 600; color: var(--text-ter); text-transform: uppercase; letter-spacing: .5px; margin-right: 4px; }
+     .filter-label { font-size: 11px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: .5px; margin-right: 4px; }
     .filter-sep { width: 1px; height: 20px; background: var(--border-light); margin: 0 4px; }
     .chip { height: 28px; padding: 0 12px; border-radius: var(--r-pill); border: 1px solid var(--border-light);
             background: var(--card); color: var(--text-sec); font-family: var(--font); font-size: 12px; font-weight: 600;
@@ -157,9 +161,10 @@
     /* ── Stacy View ───────────────────────────────────────────────────────── */
     .view-stacy { padding: 24px; }
     .st-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
-    .st-segment { background: var(--card); border-radius: var(--r-md); box-shadow: var(--sh-card);
-                  overflow: hidden; cursor: pointer; transition: box-shadow .15s; }
-    .st-segment:hover { box-shadow: var(--sh-dd); }
+     .st-segment { background: var(--card); border-radius: var(--r-md); box-shadow: var(--sh-card);
+                   overflow: hidden; cursor: pointer; transition: box-shadow .15s; }
+     .st-segment:hover { box-shadow: var(--sh-dd); }
+     .st-segment:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
     .st-segment-header { padding: 16px; position: relative; }
     .st-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
     .st-meta { display: flex; align-items: center; gap: 12px; }
@@ -185,17 +190,21 @@
     .ie-breakdown { border: 1px solid var(--border-light); border-radius: var(--r-sm); padding: 12px; margin-bottom: 10px; }
     .ie-breakdown-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .ie-breakdown-name { font-size: 13px; font-weight: 700; color: var(--text); }
-    .ie-formula { font-size: 11px; color: var(--text-ter); font-family: monospace; margin: 8px 0 6px; }
+     .ie-formula { font-size: 11px; color: var(--text-sec); font-family: monospace; margin: 8px 0 6px; }
     .ie-dims { display: flex; gap: 8px; flex-wrap: wrap; }
     .ie-dim { font-size: 11px; padding: 1px 6px; border-radius: 3px; }
-    .ie-dim--match   { background: #e8f5e9; color: #2e7d32; }
-    .ie-dim--nomatch { background: #fce4ec; color: #c62828; }
+     .ie-dim--match   { background: var(--success-bg); color: var(--success-text); }
+     .ie-dim--nomatch { background: var(--error-bg); color: var(--error-text); }
     .ie-dim--unknown { background: var(--neutral-5); color: var(--text-ter); }
     .ie-math-card { font-size: 13px; line-height: 1.7; }
     .ie-math-card code { background: var(--neutral-5); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
-    .ie-icp-list { margin-top: 8px; font-size: 12px; color: var(--text-sec); }
+     .ie-icp-list { margin-top: 8px; font-size: 12px; color: var(--text-sec); }
+     .ie-agg-note { font-size: 12px; color: var(--text-sec); margin-top: 8px; }
+     .ie-bar-row--breakdown { margin-bottom: 4px; }
+     .ie-bar-label--narrow { width: 120px; }
+     .ax-fit-spacing { margin-top: 4px; }
 
-    /* ── Alex View ────────────────────────────────────────────────────────── */
+     /* ── Alex View ────────────────────────────────────────────────────────── */
      [data-persona="alex"] .view-alex { padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
     .view-alex h2 { font-size: 14px; font-weight: 700; color: var(--text-ter); text-transform: uppercase; letter-spacing: .8px; }
     .ax-hero { background: var(--card); border-radius: var(--r-md); box-shadow: var(--sh-dd);
@@ -347,17 +356,27 @@
       competitors: { icon: 'flag',       label: 'Competitors' },
     };
 
-    function recencyLabel(lastSeen, refDate) {
-      const diff = new Date(refDate) - new Date(lastSeen);
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      if (days === 0) return 'today';
-      if (days === 1) return '1 day ago';
-      if (days < 7) return days + ' days ago';
-      const weeks = Math.floor(days / 7);
-      return weeks + (weeks === 1 ? ' week ago' : ' weeks ago');
-    }
+     function recencyLabel(lastSeen, refDate) {
+       const diff = new Date(refDate) - new Date(lastSeen);
+       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+       if (days === 0) return 'today';
+       if (days === 1) return '1 day ago';
+       if (days < 7) return days + ' days ago';
+       const weeks = Math.floor(days / 7);
+       return weeks + (weeks === 1 ? ' week ago' : ' weeks ago');
+     }
 
-    // ── FitBadge ──────────────────────────────────────────────────────────
+     function latestSignal(c) {
+       return (c.recent_signals || []).reduce((best, s) => {
+         return !best || new Date(s.last_seen) > new Date(best.last_seen) ? s : best;
+       }, null);
+     }
+
+     function weekSignalCount(c, cutoff) {
+       return (c.recent_signals || []).filter(s => new Date(s.last_seen) >= cutoff).length;
+     }
+
+     // ── FitBadge ──────────────────────────────────────────────────────────
     function FitBadge({ tier }) {
       if (!tier || tier === 'Unknown') return <span className="fit-unknown">—</span>;
       const cls = { Strong: 'fit-badge--strong', Partial: 'fit-badge--partial', Weak: 'fit-badge--weak' }[tier];
@@ -365,23 +384,23 @@
       return <span className={`fit-badge ${cls}`}>{lbl}</span>;
     }
 
-    // ── TopBar ────────────────────────────────────────────────────────────
-    function TopBar() {
-      return (
-        <div className="top-bar">
-          <span className="top-bar-logo">G2</span>
-          <div className="top-bar-search">
-            <span className="mi" aria-hidden="true">search</span>
-            <span className="top-bar-search-text">Search G2…</span>
-          </div>
-          <div className="top-bar-actions">
-            <button className="top-bar-icon" aria-label="Notifications"><span className="mi" aria-hidden="true">notifications</span></button>
-            <button className="top-bar-icon" aria-label="Help"><span className="mi" aria-hidden="true">help_outline</span></button>
-            <div className="top-bar-avatar" aria-label="User avatar">LR</div>
-          </div>
-        </div>
-      );
-    }
+     // ── TopBar ────────────────────────────────────────────────────────────
+     function TopBar() {
+       return (
+         <header className="top-bar" role="banner">
+           <span className="top-bar-logo">G2</span>
+           <div className="top-bar-search">
+             <span className="mi" aria-hidden="true">search</span>
+             <span className="top-bar-search-text">Search G2…</span>
+           </div>
+           <div className="top-bar-actions">
+             <button className="top-bar-icon" aria-label="Notifications"><span className="mi" aria-hidden="true">notifications</span></button>
+             <button className="top-bar-icon" aria-label="Help"><span className="mi" aria-hidden="true">help_outline</span></button>
+             <div className="top-bar-avatar" aria-label="User avatar">LR</div>
+           </div>
+         </header>
+       );
+     }
 
     // ── Sidebar ───────────────────────────────────────────────────────────
     function Sidebar() {
@@ -391,13 +410,13 @@
             <div className="sidebar-logomark" aria-hidden="true">G2</div>
             <span className="sidebar-orgname">G2.com</span>
           </div>
-          <nav className="sidebar-nav" aria-label="Main navigation">
-            <button className="nav-item parent">Buyer Intent</button>
-            <div className="nav-sub">
-              <button className="nav-item active">Hot Prospects</button>
-              <button className="nav-item">All Companies</button>
-              <button className="nav-item">Signals</button>
-            </div>
+           <nav className="sidebar-nav" aria-label="Main navigation">
+             <button className="nav-item parent">Buyer Intent</button>
+             <div className="nav-sub">
+               <button className="nav-item active" aria-current="page">Hot Prospects</button>
+               <button className="nav-item">All Companies</button>
+               <button className="nav-item">Signals</button>
+             </div>
             <button className="nav-item parent">Audience Builder</button>
             <button className="nav-item parent">Reports</button>
             <button className="nav-item parent">Settings</button>
@@ -518,10 +537,15 @@
               const heatLabel = seg.avgComposite >= 70 ? '🔥 Hot' : seg.avgComposite >= 40 ? 'Warm' : 'Cool';
               const overlay = seg.avgComposite >= 70 ? 'rgba(87,70,178,0.15)' : seg.avgComposite >= 40 ? 'rgba(87,70,178,0.06)' : 'transparent';
               return (
-                <div key={seg.label} className="st-segment"
-                  onClick={() => setOpenSegments(p => ({...p, [seg.label]: !p[seg.label]}))}
-                  role="button" tabIndex={0} aria-expanded={isOpen}
-                  onKeyDown={e => e.key === 'Enter' && setOpenSegments(p => ({...p, [seg.label]: !p[seg.label]}))}>
+                 <div key={seg.label} className="st-segment"
+                   onClick={() => setOpenSegments(p => ({...p, [seg.label]: !p[seg.label]}))}
+                   role="button" tabIndex={0} aria-expanded={isOpen}
+                   onKeyDown={e => {
+                     if (e.key === 'Enter' || e.key === ' ') {
+                       e.preventDefault();
+                       setOpenSegments(p => ({...p, [seg.label]: !p[seg.label]}));
+                     }
+                   }}>
                   <div className="st-segment-header" style={{ background: overlay }}>
                     <div className="st-label">{seg.label}</div>
                     <div className="st-meta">
@@ -564,11 +588,10 @@
 
       const dimNames = ['size','industry','geo','persona'];
 
-      return (
-        <div className="view-iesha">
-          {/* Section 1: Aggregate */}
-          <div className="ie-section ie-aggregate">
-            <div className="ie-section-title">Scoring Overview — All {companies.length} Companies</div>
+       return (
+         <div className="view-iesha">
+           <div className="ie-section ie-aggregate">
+             <h2 className="ie-section-title">Scoring Overview — All {companies.length} Companies</h2>
             <div className="ie-bar-row">
               <span className="ie-bar-label">Intent (×0.6) contribution</span>
               <div className="ie-bar-track">
@@ -583,14 +606,13 @@
               </div>
               <span className="ie-bar-value">{avgFitContrib}</span>
             </div>
-            <p style={{ fontSize: 12, color: 'var(--text-ter)', marginTop: 8 }}>
-              Avg composite: {Math.round(avgIntentContrib + avgFitContrib)} · {known.length} with known fit, {companies.length - known.length} intent-only
-            </p>
-          </div>
+             <p className="ie-agg-note">
+               Avg composite: {Math.round(avgIntentContrib + avgFitContrib)} · {known.length} with known fit, {companies.length - known.length} intent-only
+             </p>
+           </div>
 
-          {/* Section 2: Per-company */}
-          <div className="ie-section">
-            <div className="ie-section-title">Per-Company Score Breakdown</div>
+           <div className="ie-section">
+             <h2 className="ie-section-title">Per-Company Score Breakdown</h2>
             {companies.map(c => {
               const ic = Math.round(c.company_intent_score * 0.6);
               const fc = c._fit.score !== null ? Math.round(c._fit.score * 0.4) : 0;
@@ -600,16 +622,16 @@
                     <span className="ie-breakdown-name">{c.company_name}</span>
                     <span className="score-badge">{c._comp.composite}</span>
                   </div>
-                  <div className="ie-bar-row" style={{ marginBottom: 4 }}>
-                    <span className="ie-bar-label" style={{ width: 120 }}>Intent ({c.company_intent_score})</span>
+                   <div className="ie-bar-row ie-bar-row--breakdown">
+                     <span className="ie-bar-label ie-bar-label--narrow">Intent ({c.company_intent_score})</span>
                     <div className="ie-bar-track">
                       <div className="ie-bar-fill ie-bar-fill--intent" style={{ width: c.company_intent_score + '%' }} />
                     </div>
                     <span className="ie-bar-value">{ic}</span>
                   </div>
-                  {c._fit.score !== null && (
-                    <div className="ie-bar-row" style={{ marginBottom: 4 }}>
-                      <span className="ie-bar-label" style={{ width: 120 }}>Fit ({c._fit.score})</span>
+                   {c._fit.score !== null && (
+                     <div className="ie-bar-row ie-bar-row--breakdown">
+                       <span className="ie-bar-label ie-bar-label--narrow">Fit ({c._fit.score})</span>
                       <div className="ie-bar-track">
                         <div className="ie-bar-fill ie-bar-fill--fit" style={{ width: c._fit.score + '%' }} />
                       </div>
@@ -632,11 +654,10 @@
               );
             })}
             {companies.length === 0 && <div className="empty-state">No companies match current filters.</div>}
-          </div>
+           </div>
 
-          {/* Section 3: Math card */}
-          <div className="ie-section ie-math-card">
-            <div className="ie-section-title">Scoring Formula</div>
+           <div className="ie-section ie-math-card">
+             <h2 className="ie-section-title">Scoring Formula</h2>
             <p>When fit is known: <code>composite = intent × 0.6 + fit_score × 0.4</code></p>
             <p>When fit is unknown: <code>composite = intent</code> (no penalty for missing data)</p>
             <p>Fit tiers: <code>Strong = 100</code> · <code>Partial(2) = 75</code> · <code>Partial(1) = 50</code> · <code>Weak = 25</code> · <code>Unknown = intent only</code></p>
@@ -676,10 +697,10 @@
             <div key={c.company_name} className={`ax-hero${contacted[c.company_name] ? ' contacted' : ''}`}>
               <div className="ax-hero-top">
                 <div>
-                  <div className="ax-company" style={{ textDecoration: contacted[c.company_name] ? 'line-through' : 'none' }}>
-                    {c.company_name}
-                  </div>
-                  <div style={{ marginTop: 4 }}><FitBadge tier={c._fit.tier} /></div>
+                   <div className="ax-company" style={{ textDecoration: contacted[c.company_name] ? 'line-through' : 'none' }}>
+                     {c.company_name}
+                   </div>
+                   <div className="ax-fit-spacing"><FitBadge tier={c._fit.tier} /></div>
                 </div>
                 <div className="ax-score" aria-label={'Composite score ' + c._comp.composite}>{c._comp.composite}</div>
               </div>
@@ -708,69 +729,62 @@
       );
     }
 
-    // ── MayaView ──────────────────────────────────────────────────────────
-    function MayaView({ companies }) {
-      const NOW = new Date(MOCK_NOW);
-      const CUTOFF = new Date(NOW.getTime() - 7 * 24 * 60 * 60 * 1000);
+     // ── MayaRow ───────────────────────────────────────────────────────────
+     function MayaRow({ c, recent, cutoff, mockNow }) {
+       const latest = latestSignal(c);
+       const recency = latest ? recencyLabel(latest.last_seen, mockNow) : '—';
+       const wCount = weekSignalCount(c, cutoff);
+       return (
+         <a className="my-row" data-recent={recent ? 'true' : 'false'}
+           href={'https://' + c.company_domain} aria-label={c.company_name + ', composite ' + c._comp.composite}>
+           <div className="fr-company">
+             <span className="fr-company-name">{c.company_name}</span>
+             <span className="fr-company-domain">{c.company_domain}</span>
+           </div>
+           <div className="score-badge">{c._comp.composite}</div>
+           <FitBadge tier={c._fit.tier} />
+           <div className="fr-why">{c._why}{recent && wCount > 0 ? ` · ${wCount} signal${wCount>1?'s':''} this week` : ''}</div>
+           <div className="my-recency">{recency}</div>
+         </a>
+       );
+     }
 
-      const smbs = companies.filter(c => c.company_employees === null || c.company_employees < 200);
+     // ── MayaView ──────────────────────────────────────────────────────────
+     function MayaView({ companies }) {
+       const NOW = new Date(MOCK_NOW);
+       const CUTOFF = new Date(NOW.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-      function hasRecentSignal(c) {
-        return (c.recent_signals || []).some(s => new Date(s.last_seen) >= CUTOFF);
-      }
-      function latestSignal(c) {
-        return (c.recent_signals || []).reduce((best, s) => {
-          return !best || new Date(s.last_seen) > new Date(best.last_seen) ? s : best;
-        }, null);
-      }
-      function weekSignalCount(c) {
-        return (c.recent_signals || []).filter(s => new Date(s.last_seen) >= CUTOFF).length;
-      }
+       const smbs = companies.filter(c => c.company_employees === null || c.company_employees < 200);
 
-      const thisWeek = smbs.filter(hasRecentSignal).sort((a,b) => b._comp.composite - a._comp.composite).slice(0, 5);
-      const others = smbs.filter(c => !thisWeek.includes(c)).sort((a,b) => b._comp.composite - a._comp.composite);
+       function hasRecentSignal(c) {
+         return (c.recent_signals || []).some(s => new Date(s.last_seen) >= CUTOFF);
+       }
 
-      if (smbs.length === 0) {
-        return <div className="view-maya"><div className="empty-state">No SMB companies in current data.</div></div>;
-      }
+       const thisWeek = smbs.filter(hasRecentSignal).sort((a,b) => b._comp.composite - a._comp.composite).slice(0, 5);
+       const others = smbs.filter(c => !thisWeek.includes(c)).sort((a,b) => b._comp.composite - a._comp.composite);
 
-      function MayaRow({ c, recent }) {
-        const latest = latestSignal(c);
-        const recency = latest ? recencyLabel(latest.last_seen, MOCK_NOW) : '—';
-        const wCount = weekSignalCount(c);
-        return (
-          <a className="my-row" data-recent={recent ? 'true' : 'false'}
-            href={'https://' + c.company_domain} aria-label={c.company_name + ', composite ' + c._comp.composite}>
-            <div className="fr-company">
-              <span className="fr-company-name">{c.company_name}</span>
-              <span className="fr-company-domain">{c.company_domain}</span>
-            </div>
-            <div className="score-badge">{c._comp.composite}</div>
-            <FitBadge tier={c._fit.tier} />
-            <div className="fr-why">{c._why}{recent && wCount > 0 ? ` · ${wCount} signal${wCount>1?'s':''} this week` : ''}</div>
-            <div className="my-recency">{recency}</div>
-          </a>
-        );
-      }
+       if (smbs.length === 0) {
+         return <div className="view-maya"><div className="empty-state">No SMB companies in current data.</div></div>;
+       }
 
-      return (
-        <div className="view-maya">
-          {thisWeek.length > 0 ? (
-            <>
-              <div className="my-section-header">🔥 This Week's Hot SMBs ({thisWeek.length})</div>
-              {thisWeek.map(c => <MayaRow key={c.company_name} c={c} recent={true} />)}
-            </>
-          ) : (
-            <div className="empty-state">No SMB activity in the last 7 days. Check back tomorrow.</div>
-          )}
-          {others.length > 0 && (
-            <>
-              <div className="my-section-header">Other SMB Activity ({others.length})</div>
-              {others.map(c => <MayaRow key={c.company_name} c={c} recent={false} />)}
-            </>
-          )}
-        </div>
-      );
+       return (
+         <div className="view-maya">
+           {thisWeek.length > 0 ? (
+             <>
+               <div className="my-section-header">🔥 This Week's Hot SMBs ({thisWeek.length})</div>
+               {thisWeek.map(c => <MayaRow key={c.company_name} c={c} recent={true} cutoff={CUTOFF} mockNow={MOCK_NOW} />)}
+             </>
+           ) : (
+             <div className="empty-state">No SMB activity in the last 7 days. Check back tomorrow.</div>
+           )}
+           {others.length > 0 && (
+             <>
+               <div className="my-section-header">Other SMB Activity ({others.length})</div>
+               {others.map(c => <MayaRow key={c.company_name} c={c} recent={false} cutoff={CUTOFF} mockNow={MOCK_NOW} />)}
+             </>
+           )}
+         </div>
+       );
     }
 
     // ── App ───────────────────────────────────────────────────────────────
@@ -805,22 +819,22 @@
           <TopBar />
           <div className="shell-body">
             <Sidebar />
-            <div className="main-area">
-              <div className="page-header">
-                <div className="page-header-left">
-                  <h1>Hot Prospects Brief</h1>
-                  <span className="subtitle">Ranked by composite intent + ICP fit score · {filtered.length} companies</span>
-                </div>
-                <select className="persona-switcher" value={persona}
-                  onChange={e => setPersona(e.target.value)}
-                  aria-label="Switch persona view">
-                  <option value="francisco">Francisco (SDR)</option>
-                  <option value="stacy">Stacy (Demand Gen / ABM)</option>
-                  <option value="iesha">Iesha (RevOps / SalesOps)</option>
-                  <option value="alex">Alex (Founder / Player-Coach)</option>
-                  <option value="maya">Maya (SMB Growth)</option>
-                </select>
-              </div>
+             <div className="main-area">
+               <header className="page-header">
+                 <div className="page-header-left">
+                   <h1>Hot Prospects Brief</h1>
+                   <span className="subtitle">Ranked by composite intent + ICP fit score · {filtered.length} companies</span>
+                 </div>
+                 <select className="persona-switcher" value={persona}
+                   onChange={e => setPersona(e.target.value)}
+                   aria-label="Switch persona view">
+                   <option value="francisco">Francisco (SDR)</option>
+                   <option value="stacy">Stacy (Demand Gen / ABM)</option>
+                   <option value="iesha">Iesha (RevOps / SalesOps)</option>
+                   <option value="alex">Alex (Founder / Player-Coach)</option>
+                   <option value="maya">Maya (SMB Growth)</option>
+                 </select>
+               </header>
               <FilterBar
                 activeSignals={activeSignals} setActiveSignals={setActiveSignals}
                 activeFits={activeFits} setActiveFits={setActiveFits}
