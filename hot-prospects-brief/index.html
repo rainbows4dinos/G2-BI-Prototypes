@@ -94,6 +94,23 @@
       --st-overlay-warm: rgba(139,127,209,0.10);
     }
 
+    /* ── Dark Mode Contrast Overrides (a11y fixes) ──────────────────────── */
+    [data-theme="dark"] .chip[aria-pressed="true"] {
+      background: var(--primary-hover);   /* #a796e0 — darker active purple */
+      color: var(--surface);              /* #100c2e — very dark navy text; ~6.5:1 ratio on #a796e0 */
+    }
+    [data-theme="dark"] .nav-item.active {
+      color: var(--primary-hover);        /* #a796e0 on #2d2654 → ~5.1:1 */
+    }
+    [data-theme="dark"] .view-alex > h2,
+    [data-theme="dark"] .view-alex h2 {
+      color: var(--text-sec);             /* #b0afc8 on #100c2e → ~6.3:1 */
+    }
+    [data-theme="dark"] .fit-badge--strong {
+      background: var(--primary-hover);   /* #a796e0 — lighter so dark text works */
+      color: var(--surface);              /* #100c2e on #a796e0 → ~6.5:1 */
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font); background: var(--surface); color: var(--text); font-size: 14px; }
     button { font-family: var(--font); cursor: pointer; }
@@ -317,6 +334,15 @@
       .nav-item, .top-bar-icon, .theme-toggle, .ie-bar-fill, .ie-bar-track {
         transition: background-color 200ms ease, color 200ms ease,
                     border-color 200ms ease, box-shadow 200ms ease;
+      }
+    }
+
+    /* ── Reduced Motion Override (disable all transitions) ──────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
       }
     }
 
