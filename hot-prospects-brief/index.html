@@ -95,21 +95,21 @@
     }
 
     /* ── Dark Mode Contrast Overrides (a11y fixes) ──────────────────────── */
-    [data-theme="dark"] .chip[aria-pressed="true"] {
-      background: var(--primary-hover);   /* #a796e0 — darker active purple */
-      color: var(--surface);              /* #100c2e — very dark navy text; ~6.5:1 ratio on #a796e0 */
-    }
-    [data-theme="dark"] .nav-item.active {
-      color: var(--primary-hover);        /* #a796e0 on #2d2654 → ~5.1:1 */
-    }
-    [data-theme="dark"] .view-alex > h2,
-    [data-theme="dark"] .view-alex h2 {
-      color: var(--text-sec);             /* #b0afc8 on #100c2e → ~6.3:1 */
-    }
-    [data-theme="dark"] .fit-badge--strong {
-      background: var(--primary-hover);   /* #a796e0 — lighter so dark text works */
-      color: var(--surface);              /* #100c2e on #a796e0 → ~6.5:1 */
-    }
+     [data-theme="dark"] .chip[aria-pressed="true"] {
+       background: var(--primary-hover);
+       color: var(--surface);
+     }
+     [data-theme="dark"] .nav-item.active {
+       color: var(--primary-hover);
+     }
+     [data-theme="dark"] .view-alex > h2,
+     [data-theme="dark"] .view-alex h2 {
+       color: var(--text-sec);
+     }
+     [data-theme="dark"] .fit-badge--strong {
+       background: var(--primary-hover);
+       color: var(--surface);
+     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font); background: var(--surface); color: var(--text); font-size: 14px; }
@@ -140,16 +140,14 @@
                      border-radius: var(--r-sm); color: rgba(255,255,255,.65); background: none; border: none; transition: background .12s; }
      .top-bar-icon:hover { background: rgba(255,255,255,.14); }
      .top-bar-icon:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
-    .theme-toggle {
-      width: 30px; height: 30px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: var(--r-sm);
-      color: rgba(255,255,255,.65);
-      background: none; border: none;
-      cursor: pointer;
-      font-family: var(--font);
-      transition: background .12s;
-    }
+     .theme-toggle {
+       width: 30px; height: 30px;
+       display: flex; align-items: center; justify-content: center;
+       border-radius: var(--r-sm);
+       color: rgba(255,255,255,.65);
+       background: none; border: none;
+       transition: background .12s;
+     }
     .theme-toggle:hover { background: rgba(255,255,255,.14); }
     .theme-toggle:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
     .top-bar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,.2);
@@ -908,14 +906,14 @@
         return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
       });
 
-      function toggleTheme() {
-        setTheme(function(prev) {
-          var next = prev === 'dark' ? 'light' : 'dark';
-          try { localStorage.setItem('hpb-theme', next); }
-          catch (e) { console.warn('localStorage write failed:', e); }
-          return next;
-        });
-      }
+       function toggleTheme() {
+         setTheme(function(prev) {
+           var next = prev === 'dark' ? 'light' : 'dark';
+           try { localStorage.setItem('hpb-theme', next); }
+           catch (e) { /* ignore */ }
+           return next;
+         });
+       }
 
       React.useEffect(function() {
         if (theme === 'dark') {
