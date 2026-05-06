@@ -22,7 +22,7 @@ v2 retains the following from v1 unchanged:
 - **ICP scoring functions** — `dimensionMatch`, `computeFit`, `computeComposite` — unchanged
   signatures and behavior
 - **Dark mode framework** — `[data-theme="dark"]` CSS overrides + localStorage-driven detection
-- **Elevate Design System tokens** — same 19 base tokens; v2 adds 10 signal pill tokens on top
+- **Elevate Design System tokens** — same 25 base tokens; v2 adds 10 signal pill tokens on top
 - **Accessibility** — ARIA labels, semantic HTML, keyboard navigation, reduced-motion support
 
 **See `../hot-prospects-brief/AGENTS.md` for the full v1 spec.** This doc covers v2 deltas only.
@@ -36,7 +36,7 @@ Material Icons via Google Fonts CDN. Static HTML, no build step, no bundler, no 
 
 `index.html` (~1070 lines) — single-file prototype organized top-to-bottom:
 
-- **CSS tokens** (lines ~33–280) — same 19 base tokens as v1, plus 10 new signal pill tokens
+- **CSS tokens** (lines ~33–280) — same 25 base tokens as v1, plus 10 new signal pill tokens
   (lines 65–117) and dark-mode overrides for all new tokens
 - **Dark mode block** (lines ~79–130) — same `[data-theme="dark"]` structure as v1
 - **Mock data** (line ~405) — identical to v1; 50 companies + 4 QA fixtures

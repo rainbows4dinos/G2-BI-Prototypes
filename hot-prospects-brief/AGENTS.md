@@ -20,7 +20,7 @@ G2's production design language.
 ## Tech Stack
 
 Single-file React 18 via CDN (React + ReactDOM + Babel Standalone). No build step, no bundler,
-no npm. Styling uses Elevate Design System tokens (19 base CSS custom properties + 4
+no npm. Styling uses Elevate Design System tokens (25 base CSS custom properties + 4
 dark-mode-specific additions) and Material Icons via Google Fonts CDN. Runs as static HTML in any
 modern browser; no server, no API integration, no persistence beyond localStorage for theme
 preference (`'hpb-theme'`).
@@ -31,7 +31,7 @@ preference (`'hpb-theme'`).
 
 - **Dark mode bootstrap** — reads `localStorage['hpb-theme']`, sets `data-theme` attribute on
   `<html>` before first paint to prevent flash (lines 12–30)
-- **CSS tokens** — Elevate light/dark theme definitions; 19 base tokens in `:root`, 4
+- **CSS tokens** — Elevate light/dark theme definitions; 25 base tokens in `:root`, 4
   dark-mode-specific tokens in `[data-theme="dark"]` (lines 33–95)
 - **Dark mode overrides** — contrast fixes for components that need explicit dark-mode rules,
   scoped under `[data-theme="dark"]` (lines 98–112)
@@ -72,7 +72,7 @@ Function signatures (declarations only; see `index.html` for bodies):
 
 - **`computeFit(company, icp)`** (line 394) — aggregates ICP fit across all dimensions;
   returns `{ tier, score, matches, missingDims }`
-  - Tiers: Strong (4/4 dims match, score=100), Partial (1–2 match, score=50–75),
+  - Tiers: Strong (≥3 of 4 dims match, score=100), Partial (1–2 match, score=50–75),
     Weak (0 match, score=25), Unknown (all dims null, score=null)
 
 - **`computeComposite(company, icp)`** (line 420) — combines intent and fit into a single
@@ -99,7 +99,7 @@ separate from the global 80. Both values are intentional and should be changed i
   compare, category, competitors
 - **localStorage key** (line 15) — `'hpb-theme'` (stores `'light'` | `'dark'`)
 - **Hot threshold** — 80 (global composite cutoff); Stacy view internal threshold — 70
-- **19 Elevate CSS tokens** (lines 34–65):
+- **25 Elevate CSS tokens** (lines 34–65):
   `--primary`, `--primary-hover`, `--primary-10`, `--primary-20`, `--neutral-5`, `--card`,
   `--border-light`, `--border-med`, `--border-brand`, `--text`, `--text-sec`, `--text-ter`,
   `--text-pri`, `--r-sm`, `--r-md`, `--r-pill`, `--sh-card`, `--sh-dd`, `--font`, `--surface`,
